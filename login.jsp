@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>로그인</h2>
+        <h2>로그인 2</h2>
         <form method="post" action="login">
             <input type="text" name="username" placeholder="아이디" required>
             <input type="password" name="password" placeholder="비밀번호" required>
