@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root {
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3;
+    --background-color: #f4f7f6;
+    --container-bg-color: #ffffff;
+    --text-color: #333;
+    --border-color: #ddd;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: var(--container-bg-color);
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+button[type="submit"] {
+    padding: 0.9rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button[type="submit"]:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.message {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.error {
+    color: var(--error-color);
+    background-color: rgba(220, 53, 69, 0.1);
+    /* border: 1px solid var(--error-color); */
+}
+
+.success {
+    color: var(--success-color);
+    background-color: rgba(40, 167, 69, 0.1);
+    /* border: 1px solid var(--success-color); */
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: text-decoration 0.2s;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.form-footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.welcome-message {
+    margin-bottom: 2rem;
+} 

@@ -1,0 +1,25 @@
+# Compiled Java class files
+WEB-INF/classes/
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*~
+
+# IDE settings files (Eclipse, IntelliJ, VSCode)
+.project
+.classpath
+.settings/
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+target/
+out/
+
+# Local files (e.g., test libraries)
+WEB-INF/lib/ 
