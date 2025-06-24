@@ -3583,6 +3583,58 @@ github에 파일이 업로드되지 않았어
 
 _**Assistant**_
 
+네, 파일이 GitHub에 업로드되지 않은 이유는 **jBCrypt 라이브러리(jbcrypt-0.4.jar)가 프로젝트의 `WEB-INF/lib` 폴더에 없어서 소스 코드가 컴파일되지 않았기 때문**입니다.  
+이로 인해 pre-push hook에서 컴파일이 실패하고, push가 자동으로 중단되었습니다.
+
+---
+
+## 해결 방법 요약
+
+1. **jBCrypt 라이브러리 추가**
+   - [여기서 jbcrypt-0.4.jar 다운로드](https://repo1.maven.org/maven2/org/mindrot/jbcrypt/0.4/jbcrypt-0.4.jar)
+   - 다운로드한 파일을 `WEB-INF/lib/` 폴더에 복사
+
+2. **다시 push 시도**
+   - 라이브러리 추가 후, 아래 명령어를 실행
+     ```sh
+     git add .
+     git commit -m "Add jBCrypt library for password encryption"
+     git push
+     ```
+   - pre-push hook이 정상적으로 컴파일 및 테스트를 통과하면, GitHub에 업로드가 완료됩니다.
+
+---
+
+### 추가 안내
+
+- `WEB-INF/lib/jbcrypt-0.4.jar` 파일이 반드시 존재해야 합니다.
+- 라이브러리 추가 후에도 문제가 발생하면, 에러 메시지와 함께 다시 문의해 주세요.
+
+**라이브러리 추가가 완료되면 push를 다시 시도해 주세요!**  
+필요하다면 push 명령을 대신 실행해드릴 수 있습니다.
+
+---
+
+_**User**_
+
+git add .
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
 
 
 ---
