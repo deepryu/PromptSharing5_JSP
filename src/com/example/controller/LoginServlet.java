@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.model.User;
 import com.example.model.UserDAO;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,9 +32,7 @@ public class LoginServlet extends HttpServlet {
         
         User user = userDAO.findByUsername(username);
         
-        // IMPORTANT: In a real application, you MUST compare hashed passwords.
-        // This is a major security vulnerability.
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             HttpSession session = request.getSession();
             session.setAttribute("username", username);
             response.sendRedirect("welcome.jsp");

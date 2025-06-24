@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserDAO {
 
@@ -40,8 +41,10 @@ public class UserDAO {
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
+            // 비밀번호 해싱
+            String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
             ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPassword());
+            ps.setString(2, hashed);
             int result = ps.executeUpdate();
             return result > 0;
         } catch (SQLException e) {
