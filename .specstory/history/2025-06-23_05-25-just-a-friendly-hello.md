@@ -6408,9 +6408,341 @@ _**User**_
 
 _**Assistant**_
 
+```diff
+              try {
+                  result = candidateDAO.addCandidate(candidate);
+-                 if (!result) error = "지원자 등록에 실패했습니다. (이메일 중복 등)";
++                 if (!result) {
++                     error = "지원자 등록에 실패했습니다. (이메일 중복 등)";
++                     candidate.setId(0);
++                 }
+              } catch (Exception e) {
+                  error = e.getMessage();
++                 candidate.setId(0);
+              }
+          } else {
+```
+
+---
+
+```diff
+  <%
+      Candidate candidate = (Candidate) request.getAttribute("candidate");
+-     boolean isEdit = (candidate != null);
++     boolean isEdit = (candidate != null && candidate.getId() > 0);
+      String error = (String) request.getAttribute("error");
+  %>
+```
+
+```diff
+              <input type="hidden" name="id" value="<%= candidate.getId() %>">
+          <% } %>
+-         <input type="text" name="name" placeholder="이름" value="<%= isEdit ? candidate.getName() : "" %>" required><br>
+-         <input type="email" name="email" placeholder="이메일" value="<%= isEdit ? candidate.getEmail() : "" %>" required><br>
+-         <input type="text" name="phone" placeholder="연락처" value="<%= isEdit ? candidate.getPhone() : "" %>"><br>
+-         <textarea name="resume" placeholder="이력서(요약)"><%= isEdit ? candidate.getResume() : "" %></textarea><br>
++         <input type="text" name="name" placeholder="이름" value="<%= candidate != null ? candidate.getName() : "" %>" required><br>
++         <input type="email" name="email" placeholder="이메일" value="<%= candidate != null ? candidate.getEmail() : "" %>" required><br>
++         <input type="text" name="phone" placeholder="연락처" value="<%= candidate != null ? candidate.getPhone() : "" %>"><br>
++         <textarea name="resume" placeholder="이력서(요약)"><%= candidate != null ? candidate.getResume() : "" %></textarea><br>
+          <button type="submit"><%= isEdit ? "수정" : "등록" %></button>
+          <a href="candidates"><button type="button">목록으로</button></a>
+```
+
+---
+
+이제 지원자 등록 실패 시에는 항상 "신규 지원자 등록" 폼이 뜨고,  
+수정 실패 시에는 "지원자 수정" 폼이 뜨도록 동작이 명확하게 개선되었습니다.
+
+- 등록 실패 시: id가 0으로 세팅되어 isEdit=false → "신규 지원자 등록" 폼
+- 수정 실패 시: id가 그대로 유지되어 isEdit=true → "지원자 수정" 폼
+
+이제 사용자는 상황에 맞는 폼과 에러 메시지를 정확히 볼 수 있습니다.  
+문제 없이 동작하는지 확인해보시고, 추가 요청이 있으면 말씀해 주세요!
+
+---
+
+_**User**_
+
+변경사항을 github에 업로드해줘
+
+---
+
+_**Assistant**_
+
+```bash
+git add . && git commit -m "fix: 지원자 등록/수정 실패 시 폼 분기 및 에러 메시지 UX 개선" && git push
+```
+
+```
+분기 및 에러 메시지 UX 개선" && git push                                                               [main a131
+583] fix: 지원자 등록/수정 실패 시 폼 분기 및 에러 메시지 UX 개선
+ 10 files changed, 2402 insertions(+), 1 deletion(-)
+ create mode 100644 candidate_detail.jsp
+ create mode 100644 candidate_form.jsp
+ create mode 100644 candidates.jsp
+ create mode 100644 "docs/\355\224\204\353\241\234\354\240\235\355\212\270.prd"
+ create mode 100644 "docs/\355\231\225\354\236\245_\352\270\260\353\212\245_\354\240\225\354\235\230\35
+ create mode 100644 src/com/example/controller/CandidateServlet.java
+ create mode 100644 src/com/example/model/Candidate.java
+ create mode 100644 src/com/example/model/CandidateDAO.java
+--- Running pre-push hook: Executing unit tests... ---
+1. Compiling application source...
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+2. Compiling test source...
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+3. Running JUnit tests...
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+JUnit version 4.13.2
+....
+Time: 5.583
+
+OK (4 tests)
+
+
+--- TESTS PASSED: All checks complete. Proceeding with push. ---
+Enumerating objects: 31, done.
+Counting objects: 100% (31/31), done.
+Delta compression using up to 18 threads
+Compressing objects: 100% (18/18), done.
+Writing objects: 100% (20/20), 21.01 KiB | 827.00 KiB/s, done.
+Total 20 (delta 5), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+To https://github.com/deepryu/PromptSharing5_JSP.git
+   d8c7c5d..a131583  main -> main
+
+```
+
+---
+
+변경사항이 정상적으로 커밋되고, GitHub에 성공적으로 업로드(푸시)되었습니다!
+
+- 지원자 등록/수정 실패 시 폼 분기 및 에러 메시지 UX 개선이 반영되었습니다.
+- 단위 테스트도 모두 통과했습니다.
+
+이제 원격 저장소에도 최신 코드와 개선된 UX가 반영되어 있습니다.  
+추가로 필요한 작업이나 궁금한 점이 있으면 언제든 말씀해 주세요! 🚀
+
+---
+
+_**User**_
+
+추가된 기능들에 대해서 테스트 케이스들 생성해줘
+
+---
+
+_**Assistant**_
+
+<details>
+            <summary>Listed directory test/com/example/model • **1** results</summary>
+        
+| Name |
+|-------|
+| 📄 `UserDAOTest.java` |
+
+</details>
+
+---
+
+```diff
+- 
++ package com.example.model;
++ 
++ import org.junit.After;
++ import org.junit.Before;
++ import org.junit.Test;
++ import static org.junit.Assert.*;
++ 
++ import java.sql.Connection;
++ import java.sql.PreparedStatement;
++ import com.example.util.DatabaseUtil;
++ import java.util.List;
++ 
++ public class CandidateDAOTest {
++     private CandidateDAO candidateDAO;
++     private final String testEmail = "test_candidate_junit@example.com";
++ 
++     @Before
++     public void setUp() throws Exception {
++         candidateDAO = new CandidateDAO();
++         // Clean up test candidate if exists
++         try (Connection conn = DatabaseUtil.getConnection();
++              PreparedStatement ps = conn.prepareStatement("DELETE FROM candidates WHERE email = ?")) {
++             ps.setString(1, testEmail);
++             ps.executeUpdate();
++         }
++     }
++ 
++     @After
++     public void tearDown() throws Exception {
++         // Clean up test candidate
++         try (Connection conn = DatabaseUtil.getConnection();
++              PreparedStatement ps = conn.prepareStatement("DELETE FROM candidates WHERE email = ?")) {
++             ps.setString(1, testEmail);
++             ps.executeUpdate();
++         }
++     }
++ 
++     @Test
++     public void testAddCandidate_Success() {
++         Candidate c = new Candidate();
++         c.setName("테스트 지원자");
++         c.setEmail(testEmail);
++         c.setPhone("01012345678");
++         c.setResume("JUnit 테스트용 지원자");
++         assertTrue(candidateDAO.addCandidate(c));
++     }
++ 
++     @Test
++     public void testAddCandidate_Duplicate() {
++         Candidate c1 = new Candidate();
++         c1.setName("테스트 지원자");
++         c1.setEmail(testEmail);
++         c1.setPhone("01012345678");
++         c1.setResume("JUnit 테스트용 지원자");
++         candidateDAO.addCandidate(c1);
++ 
++         Candidate c2 = new Candidate();
++         c2.setName("중복 지원자");
++         c2.setEmail(testEmail); // 같은 이메일
++         c2.setPhone("01099999999");
++         c2.setResume("중복 테스트");
++         assertFalse(candidateDAO.addCandidate(c2));
++     }
++ 
++     @Test
++     public void testGetCandidateById_Exists() {
++         Candidate c = new Candidate();
++         c.setName("테스트 지원자");
++         c.setEmail(testEmail);
++         c.setPhone("01012345678");
++         c.setResume("JUnit 테스트용 지원자");
++         candidateDAO.addCandidate(c);
++         List<Candidate> list = candidateDAO.getAllCandidates();
++         Candidate found = null;
++         for (Candidate cand : list) {
++             if (testEmail.equals(cand.getEmail())) {
++                 found = candidateDAO.getCandidateById(cand.getId());
++                 break;
++             }
++         }
++         assertNotNull(found);
++         assertEquals(testEmail, found.getEmail());
++     }
++ 
++     @Test
++     public void testUpdateCandidate() {
++         Candidate c = new Candidate();
++         c.setName("테스트 지원자");
++         c.setEmail(testEmail);
++         c.setPhone("01012345678");
++         c.setResume("JUnit 테스트용 지원자");
++         candidateDAO.addCandidate(c);
++         List<Candidate> list = candidateDAO.getAllCandidates();
++         Candidate found = null;
++         for (Candidate cand : list) {
++             if (testEmail.equals(cand.getEmail())) {
++                 found = cand;
++                 break;
++             }
++         }
++         assertNotNull(found);
++         found.setName("수정된 지원자");
++         found.setPhone("01087654321");
++         assertTrue(candidateDAO.updateCandidate(found));
++         Candidate updated = candidateDAO.getCandidateById(found.getId());
++         assertEquals("수정된 지원자", updated.getName());
++         assertEquals("01087654321", updated.getPhone());
++     }
++ 
++     @Test
++     public void testDeleteCandidate() {
++         Candidate c = new Candidate();
++         c.setName("테스트 지원자");
++         c.setEmail(testEmail);
++         c.setPhone("01012345678");
++         c.setResume("JUnit 테스트용 지원자");
++         candidateDAO.addCandidate(c);
++         List<Candidate> list = candidateDAO.getAllCandidates();
++         Candidate found = null;
++         for (Candidate cand : list) {
++             if (testEmail.equals(cand.getEmail())) {
++                 found = cand;
++                 break;
++             }
++         }
++         assertNotNull(found);
++         assertTrue(candidateDAO.deleteCandidate(found.getId()));
++         Candidate deleted = candidateDAO.getCandidateById(found.getId());
++         assertNull(deleted);
++     }
++ } 
+```
+
+---
+
 
 
 ---
+
+`CandidateDAO`의 CRUD 기능에 대한 JUnit 테스트 케이스(`CandidateDAOTest.java`)를 생성했습니다.  
+이 테스트는 다음을 검증합니다:
+
+- 지원자 등록 성공/실패(중복)
+- ID로 지원자 조회
+- 지원자 정보 수정
+- 지원자 삭제
+
+각 테스트는 DB에 실제로 데이터를 넣고, 결과를 검증하며, 테스트 전후로 테스트 데이터를 정리합니다.
+
+**추가로 필요한 테스트 케이스(예시):**
+- 필수 입력값 누락 시 예외/실패 처리
+- 잘못된 형식(이메일 등) 입력 시 실패
+- 대량 데이터 처리(페이징 등)
+- XSS/SQL Injection 방어(입력값 escape, PreparedStatement 사용 확인)
+- 트랜잭션 롤백(실패 시 데이터 일관성)
+
+이 외에도,  
+- User(회원) 관리  
+- 로그인/로그아웃  
+- 에러 메시지 노출  
+- 보안(암호화, 세션 등)  
+에 대한 테스트도 필요하다면 말씀해 주세요.  
+원하시는 테스트 항목을 구체적으로 지정해주시면, 추가로 생성해드릴 수 있습니다!
+
+---
+
+_**User**_
+
+코드의 안정성을 위해 GitHub에 업로드하기 전에 자동으로 테스트를 실행하는 시스템을 구축해줘
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+_**User**_
+
+개선안을 적용해줘
+
+---
+
+_**Assistant**_
 
 
 
