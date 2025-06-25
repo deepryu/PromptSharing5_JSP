@@ -34,6 +34,7 @@
 <div class="container wide-table-container">
     <h2>지원자 목록</h2>
     <a href="candidates?action=new"><button>신규 지원자 등록</button></a>
+    <a href="main.jsp"><button>홈으로 이동</button></a>
     <table class="candidate-table" border="1">
         <tr>
             <th>이름</th>

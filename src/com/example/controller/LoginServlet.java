@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet {
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             HttpSession session = request.getSession();
             session.setAttribute("username", username);
-            response.sendRedirect("welcome.jsp");
+            response.sendRedirect("main.jsp");
         } else {
             request.setAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
             request.getRequestDispatcher("login.jsp").forward(request, response);

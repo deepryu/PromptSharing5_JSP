@@ -24,6 +24,14 @@
 ## 4. 테스트 및 자동화
 - **단위 테스트**: JUnit 기반, 주요 DAO/비즈니스 로직에 대해 작성
 - **자동화**: pre-push hook으로 빌드/테스트 자동 실행, 실패 시 push 금지
+- **컴파일 명령어**: 
+  ```bash
+  javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java src/com/example/model/*.java src/com/example/controller/*.java
+  ```
+  - 모든 Java 소스 파일(util, model, controller)을 한 번에 컴파일
+  - servlet-api.jar와 WEB-INF/lib의 모든 라이브러리를 classpath에 포함
+  - 컴파일된 클래스는 WEB-INF/classes 디렉토리에 저장
+  - 변경사항 적용 후 반드시 이 명령어로 컴파일 실행
 
 ## 5. 협업 및 문서화
 - **문서화**: 모든 주요 변경사항은 docs/에 마크다운 파일로 기록
