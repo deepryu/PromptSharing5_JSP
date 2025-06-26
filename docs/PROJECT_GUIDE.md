@@ -146,28 +146,70 @@ CREATE TABLE interview_schedules (
   - Windows 환경 최적화된 컬러 출력
   - 상세한 오류 진단 및 해결 가이드
 
-#### 필수 푸시 전 검증 절차
+#### 🚀 정상 동작 확인된 GitHub 푸시 절차
+
+##### 1단계: PowerShell Maven 검증 (필수)
 ```powershell
-# 1단계: PowerShell 검증 실행 (필수)
+# Maven 전체 검증 실행
 powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1
+```
 
-# 2단계: 검증 성공 시 GitHub 푸시
+**검증 과정**:
+- ✅ Maven 환경 확인 (pom.xml, mvnw.cmd)
+- ✅ Maven Clean & Compile 
+- ✅ Maven Test-Compile
+- ✅ Maven JUnit Test (20개 케이스 실행)
+  - UserDAOTest: 4개
+  - CandidateDAOTest: 5개  
+  - InterviewScheduleDAOTest: 11개
+- ✅ 빌드 결과물 검증 (WEB-INF/classes)
+
+##### 2단계: 검증 성공 시 GitHub 푸시
+```powershell
+# 모든 변경사항 스테이징
+git add .
+
+# 의미있는 커밋 메시지 작성
+git commit -m "feat: 새로운 기능 추가
+
+✨ 주요 변경사항:
+- 기능 A 구현
+- 버그 B 수정
+- 문서 C 업데이트
+
+🧪 검증 완료:
+- Maven 컴파일: ✅
+- JUnit 테스트 (20개): ✅
+- 빌드 검증: ✅"
+
+# PowerShell 검증 통과 후 푸시
 git push origin main --no-verify
+```
 
-# 대체 방법: Maven 명령어로 동일한 검증 수행
+##### 대체 검증 방법
+```powershell
+# Maven 명령어로 동일한 검증 수행
 .\mvnw.cmd clean compile test-compile test
 
 # 단계별 실행 (문제 해결용)
-.\mvnw.cmd clean
-.\mvnw.cmd compile
-.\mvnw.cmd test-compile  
-.\mvnw.cmd test
+.\mvnw.cmd clean        # 이전 빌드 정리
+.\mvnw.cmd compile      # 소스 컴파일  
+.\mvnw.cmd test-compile # 테스트 컴파일
+.\mvnw.cmd test         # JUnit 테스트 실행
 ```
 
-#### 중요 주의사항
-- **반드시 PowerShell 검증 후 푸시**: Windows 환경에서 Git hooks 자동 실행이 제한되므로 수동 검증 필수
-- **--no-verify 사용 조건**: PowerShell 검증 통과 시에만 사용
-- **검증 실패 시**: 문제 해결 후 반드시 재검증 수행
+#### 🔒 보안 및 품질 보장
+- **Windows Git Hooks 제한**: PowerShell 환경에서 Git hooks 자동 실행 불가로 수동 검증 필수
+- **--no-verify 사용 조건**: PowerShell 검증 완전 통과 시에만 사용
+- **검증 실패 시 대응**: 
+  1. 오류 메시지 확인 및 문제 해결
+  2. 재검증 실행
+  3. 모든 테스트 통과 후 푸시
+
+#### ⚠️ 중요 주의사항
+- **절대 검증 없이 푸시 금지**: `--no-verify` 옵션은 검증 완료 후에만 사용
+- **테스트 실패 시 푸시 중단**: 20개 테스트 중 하나라도 실패하면 문제 해결 필수
+- **데이터베이스 연결 확인**: 테스트 실행 전 PostgreSQL 서버 상태 점검
 
 #### Windows PowerShell Git 명령어
 ```powershell
