@@ -81,17 +81,17 @@ CREATE TABLE interview_schedules (
 **⚠️ CRITICAL: GitHub에 푸시하기 전에 반드시 다음 절차를 수행해야 합니다:**
 
 1. **컴파일 검증**:
-   ```bash
+   ```cmd
    javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java src/com/example/model/User.java src/com/example/model/UserDAO.java src/com/example/model/Candidate.java src/com/example/model/CandidateDAO.java src/com/example/model/InterviewSchedule.java src/com/example/model/InterviewScheduleDAO.java src/com/example/controller/LoginServlet.java src/com/example/controller/LogoutServlet.java src/com/example/controller/RegisterServlet.java src/com/example/controller/CandidateServlet.java src/com/example/controller/InterviewScheduleServlet.java
    ```
 
 2. **테스트 실행**:
-   ```bash
+   ```cmd
    # 방법 1: Maven 기반 테스트 실행 (권장)
    .\test-maven.cmd
    
    # 방법 2: JUnit JAR 직접 실행 (기존 방식)
-   java -jar WEB-INF/lib/junit-platform-console-standalone.jar --class-path "WEB-INF/classes:WEB-INF/lib/*" --scan-class-path
+   java -jar WEB-INF/lib/junit-platform-console-standalone.jar --class-path "WEB-INF/classes;WEB-INF/lib/*" --scan-class-path
    ```
 
 3. **수동 테스트 확인**:
@@ -99,14 +99,14 @@ CREATE TABLE interview_schedules (
    - 데이터베이스 연결 및 CRUD 연산 정상 동작 확인
 
 ### 4-3. Maven 기반 테스트 실행 방법
-```bash
+```cmd
 # 단계별 Maven 테스트 실행
 .\test-maven.cmd
 
 # 또는 개별 테스트 클래스 실행
-mvnw.cmd test -Dtest=UserDAOTest
-mvnw.cmd test -Dtest=CandidateDAOTest
-mvnw.cmd test -Dtest=InterviewScheduleDAOTest
+.\mvnw.cmd test -Dtest=UserDAOTest
+.\mvnw.cmd test -Dtest=CandidateDAOTest
+.\mvnw.cmd test -Dtest=InterviewScheduleDAOTest
 
 # 전체 Maven 빌드 및 테스트
 .\maven-all.cmd
@@ -117,15 +117,57 @@ mvnw.cmd test -Dtest=InterviewScheduleDAOTest
 - **자동 정리**: 테스트 데이터 중복 및 충돌 방지를 위한 데이터베이스 정리 포함
 - **실시간 피드백**: 각 테스트의 성공/실패 상태를 즉시 확인 가능
 
-### 4-4. 자동화 설정
-- **Pre-push Hook**: `.git/hooks/pre-push` 스크립트가 푸시 전 자동으로 컴파일 및 테스트 실행
-- **실패 시 Push 금지**: 컴파일 실패나 테스트 실패 시 GitHub 푸시가 자동으로 차단됨
+### 4-4. 자동화 설정 및 Git 명령어
+
+#### Maven 기반 Pre-push Hook
+- **Maven 자동화**: `.git/hooks/pre-push` 스크립트가 푸시 전 자동으로 Maven 빌드 및 테스트 실행
+- **실행 순서**: Maven Clean → Maven Compile → Maven Test-Compile → Maven Test → 빌드 결과 검증
+- **검증 항목**: 
+  - Maven 환경 설정 확인 (pom.xml, mvnw.cmd)
+  - 전체 소스 컴파일 (util, model, controller)
+  - 테스트 소스 컴파일 
+  - JUnit 테스트 실행 (총 20개 케이스)
+  - 빌드 결과물 검증 (target/classes 확인)
+- **실패 시 Push 금지**: Maven 단계별 실패 시 GitHub 푸시가 자동으로 차단됨
 - **Hook 우회**: 응급상황에서만 `git push --no-verify` 사용 (권장하지 않음)
+
+#### Pre-push Hook 수동 테스트
+```cmd
+# pre-push 훅과 동일한 검증 수행
+.\mvnw.cmd clean compile test-compile test
+
+# 또는 단계별 실행
+.\mvnw.cmd clean
+.\mvnw.cmd compile
+.\mvnw.cmd test-compile  
+.\mvnw.cmd test
+```
+
+#### Windows PowerShell Git 명령어
+```powershell
+# Git 상태 확인
+git status
+
+# 파일 목록 확인 (Windows)
+dir .git\hooks\
+
+# 변경사항 스테이징
+git add .
+
+# 커밋
+git commit -m "커밋 메시지"
+
+# GitHub 푸시
+git push origin main
+
+# Hook 우회 푸시 (응급시만)
+git push origin main --no-verify
+```
 
 ### 4-5. 컴파일 및 배포 명령어
 
 #### 4-5-1. 모든 클래스 파일 컴파일 명령어
-```bash
+```cmd
 # 방법 1: 개별 파일 지정 (권장)
 javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java src/com/example/model/User.java src/com/example/model/UserDAO.java src/com/example/model/Candidate.java src/com/example/model/CandidateDAO.java src/com/example/model/InterviewSchedule.java src/com/example/model/InterviewScheduleDAO.java src/com/example/controller/LoginServlet.java src/com/example/controller/LogoutServlet.java src/com/example/controller/RegisterServlet.java src/com/example/controller/CandidateServlet.java src/com/example/controller/InterviewScheduleServlet.java
 
@@ -139,7 +181,7 @@ javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes sr
 ```
 
 #### 4-5-2. 배포 후 Tomcat 중지 명령어
-```bash
+```cmd
 # Windows에서 Tomcat 중지만 수행
 # 1. Tomcat 중지
 taskkill /f /im java.exe
@@ -157,7 +199,7 @@ net stop tomcat9
 ```
 
 #### 4-5-3. 배포 확인 명령어
-```bash
+```cmd
 # 컴파일된 클래스 파일 확인
 dir WEB-INF\classes\com\example\model\*.class
 dir WEB-INF\classes\com\example\controller\*.class
