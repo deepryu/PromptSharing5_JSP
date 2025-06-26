@@ -120,10 +120,8 @@ CREATE TABLE interview_schedules (
 ### 4-4. 자동화 설정 및 Git 명령어
 
 #### PowerShell 기반 Maven Pre-push Hook
-- **이중 구조 설계**: 
-  - `.git/hooks/pre-push`: Git이 인식하는 bash wrapper (PowerShell 스크립트 호출)
-  - `.git/hooks/pre-push.ps1`: 실제 Maven 검증을 수행하는 PowerShell 스크립트
-- **자동 실행**: `git push` 시 bash wrapper가 PowerShell 스크립트를 자동 호출
+- **수동 검증 필수**: Windows PowerShell 환경에서 Git hooks 자동 실행 제한으로 인해 **푸시 전 수동 검증 필수**
+- **검증 스크립트**: `.git/hooks/pre-push.ps1` PowerShell 스크립트로 Maven 빌드 및 테스트 수행
 - **실행 순서**: Maven Clean → Maven Compile → Maven Test-Compile → Maven Test → 빌드 결과 검증
 - **검증 항목**: 
   - Maven 환경 설정 확인 (pom.xml, mvnw.cmd)
@@ -132,8 +130,10 @@ CREATE TABLE interview_schedules (
   - JUnit 테스트 실행 (총 20개 케이스)
   - 빌드 결과물 검증 (WEB-INF/classes 확인)
 - **Windows PowerShell 최적화**: 컬러 출력, 단계별 진행 상황, 상세한 오류 메시지 제공
-- **실패 시 Push 금지**: Maven 단계별 실패 시 GitHub 푸시가 자동으로 차단됨
-- **Hook 우회**: 응급상황에서만 `git push --no-verify` 사용 (권장하지 않음)
+- **푸시 절차**: 
+  1. **필수**: PowerShell 검증 실행
+  2. **검증 통과 시**: `git push origin main --no-verify`로 푸시
+  3. **검증 실패 시**: 문제 해결 후 재검증
 
 #### Hook 파일 구조
 - **`.git/hooks/pre-push`** (bash wrapper):
@@ -146,23 +146,28 @@ CREATE TABLE interview_schedules (
   - Windows 환경 최적화된 컬러 출력
   - 상세한 오류 진단 및 해결 가이드
 
-#### Pre-push Hook 수동 테스트
+#### 필수 푸시 전 검증 절차
 ```powershell
-# PowerShell pre-push 훅 직접 실행 (권장)
+# 1단계: PowerShell 검증 실행 (필수)
 powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1
 
-# 또는 bash wrapper 테스트
-.\.git\hooks\pre-push
+# 2단계: 검증 성공 시 GitHub 푸시
+git push origin main --no-verify
 
-# 또는 Maven 명령어로 동일한 검증 수행
+# 대체 방법: Maven 명령어로 동일한 검증 수행
 .\mvnw.cmd clean compile test-compile test
 
-# 단계별 실행
+# 단계별 실행 (문제 해결용)
 .\mvnw.cmd clean
 .\mvnw.cmd compile
 .\mvnw.cmd test-compile  
 .\mvnw.cmd test
 ```
+
+#### 중요 주의사항
+- **반드시 PowerShell 검증 후 푸시**: Windows 환경에서 Git hooks 자동 실행이 제한되므로 수동 검증 필수
+- **--no-verify 사용 조건**: PowerShell 검증 통과 시에만 사용
+- **검증 실패 시**: 문제 해결 후 반드시 재검증 수행
 
 #### Windows PowerShell Git 명령어
 ```powershell
