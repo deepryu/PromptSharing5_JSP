@@ -119,8 +119,11 @@ CREATE TABLE interview_schedules (
 
 ### 4-4. 자동화 설정 및 Git 명령어
 
-#### Maven 기반 Pre-push Hook
-- **Maven 자동화**: `.git/hooks/pre-push.ps1` PowerShell 스크립트가 푸시 전 자동으로 Maven 빌드 및 테스트 실행
+#### PowerShell 기반 Maven Pre-push Hook
+- **이중 구조 설계**: 
+  - `.git/hooks/pre-push`: Git이 인식하는 bash wrapper (PowerShell 스크립트 호출)
+  - `.git/hooks/pre-push.ps1`: 실제 Maven 검증을 수행하는 PowerShell 스크립트
+- **자동 실행**: `git push` 시 bash wrapper가 PowerShell 스크립트를 자동 호출
 - **실행 순서**: Maven Clean → Maven Compile → Maven Test-Compile → Maven Test → 빌드 결과 검증
 - **검증 항목**: 
   - Maven 환경 설정 확인 (pom.xml, mvnw.cmd)
@@ -132,10 +135,24 @@ CREATE TABLE interview_schedules (
 - **실패 시 Push 금지**: Maven 단계별 실패 시 GitHub 푸시가 자동으로 차단됨
 - **Hook 우회**: 응급상황에서만 `git push --no-verify` 사용 (권장하지 않음)
 
+#### Hook 파일 구조
+- **`.git/hooks/pre-push`** (bash wrapper):
+  - Git이 자동으로 실행하는 진입점
+  - PowerShell 실행 정책 설정 및 스크립트 호출
+  - PowerShell 실행 결과에 따른 push 허용/차단 제어
+
+- **`.git/hooks/pre-push.ps1`** (PowerShell 스크립트):
+  - 실제 Maven 빌드 및 테스트 수행
+  - Windows 환경 최적화된 컬러 출력
+  - 상세한 오류 진단 및 해결 가이드
+
 #### Pre-push Hook 수동 테스트
 ```powershell
-# PowerShell pre-push 훅 직접 실행
+# PowerShell pre-push 훅 직접 실행 (권장)
 powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1
+
+# 또는 bash wrapper 테스트
+.\.git\hooks\pre-push
 
 # 또는 Maven 명령어로 동일한 검증 수행
 .\mvnw.cmd clean compile test-compile test
