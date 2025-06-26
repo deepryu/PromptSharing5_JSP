@@ -120,23 +120,27 @@ CREATE TABLE interview_schedules (
 ### 4-4. 자동화 설정 및 Git 명령어
 
 #### Maven 기반 Pre-push Hook
-- **Maven 자동화**: `.git/hooks/pre-push` 스크립트가 푸시 전 자동으로 Maven 빌드 및 테스트 실행
+- **Maven 자동화**: `.git/hooks/pre-push.ps1` PowerShell 스크립트가 푸시 전 자동으로 Maven 빌드 및 테스트 실행
 - **실행 순서**: Maven Clean → Maven Compile → Maven Test-Compile → Maven Test → 빌드 결과 검증
 - **검증 항목**: 
   - Maven 환경 설정 확인 (pom.xml, mvnw.cmd)
   - 전체 소스 컴파일 (util, model, controller)
   - 테스트 소스 컴파일 
   - JUnit 테스트 실행 (총 20개 케이스)
-  - 빌드 결과물 검증 (target/classes 확인)
+  - 빌드 결과물 검증 (WEB-INF/classes 확인)
+- **Windows PowerShell 최적화**: 컬러 출력, 단계별 진행 상황, 상세한 오류 메시지 제공
 - **실패 시 Push 금지**: Maven 단계별 실패 시 GitHub 푸시가 자동으로 차단됨
 - **Hook 우회**: 응급상황에서만 `git push --no-verify` 사용 (권장하지 않음)
 
 #### Pre-push Hook 수동 테스트
-```cmd
-# pre-push 훅과 동일한 검증 수행
+```powershell
+# PowerShell pre-push 훅 직접 실행
+powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1
+
+# 또는 Maven 명령어로 동일한 검증 수행
 .\mvnw.cmd clean compile test-compile test
 
-# 또는 단계별 실행
+# 단계별 실행
 .\mvnw.cmd clean
 .\mvnw.cmd compile
 .\mvnw.cmd test-compile  
