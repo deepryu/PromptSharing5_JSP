@@ -596,14 +596,16 @@
                 </div>
             </div>
             
-            <!-- 두 번째 줄: 필터 옵션들 -->
-            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <form action="questions" method="get" style="display: flex; align-items: center; gap: 8px;">
+            <!-- 두 번째 줄: 필터 옵션들 - 강제 일렬 배치 -->
+            <div style="display: flex !important; align-items: center !important; gap: 30px !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
+                
+                <!-- 카테고리 필터 -->
+                <div style="display: inline-flex !important; align-items: center !important; gap: 8px !important; white-space: nowrap !important; flex-shrink: 0 !important;">
+                    <label style="font-weight: 500 !important; color: #24292f !important; margin-right: 8px !important;">카테고리:</label>
+                    <form action="questions" method="get" style="display: inline !important; margin: 0 !important;">
                         <input type="hidden" name="action" value="filter">
-                        <label style="font-weight: 500; color: #24292f; white-space: nowrap;">카테고리:</label>
                         <select name="category" onchange="this.form.submit()" 
-                                style="padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 3px; background: white; min-width: 100px;">
+                                style="padding: 6px 10px !important; border: 1px solid #d0d7de !important; border-radius: 3px !important; background: white !important; min-width: 100px !important; font-size: 14px !important;">
                             <option value="all">전체</option>
                             <option value="기술" ${filterCategory == '기술' ? 'selected' : ''}>기술</option>
                             <option value="인성" ${filterCategory == '인성' ? 'selected' : ''}>인성</option>
@@ -613,12 +615,13 @@
                     </form>
                 </div>
                 
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <form action="questions" method="get" style="display: flex; align-items: center; gap: 8px;">
+                <!-- 난이도 필터 -->
+                <div style="display: inline-flex !important; align-items: center !important; gap: 8px !important; white-space: nowrap !important; flex-shrink: 0 !important;">
+                    <label style="font-weight: 500 !important; color: #24292f !important; margin-right: 8px !important;">난이도:</label>
+                    <form action="questions" method="get" style="display: inline !important; margin: 0 !important;">
                         <input type="hidden" name="action" value="filter">
-                        <label style="font-weight: 500; color: #24292f; white-space: nowrap;">난이도:</label>
                         <select name="difficulty" onchange="this.form.submit()" 
-                                style="padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 3px; background: white; min-width: 120px;">
+                                style="padding: 6px 10px !important; border: 1px solid #d0d7de !important; border-radius: 3px !important; background: white !important; min-width: 150px !important; font-size: 14px !important;">
                             <option value="all">전체</option>
                             <option value="1" ${filterDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆ (매우 쉬움)</option>
                             <option value="2" ${filterDifficulty == 2 ? 'selected' : ''}>★★☆☆☆ (쉬움)</option>
@@ -629,11 +632,14 @@
                     </form>
                 </div>
                 
+                <!-- 필터 초기화 버튼 -->
                 <c:if test="${filterCategory != null || filterDifficulty != null}">
-                    <button onclick="location.href='questions'" 
-                            style="background: #f6f8fa; color: #24292f; border: 1px solid #d0d7de; padding: 6px 12px; border-radius: 3px; cursor: pointer;">
-                        🔄 필터 초기화
-                    </button>
+                    <div style="flex-shrink: 0 !important;">
+                        <button onclick="location.href='questions'" 
+                                style="background: #f6f8fa !important; color: #24292f !important; border: 1px solid #d0d7de !important; padding: 6px 12px !important; border-radius: 3px !important; cursor: pointer !important; white-space: nowrap !important;">
+                            🔄 필터 초기화
+                        </button>
+                    </div>
                 </c:if>
             </div>
         </div>
