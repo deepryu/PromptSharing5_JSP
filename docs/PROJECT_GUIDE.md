@@ -119,7 +119,41 @@ CREATE TABLE interview_schedules (
 
 ### 4-4. 자동화 설정 및 Git 명령어
 
-#### PowerShell 기반 Maven Pre-push Hook
+#### 📄 JSP 파일만 수정된 경우 간소화 절차
+**JSP 파일(.jsp)만 수정되고 Java 소스 파일(.java)은 변경되지 않은 경우:**
+
+##### 🚀 빠른 배포 절차 (JSP 전용)
+```powershell
+# 1. JSP 파일 변경사항 확인
+git status
+
+# 2. 변경된 파일이 JSP만 있는지 확인 후 즉시 커밋
+git add *.jsp
+git commit -m "style: JSP UI 개선
+
+📄 JSP 파일만 수정:
+- 레이아웃 개선
+- CSS 스타일 조정
+- 사용자 인터페이스 개선
+
+⚡ 컴파일 불필요 (JSP 파일만 변경)"
+
+# 3. 컴파일 과정 생략하고 바로 푸시
+git push origin main
+```
+
+##### 🔍 JSP 전용 배포 조건
+- ✅ **변경 파일**: `.jsp` 확장자 파일만 수정
+- ✅ **Java 소스**: `src/com/example/` 하위 `.java` 파일 변경 없음
+- ✅ **설정 파일**: `web.xml`, `pom.xml` 변경 없음
+- ✅ **라이브러리**: `WEB-INF/lib/` 변경 없음
+
+##### ⚠️ 주의사항 (JSP 전용 배포 시)
+- **Java 코드 변경 시**: 반드시 전체 Maven 검증 필요
+- **설정 변경 시**: web.xml, pom.xml 변경 시 전체 검증 필요
+- **혼재 변경 시**: JSP + Java 파일 동시 변경 시 전체 검증 필요
+
+#### PowerShell 기반 Maven Pre-push Hook (Java 파일 변경 시)
 - **수동 검증 필수**: Windows PowerShell 환경에서 Git hooks 자동 실행 제한으로 인해 **푸시 전 수동 검증 필수**
 - **검증 스크립트**: `.git/hooks/pre-push.ps1` PowerShell 스크립트로 Maven 빌드 및 테스트 수행
 - **실행 순서**: Maven Clean → Maven Compile → Maven Test-Compile → Maven Test → 빌드 결과 검증
@@ -234,7 +268,35 @@ git push origin main --no-verify
 
 ### 4-5. 컴파일 및 배포 명령어
 
-#### 4-5-1. 모든 클래스 파일 컴파일 명령어
+#### 4-5-1. JSP 파일 전용 배포 (컴파일 생략)
+**JSP 파일만 수정된 경우 컴파일 없이 즉시 배포 가능:**
+
+```cmd
+# JSP 파일 변경 확인
+git status
+
+# JSP 파일만 변경되었다면 컴파일 과정 생략
+# Tomcat이 JSP를 자동으로 컴파일하므로 별도 컴파일 불필요
+
+# 브라우저에서 즉시 확인 가능
+# http://localhost:8080/PromptSharing5_JSP/
+
+# 강제 새로고침으로 캐시 무시 (권장)
+# Ctrl + F5 또는 Ctrl + Shift + R
+```
+
+**JSP 전용 배포 장점:**
+- ⚡ **즉시 반영**: Tomcat이 JSP를 자동 컴파일
+- 🚀 **빠른 개발**: UI 수정 후 바로 확인 가능
+- 💡 **캐시 관리**: 브라우저 강제 새로고침으로 최신 변경사항 확인
+- 🔄 **Hot Deploy**: 서버 재시작 없이 변경사항 적용
+
+**JSP 전용 배포 제한사항:**
+- ❌ **Java 로직 변경**: Servlet, DAO, Model 클래스 변경 시 컴파일 필수
+- ❌ **의존성 변경**: 라이브러리 추가/변경 시 컴파일 필수
+- ❌ **설정 변경**: web.xml, pom.xml 변경 시 재시작 필요
+
+#### 4-5-2. 모든 클래스 파일 컴파일 명령어 (Java 파일 변경 시)
 ```cmd
 # 방법 1: 개별 파일 지정 (권장)
 javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java src/com/example/model/User.java src/com/example/model/UserDAO.java src/com/example/model/Candidate.java src/com/example/model/CandidateDAO.java src/com/example/model/InterviewSchedule.java src/com/example/model/InterviewScheduleDAO.java src/com/example/controller/LoginServlet.java src/com/example/controller/LogoutServlet.java src/com/example/controller/RegisterServlet.java src/com/example/controller/CandidateServlet.java src/com/example/controller/InterviewScheduleServlet.java
@@ -248,7 +310,7 @@ javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes sr
 javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/controller/*.java
 ```
 
-#### 4-5-2. 배포 후 Tomcat 중지 명령어
+#### 4-5-3. 배포 후 Tomcat 중지 명령어 (Java 파일 변경 시)
 ```cmd
 # Windows에서 Tomcat 중지만 수행
 # 1. Tomcat 중지
@@ -266,7 +328,7 @@ net stop tomcat9
 # - 또는 브라우저에서 강제 새로고침 (Ctrl + F5)
 ```
 
-#### 4-5-3. 배포 확인 명령어
+#### 4-5-4. 배포 확인 명령어
 ```cmd
 # 컴파일된 클래스 파일 확인
 dir WEB-INF\classes\com\example\model\*.class
@@ -280,14 +342,14 @@ tasklist | findstr java
 # 브라우저에서 http://localhost:8080/PromptSharing5_JSP/ 접속
 ```
 
-#### 4-5-4. 컴파일 및 배포 상세 설명
+#### 4-5-5. 컴파일 및 배포 상세 설명
 - **모든 Java 소스 파일**(util, model, controller)을 한 번에 컴파일
 - **servlet-api.jar**와 **WEB-INF/lib**의 모든 라이브러리를 classpath에 포함
 - **컴파일된 클래스**는 WEB-INF/classes 디렉토리에 저장
 - **변경사항 적용 후** 반드시 컴파일 → Tomcat 중지 → 테스트 순서로 진행 (시작은 수동)
 - **NoSuchMethodError 발생 시**: 반드시 Tomcat 중지 필요 (클래스 로더 캐시 문제)
 
-#### 4-5-5. 배포 스크립트 (배치 파일)
+#### 4-5-6. 배포 스크립트 (배치 파일)
 ```batch
 @echo off
 echo === JSP 프로젝트 컴파일 및 배포 ===
@@ -311,6 +373,33 @@ timeout /t 3 /nobreak >nul
 echo 완료!
 pause
 ```
+
+### 📋 배포 절차 요약
+
+#### 🔍 변경사항 유형별 배포 방법
+
+| 변경 유형 | 컴파일 필요 | 테스트 필요 | Tomcat 재시작 | 배포 시간 |
+|----------|-------------|-------------|---------------|-----------|
+| **JSP 파일만** | ❌ 불필요 | ❌ 생략 가능 | ❌ 불필요 | ⚡ 즉시 |
+| **Java + JSP** | ✅ 필수 | ✅ 필수 | ✅ 권장 | 🐌 5-10분 |
+| **설정 파일** | ✅ 필수 | ✅ 필수 | ✅ 필수 | 🐌 5-10분 |
+| **라이브러리** | ✅ 필수 | ✅ 필수 | ✅ 필수 | 🐌 5-10분 |
+
+#### 🚀 빠른 배포 체크리스트
+
+**JSP 파일만 수정한 경우:**
+- [ ] `git status`로 변경 파일 확인
+- [ ] JSP 파일만 변경되었는지 확인
+- [ ] `git add *.jsp && git commit -m "style: UI 개선"`
+- [ ] `git push origin main` (컴파일 생략)
+- [ ] 브라우저에서 `Ctrl + F5`로 강제 새로고침
+
+**Java 파일이 포함된 경우:**
+- [ ] PowerShell 검증 실행: `powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1`
+- [ ] 20개 테스트 모두 통과 확인
+- [ ] `git add . && git commit -m "의미있는 메시지"`
+- [ ] `git push origin main --no-verify`
+- [ ] Tomcat 재시작 권장
 
 ## 5. 협업 및 문서화
 - **문서화**: 모든 주요 변경사항은 docs/에 마크다운 파일로 기록
