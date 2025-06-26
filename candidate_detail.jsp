@@ -14,12 +14,13 @@
 <div class="container">
     <h2>지원자 상세 정보</h2>
     <% if (candidate != null) { %>
+        <p><strong>지원팀:</strong> <%= candidate.getTeam() != null ? candidate.getTeam() : "-" %></p>
         <p><strong>이름:</strong> <%= candidate.getName() %></p>
         <p><strong>이메일:</strong> <%= candidate.getEmail() %></p>
         <p><strong>연락처:</strong> <%= candidate.getPhone() %></p>
         <p><strong>이력서(요약):</strong><br><pre><%= candidate.getResume() %></pre></p>
-        <p><strong>등록일:</strong> <%= candidate.getCreatedAt() %></p>
-        <p><strong>수정일:</strong> <%= candidate.getUpdatedAt() %></p>
+        <p><strong>등록시간:</strong> <%= candidate.getCreatedAtTimeOnly() %></p>
+        <p><strong>수정시간:</strong> <%= candidate.getUpdatedAtTimeOnly() %></p>
         <a href="candidates?action=edit&id=<%=candidate.getId()%>"><button>수정</button></a>
         <a href="candidates?action=delete&id=<%=candidate.getId()%>" onclick="return confirm('정말 삭제하시겠습니까?');"><button>삭제</button></a>
         <a href="candidates"><button>목록으로</button></a>

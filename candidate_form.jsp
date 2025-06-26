@@ -22,6 +22,16 @@
         <% if (isEdit) { %>
             <input type="hidden" name="id" value="<%= candidate.getId() %>">
         <% } %>
+        <select name="team" required>
+            <option value="">지원팀 선택</option>
+            <option value="개발팀" <%= candidate != null && "개발팀".equals(candidate.getTeam()) ? "selected" : "" %>>개발팀</option>
+            <option value="기획팀" <%= candidate != null && "기획팀".equals(candidate.getTeam()) ? "selected" : "" %>>기획팀</option>
+            <option value="디자인팀" <%= candidate != null && "디자인팀".equals(candidate.getTeam()) ? "selected" : "" %>>디자인팀</option>
+            <option value="마케팅팀" <%= candidate != null && "마케팅팀".equals(candidate.getTeam()) ? "selected" : "" %>>마케팅팀</option>
+            <option value="영업팀" <%= candidate != null && "영업팀".equals(candidate.getTeam()) ? "selected" : "" %>>영업팀</option>
+            <option value="인사팀" <%= candidate != null && "인사팀".equals(candidate.getTeam()) ? "selected" : "" %>>인사팀</option>
+            <option value="재무팀" <%= candidate != null && "재무팀".equals(candidate.getTeam()) ? "selected" : "" %>>재무팀</option>
+        </select><br>
         <input type="text" name="name" placeholder="이름" value="<%= candidate != null ? candidate.getName() : "" %>" required><br>
         <input type="email" name="email" placeholder="이메일" value="<%= candidate != null ? candidate.getEmail() : "" %>" required><br>
         <input type="text" name="phone" placeholder="연락처" value="<%= candidate != null ? candidate.getPhone() : "" %>"><br>

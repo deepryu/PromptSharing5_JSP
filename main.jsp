@@ -50,13 +50,13 @@
             <% } %>
         </div>
         <div class="main-dashboard">
-            <h1>관리자 메인 대시보드</h1>
+            <h1>관리자 메인 대시보드 <span style="color: #007bff; font-size: 0.7em; font-weight: normal;">V1.0</span></h1>
             <ul>
                 <li>
-                    <a href="candidates" class="completed">1. 인터뷰 대상자(지원자) 관리</a>
+                    <a href="candidates" class="completed">1. 인터뷰 대상자 관리</a>
                 </li>
                 <li>
-                    <a href="#">2. 인터뷰 일정 관리 (준비중)</a>
+                    <a href="interview/list" class="completed">2. 인터뷰 일정 관리</a>
                 </li>
                 <li>
                     <a href="#">3. 질문/평가 항목 관리 (준비중)</a>

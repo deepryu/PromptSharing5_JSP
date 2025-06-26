@@ -59,11 +59,13 @@ public class CandidateServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String resume = request.getParameter("resume");
+        String team = request.getParameter("team");
         Candidate candidate = new Candidate();
         candidate.setName(name);
         candidate.setEmail(email);
         candidate.setPhone(phone);
         candidate.setResume(resume);
+        candidate.setTeam(team);
         String error = null;
         boolean result = false;
         if (idStr == null || idStr.isEmpty()) {
