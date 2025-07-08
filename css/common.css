@@ -1,0 +1,662 @@
+/* ========================================
+   📱 JSP 채용 관리 시스템 - 통합 CSS
+   모바일 우선 반응형 디자인
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+/* ========================================
+   🎨 CSS 변수 (컬러 시스템)
+   ======================================== */
+:root {
+    /* GitHub 스타일 컬러 팔레트 */
+    --bg-primary: #f0f0f0;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f6f8fa;
+    
+    --border-primary: #d0d7de;
+    --border-secondary: #8c959f;
+    
+    --text-primary: #24292f;
+    --text-secondary: #656d76;
+    --text-tertiary: #6e7681;
+    
+    --blue-primary: #0078d4;
+    --blue-secondary: #106ebe;
+    
+    --green-primary: #2da44e;
+    --green-secondary: #2c974b;
+    --green-tertiary: #1a7f37;
+    
+    --red-primary: #da3633;
+    --red-secondary: #cf222e;
+    --red-tertiary: #b91c28;
+    
+    --yellow-primary: #d97706;
+    --yellow-secondary: #fef3c7;
+    
+    /* 간격 시스템 (8px 기준) */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    
+    /* 폰트 시스템 */
+    --font-xs: 0.75rem;   /* 12px */
+    --font-sm: 0.875rem;  /* 14px */
+    --font-base: 1rem;    /* 16px */
+    --font-lg: 1.125rem;  /* 18px */
+    --font-xl: 1.25rem;   /* 20px */
+    --font-2xl: 1.5rem;   /* 24px */
+    
+    /* 반응형 브레이크포인트 */
+    --mobile: 320px;
+    --tablet: 768px;
+    --desktop: 1024px;
+    --wide: 1400px;
+}
+
+/* ========================================
+   📱 기본 스타일 (Mobile First)
+   ======================================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    margin: 0;
+    padding: var(--space-sm);
+    line-height: 1.5;
+    font-size: var(--font-base);
+}
+
+/* ========================================
+   🏗️ 레이아웃 컴포넌트
+   ======================================== */
+
+/* 컨테이너 */
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--space-sm);
+}
+
+/* 상단 내비게이션 바 */
+.top-bar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.top-bar h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: var(--font-lg);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content,
+.main-dashboard {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* 콘텐츠 헤더 */
+.content-header,
+.dashboard-header {
+    background: var(--blue-primary);
+    color: white;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--blue-secondary);
+}
+
+.content-header h1,
+.dashboard-header h1 {
+    margin: 0;
+    font-size: var(--font-xl);
+    font-weight: 600;
+}
+
+/* 콘텐츠 본문 */
+.content-body,
+.dashboard-content {
+    padding: var(--space-md);
+}
+
+/* ========================================
+   🎛️ 버튼 시스템
+   ======================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 32px;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    text-decoration: none;
+}
+
+/* 버튼 변형 */
+.btn-primary {
+    background: var(--green-primary);
+    color: white;
+    border-color: var(--green-primary);
+}
+
+.btn-primary:hover {
+    background: var(--green-secondary);
+    border-color: var(--green-secondary);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5c636a;
+    border-color: #5c636a;
+}
+
+.btn-danger {
+    background: var(--red-primary);
+    color: white;
+    border-color: var(--red-primary);
+}
+
+.btn-danger:hover {
+    background: var(--red-secondary);
+    border-color: var(--red-secondary);
+}
+
+/* 모바일 터치 친화적 버튼 */
+@media (max-width: 767px) {
+    .btn {
+        min-height: 44px;
+        padding: var(--space-md);
+        font-size: var(--font-base);
+    }
+}
+
+/* ========================================
+   📊 메뉴 그리드 (대시보드)
+   ======================================== */
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--border-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.menu-item {
+    background: var(--bg-secondary);
+    display: block;
+    padding: var(--space-md);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: background-color 0.2s;
+    border: none;
+    font-size: var(--font-base);
+    position: relative;
+}
+
+.menu-item:hover {
+    background: var(--bg-tertiary);
+    text-decoration: none;
+}
+
+.menu-item.completed {
+    background: #f6ffed;
+    border-left: 4px solid var(--green-tertiary);
+}
+
+.menu-item.completed:hover {
+    background: #f0f9ff;
+}
+
+.menu-item.disabled {
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+.menu-number {
+    font-weight: 600;
+    color: #0969da;
+    margin-right: var(--space-sm);
+}
+
+.menu-item.completed .menu-number {
+    color: var(--green-tertiary);
+}
+
+.menu-item.disabled .menu-number {
+    color: var(--text-tertiary);
+}
+
+.status-badge {
+    float: right;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: var(--font-xs);
+    font-weight: 500;
+}
+
+.status-completed {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.status-pending {
+    background: var(--yellow-secondary);
+    color: var(--yellow-primary);
+    border: 1px solid #fcd34d;
+}
+
+/* ========================================
+   📊 통계 바
+   ======================================== */
+.stats-bar {
+    display: flex;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    margin-bottom: var(--space-md);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    flex: 1;
+    min-width: 100px;
+    padding: var(--space-md);
+    text-align: center;
+    border-right: 1px solid var(--border-primary);
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.stat-number {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    color: #0969da;
+    margin-bottom: var(--space-xs);
+    display: block;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+}
+
+/* ========================================
+   🎛️ 컨트롤 섹션
+   ======================================== */
+.controls-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    border-radius: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    align-items: end;
+    width: 100%;
+}
+
+.filter-controls,
+.search-container {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-controls select,
+.filter-controls input,
+.search-container input {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    font-size: var(--font-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    min-width: 120px;
+}
+
+.search-container input {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* ========================================
+   📋 테이블 스타일
+   ======================================== */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    margin-bottom: var(--space-md);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-secondary);
+    font-size: var(--font-sm);
+}
+
+th, td {
+    padding: var(--space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-primary);
+    vertical-align: middle;
+}
+
+th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+tr:hover {
+    background: var(--bg-tertiary);
+}
+
+/* ========================================
+   📱 반응형 미디어 쿼리
+   ======================================== */
+
+/* 태블릿 이상 (768px+) */
+@media (min-width: 768px) {
+    body {
+        padding: var(--space-md);
+    }
+    
+    .container {
+        max-width: var(--wide);
+        padding: 0 var(--space-md);
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .controls-grid {
+        grid-template-columns: 1fr auto auto auto;
+    }
+    
+    .stats-bar {
+        flex-wrap: nowrap;
+    }
+    
+    .stat-item {
+        min-width: auto;
+    }
+}
+
+/* 데스크톱 이상 (1024px+) */
+@media (min-width: 1024px) {
+    .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    
+    .top-bar {
+        flex-wrap: nowrap;
+    }
+    
+    .controls-section {
+        flex-wrap: nowrap;
+    }
+}
+
+/* 와이드 스크린 (1400px+) */
+@media (min-width: 1400px) {
+    .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ========================================
+   🔧 유틸리티 클래스
+   ======================================== */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.mr-0 { margin-right: 0; }
+.ml-0 { margin-left: 0; }
+
+.mt-sm { margin-top: var(--space-sm); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mb-md { margin-bottom: var(--space-md); }
+
+.hidden { display: none; }
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.flex { display: flex; }
+
+.flex-wrap { flex-wrap: wrap; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+
+/* ========================================
+   🎨 폼 스타일
+   ======================================== */
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: 3px;
+    font-size: var(--font-base);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* ========================================
+   ⚠️ 알림 메시지
+   ======================================== */
+.alert {
+    padding: var(--space-md);
+    border-radius: 3px;
+    margin-bottom: var(--space-md);
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background: #dcfce7;
+    color: #16a34a;
+    border-color: #86efac;
+}
+
+.alert-error,
+.alert-danger {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.alert-warning {
+    background: var(--yellow-secondary);
+    color: var(--yellow-primary);
+    border-color: #fcd34d;
+}
+
+.alert-info {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
+}
+
+/* ========================================
+   📱 모바일 최적화
+   ======================================== */
+@media (max-width: 767px) {
+    /* 모바일에서 테이블을 카드 형태로 변환 */
+    .table-mobile-cards {
+        display: block;
+    }
+    
+    .table-mobile-cards thead {
+        display: none;
+    }
+    
+    .table-mobile-cards tbody,
+    .table-mobile-cards tr,
+    .table-mobile-cards td {
+        display: block;
+    }
+    
+    .table-mobile-cards tr {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 3px;
+        margin-bottom: var(--space-md);
+        padding: var(--space-md);
+    }
+    
+    .table-mobile-cards td {
+        border: none;
+        padding: var(--space-xs) 0;
+        position: relative;
+        padding-left: 40%;
+    }
+    
+    .table-mobile-cards td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 35%;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    
+    /* 모바일에서 버튼 그룹 */
+    .btn-group-mobile {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+    
+    .btn-group-mobile .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ========================================
+   🎯 접근성 개선
+   ======================================== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* 포커스 표시 개선 */
+*:focus {
+    outline: 2px solid var(--blue-primary);
+    outline-offset: 2px;
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+    :root {
+        --border-primary: #000000;
+        --text-primary: #000000;
+        --bg-secondary: #ffffff;
+    }
+}
+
+/* 다크 모드 기본 준비 */
+@media (prefers-color-scheme: dark) {
+    /* 향후 다크 모드 지원 시 여기에 추가 */
+} 

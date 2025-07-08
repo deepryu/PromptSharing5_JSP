@@ -1,417 +1,606 @@
-# 프로젝트 지침서 (PROJECT GUIDE)
+# 프로젝트 가이드 (PROJECT GUIDE)
 
-## 1. 프로젝트 개요
-- 본 프로젝트는 JSP, Servlet, PostgreSQL, Tomcat을 기반으로 한 **개발자 인터뷰 결과 관리 시스템**입니다.
-- 회원 관리 기능과 지원자 관리 기능을 포함하며, MVC 패턴을 엄격히 준수합니다.
-- 보안과 유지보수성을 최우선으로 하며, 모던한 UI/UX를 제공합니다.
+## 📋 프로젝트 개요
+**JSP 기반 개발자 인터뷰 관리 시스템**
+- **기술 스택**: JSP, Servlet, PostgreSQL, Maven, Tomcat
+- **구조**: MVC 패턴
+- **특징**: 모던 UI/UX, 반응형 디자인
 
-## 1-1. 데이터베이스 정보
-- **DB 이름:** promptsharing
-- **DB 유저:** postgresql
-- **DB 패스워드:** 1234
+## 🗄️ 데이터베이스
 
-### 1-1-1. 주요 테이블 구조
+### 📊 DB 연결 정보
+```yaml
+DB 정보:
+  - 이름: promptsharing
+  - 사용자: postgresql
+  - 비밀번호: 1234
+  - 주요 테이블: users, candidates, interview_schedules, interview_results
+```
+
+### 🔧 데이터베이스 작업 정책 (중요!)
+
+**⚠️ 에이전트 행동 제한사항**:
+- **절대 금지**: PostgreSQL에 직접 연결 시도 (`psql` 명령어 등)
+- **절대 금지**: 데이터베이스 스크립트 자동 실행
+- **허용 사항**: SQL 스크립트 파일 생성만 허용
+
+**✅ 올바른 DB 작업 절차**:
+1. **스크립트 생성**: 에이전트가 SQL 스크립트 파일을 생성
+2. **수동 실행**: 사용자가 직접 PostgreSQL에서 스크립트 실행
+3. **결과 확인**: 사용자가 변경사항 확인 후 피드백
+
+**📁 스크립트 저장 위치**: `sql/` 디렉토리
+- 테이블 생성: `create_*.sql`
+- 테이블 수정: `alter_*.sql` 또는 `add_*.sql`
+- 데이터 삽입: `insert_*.sql`
+- 업데이트: `update_*.sql`
+
+**💡 사용자 제어권 보장**:
+- 데이터베이스 스키마 변경은 중요한 작업이므로 사용자가 직접 검토하고 실행
+- 에이전트는 스크립트 생성과 설명만 제공
+- 데이터 손실 방지를 위한 안전 장치
+
+**🔍 스크립트 생성 예시**:
 ```sql
--- 사용자 관리 테이블
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- 파일: sql/add_resume_fields.sql
+-- 목적: 지원자 테이블에 이력서 파일 관련 컬럼 추가
 
--- 지원자 관리 테이블 (2025-06-25 team 컬럼 추가)
-CREATE TABLE candidates (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    phone VARCHAR(20),
-    resume TEXT,
-    team VARCHAR(50),  -- 지원팀: 개발팀, 기획팀, 디자인팀, 마케팅팀, 영업팀, 인사팀, 재무팀
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 인터뷰 일정 관리 테이블 (2025-06-25 완성)
-CREATE TABLE interview_schedules (
-    id SERIAL PRIMARY KEY,
-    candidate_id INTEGER NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
-    interviewer_name VARCHAR(100) NOT NULL,
-    interview_date DATE NOT NULL,
-    interview_time TIME NOT NULL,
-    duration INTEGER DEFAULT 60,  -- 소요시간(분)
-    location VARCHAR(200),
-    interview_type VARCHAR(50) DEFAULT '기술면접',  -- 기술면접, 인성면접, 임원면접 등
-    status VARCHAR(20) DEFAULT '예정',  -- 예정, 진행중, 완료, 취소, 연기
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+ALTER TABLE candidates 
+ADD COLUMN resume_file_name VARCHAR(255),
+ADD COLUMN resume_file_path VARCHAR(500),
+ADD COLUMN resume_file_size BIGINT DEFAULT 0,
+ADD COLUMN resume_file_type VARCHAR(50),
+ADD COLUMN resume_uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ```
 
-## 1-2. 주요 기능
-- **회원 관리**: 로그인, 회원가입, 로그아웃, 세션 관리
-- **지원자 관리**: CRUD 기능, 지원팀 분류, 시간 기반 정렬
-- **✅ 인터뷰 일정 관리**: 완전한 CRUD, 캘린더/리스트 뷰, 상세 페이지, 일정 충돌 방지
-- **UI/UX**: 모던한 디자인, 반응형 테이블, 통일된 버튼 스타일, 네비게이션 체계화
+## 🏗️ 주요 기능
+| 기능 | 상태 | 설명 |
+|------|------|------|
+| 회원 관리 | ✅ 완료 | 로그인, 회원가입, 세션 관리 |
+| 지원자 관리 | ✅ 완료 | CRUD, 팀별 분류 |
+| 인터뷰 일정 관리 | ✅ 완료 | 일정 생성/수정, 캘린더 뷰 |
+| 인터뷰 결과 관리 | ✅ 완료 | 결과 기록, 평가 항목 관리 |
+| 질문 관리 | ✅ 완료 | 질문 생성/분류, 평가 기준 |
 
-## 2. 개발 및 코딩 규칙
-- **네이밍**: 클래스/메서드/변수명은 Java 표준을 따릅니다. (CamelCase, 의미 있는 이름)
-- **주석**: 핵심 로직, 복잡한 쿼리, 예외 처리에는 반드시 주석을 남깁니다.
-- **코드 스타일**: 들여쓰기 4칸, 불필요한 공백/주석/코드 금지
-- **커밋 메시지**: 한글 또는 영어로, 변경 목적과 내용을 명확히 작성
+## ⚡ 코드 수정 안전 가이드라인 (중요!)
 
-## 3. 보안 및 품질 기준
-- **SQL Injection 방지**: 모든 쿼리는 PreparedStatement 사용
-- **XSS 방지**: 사용자 입력값 출력 시 HTML 이스케이프 필수
-- **비밀번호 암호화**: bcrypt(jBCrypt)로 해싱 저장
-- **예외 처리**: 사용자에게는 친절한 메시지, 로그에는 상세 정보 기록
+### 🛡️ 정상 동작 코드 수정 시 주의사항
 
-## 4. 테스트 및 자동화
+**❗ 기본 원칙**: 정상적으로 동작하는 코드를 수정할 때는 최대한 신중하게 접근
 
-### 4-1. 단위 테스트 필수 사항
-- **JUnit 기반 테스트**: 모든 DAO 클래스와 핵심 비즈니스 로직에 대해 단위 테스트 작성 필수
-- **현재 테스트 케이스**: 총 9개 (UserDAOTest: 4개, CandidateDAOTest: 5개)
-- **예정 테스트 케이스**: InterviewScheduleDAOTest (11개 - CRUD, 시간 충돌, 상태별/날짜별 조회 등)
-- **테스트 범위**: CRUD 연산, 데이터 유효성 검증, 예외 상황 처리, 데이터 무결성 확인
-- **테스트 실행 방법**: `.\test-maven.cmd` 스크립트를 사용하여 Maven 기반 테스트 수행
+#### 📋 수정 전 필수 체크리스트
 
-### 4-2. GitHub Push 전 필수 절차 ⚠️
-**⚠️ CRITICAL: GitHub에 푸시하기 전에 반드시 다음 절차를 수행해야 합니다:**
-
-1. **컴파일 검증**:
-   ```cmd
-   javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java src/com/example/model/User.java src/com/example/model/UserDAO.java src/com/example/model/Candidate.java src/com/example/model/CandidateDAO.java src/com/example/model/InterviewSchedule.java src/com/example/model/InterviewScheduleDAO.java src/com/example/controller/LoginServlet.java src/com/example/controller/LogoutServlet.java src/com/example/controller/RegisterServlet.java src/com/example/controller/CandidateServlet.java src/com/example/controller/InterviewScheduleServlet.java
-   ```
-
-2. **테스트 실행**:
-   ```cmd
-   # 방법 1: Maven 기반 테스트 실행 (권장)
-   .\test-maven.cmd
-   
-   # 방법 2: JUnit JAR 직접 실행 (기존 방식)
-   java -jar WEB-INF/lib/junit-platform-console-standalone.jar --class-path "WEB-INF/classes;WEB-INF/lib/*" --scan-class-path
-   ```
-
-3. **수동 테스트 확인**:
-   - 웹 애플리케이션 실행하여 주요 기능 동작 확인
-   - 데이터베이스 연결 및 CRUD 연산 정상 동작 확인
-
-### 4-3. Maven 기반 테스트 실행 방법
-```cmd
-# 단계별 Maven 테스트 실행
-.\test-maven.cmd
-
-# 또는 개별 테스트 클래스 실행
-.\mvnw.cmd test -Dtest=UserDAOTest
-.\mvnw.cmd test -Dtest=CandidateDAOTest
-.\mvnw.cmd test -Dtest=InterviewScheduleDAOTest
-
-# 전체 Maven 빌드 및 테스트
-.\maven-all.cmd
+**1. 🔍 기존 코드 분석**
+```bash
+# 수정 전 반드시 기존 코드의 현재 상태 확인
+- 현재 메소드명과 시그니처 확인
+- 의존성 클래스들의 실제 메소드 확인  
+- 컴파일 상태 및 동작 여부 확인
 ```
 
-**테스트 스크립트 특징**:
-- **test-maven.cmd**: 각 테스트 클래스를 개별적으로 실행하여 상세한 결과 표시
-- **자동 정리**: 테스트 데이터 중복 및 충돌 방지를 위한 데이터베이스 정리 포함
-- **실시간 피드백**: 각 테스트의 성공/실패 상태를 즉시 확인 가능
+**2. 📊 수정 전후 비교 분석**
+```markdown
+수정 사유: [구체적인 이유 기술]
+수정 범위: [변경되는 부분 명시]  
+영향 범위: [다른 클래스/메소드에 미치는 영향]
+테스트 필요성: [컴파일/실행 테스트 계획]
+```
 
-### 4-4. 자동화 설정 및 Git 명령어
+**3. 🎯 최소 변경 원칙**
+- **목적**: 디버깅 로그 추가가 목적이라면 → 로그만 추가
+- **금지**: 기존 메소드 호출 방식 변경 금지
+- **우선**: 기존 구조 유지하면서 목적 달성
 
-#### 📄 JSP 파일만 수정된 경우 간소화 절차
-**JSP 파일(.jsp)만 수정되고 Java 소스 파일(.java)은 변경되지 않은 경우:**
+#### ⚠️ 자주 발생하는 실수 패턴
 
-##### 🚀 빠른 배포 절차 (JSP 전용)
-```powershell
-# 1. JSP 파일 변경사항 확인
-git status
+**1. 메소드명 변경으로 인한 컴파일 오류**
+```java
+// ❌ 잘못된 예: 기존 메소드를 추측으로 변경
+User user = userDAO.login(username, password);  // login() 메소드가 없을 수 있음
 
-# 2. 변경된 파일이 JSP만 있는지 확인 후 즉시 커밋
+// ✅ 올바른 예: 기존 메소드 확인 후 사용
+User user = userDAO.findByUsername(username);   // 실제 존재하는 메소드 확인
+if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+    // 추가 로직
+}
+```
+
+**2. 객체 필드/메소드 추측으로 인한 오류**
+```java
+// ❌ 잘못된 예: 존재하지 않는 메소드 호출
+session.setAttribute("name", user.getName());    // getName() 메소드가 없을 수 있음
+session.setAttribute("role", user.getRole());    // getRole() 메소드가 없을 수 있음
+
+// ✅ 올바른 예: 실제 존재하는 메소드만 사용
+session.setAttribute("username", user.getUsername());  // 실제 존재 확인
+session.setAttribute("userId", user.getId());          // 실제 존재 확인
+```
+
+#### 🔧 안전한 수정 절차
+
+**Step 1: 현재 상태 파악**
+```bash
+# 해당 클래스 파일 내용 확인
+read_file src/com/example/model/UserDAO.java
+read_file src/com/example/model/User.java
+
+# 컴파일 상태 확인  
+mvnw.cmd compile
+```
+
+**Step 2: 수정 계획 수립**
+```markdown
+📝 수정 계획서:
+- 목적: [예: 디버깅 로그 추가]
+- 변경 대상: [예: LoginServlet.java의 doPost 메소드]
+- 보존 사항: [예: 기존 로그인 로직 완전 보존]
+- 추가 사항: [예: System.out.println 디버깅 로그만 추가]
+```
+
+**Step 3: 점진적 수정**
+```java
+// 1단계: 로그만 추가 (기존 로직 건드리지 않음)
+System.out.println("🔍 [LoginServlet] 로그인 시작: " + username);
+기존코드_그대로_유지();
+
+// 2단계: 컴파일 테스트
+mvnw.cmd compile
+
+// 3단계: 오류 발생시 즉시 롤백하고 분석
+```
+
+#### 📚 수정 사유 문서화
+
+**모든 코드 수정시 반드시 포함해야 할 설명**:
+
+```markdown
+## 수정 사유 및 내용
+
+### 🎯 수정 목적
+- [구체적인 목적]: 예) ERR_TOO_MANY_REDIRECTS 디버깅을 위한 로그 추가
+
+### 📝 수정 내용  
+- [변경 사항]: 예) LoginServlet, AuthenticationFilter에 System.out.println 디버깅 로그 추가
+- [보존 사항]: 예) 기존 로그인 로직, 세션 관리 로직 완전 보존
+
+### ⚖️ 변경 전후 비교
+**변경 전:**
+- 정상 동작하는 로그인 기능
+- 컴파일 오류 없음
+
+**변경 후:**  
+- 동일한 로그인 기능 + 디버깅 로그
+- 컴파일 오류 없어야 함
+
+### 🧪 검증 방법
+- [ ] 컴파일 성공 확인
+- [ ] 로그인 기능 정상 동작 확인  
+- [ ] 디버깅 로그 정상 출력 확인
+```
+
+#### 🚨 긴급 롤백 가이드
+
+**컴파일 오류 발생시 즉시 대응**:
+```bash
+# 1. 백업에서 복원 (권장)
+cp backup/LoginServlet.java.backup src/com/example/controller/LoginServlet.java
+
+# 2. Git으로 되돌리기
+git checkout HEAD -- src/com/example/controller/LoginServlet.java
+
+# 3. 재컴파일 확인
+mvnw.cmd compile
+```
+
+### 💡 모범 사례
+
+**✅ 안전한 수정 예시**:
+```java
+// 기존 코드 (그대로 유지)
+if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+    // 디버깅 로그만 추가 (기존 로직 변경 없음)
+    System.out.println("✅ [LoginServlet] 로그인 성공: " + username);
+    
+    HttpSession session = request.getSession(true);
+    session.setAttribute("username", user.getUsername()); // 기존 메소드 그대로
+    
+    response.sendRedirect("main.jsp");
+}
+```
+
+**❌ 위험한 수정 예시**:
+```java
+// 기존에 없던 메소드를 추측으로 사용 (컴파일 오류 발생)
+User user = userDAO.login(username, password);  // login() 메소드가 실제로 없음
+session.setAttribute("role", user.getRole());   // getRole() 메소드가 실제로 없음
+```
+
+### 🔄 사후 검증 절차
+
+**모든 수정 완료 후 필수 검증**:
+1. **컴파일 테스트**: `mvnw.cmd compile` 성공 확인
+2. **기능 테스트**: 기존 동작이 정상인지 확인  
+3. **목적 달성**: 수정 목적(예: 디버깅 로그)이 달성되었는지 확인
+4. **부작용 점검**: 다른 기능에 영향을 주지 않았는지 확인
+
+**📌 기억할 것**: 코드 수정의 80%는 기존 코드 보존, 20%만 새로운 기능 추가
+
+## 🎨 UI/UX 스타일 가이드
+
+### 📐 표준 디자인 시스템 (main.jsp 기준)
+**모든 새로운 화면은 main.jsp의 GitHub 스타일을 따라야 합니다.**
+
+#### 🏗️ 기본 레이아웃 구조
+```html
+<div class="container">
+    <div class="top-bar">
+        <!-- 상단 바: 제목 + 사용자 정보 + 액션 버튼 -->
+    </div>
+    
+    <div class="main-dashboard">
+        <div class="dashboard-header">
+            <!-- 페이지 헤더: 배경색 #0078d4 -->
+        </div>
+        <div class="dashboard-content">
+            <!-- 메인 콘텐츠 영역 -->
+        </div>
+    </div>
+</div>
+```
+
+#### 🎨 색상 팔레트 (GitHub 기반)
+```css
+/* 주요 색상 */
+--primary-bg: #f0f0f0;          /* 배경색 */
+--container-bg: white;          /* 컨테이너 배경 */
+--border-color: #d0d7de;        /* 테두리 */
+--text-primary: #24292f;        /* 기본 텍스트 */
+--text-secondary: #656d76;      /* 보조 텍스트 */
+--header-bg: #0078d4;           /* 헤더 배경 */
+--header-border: #106ebe;       /* 헤더 테두리 */
+
+/* 상태 색상 */
+--success: #1f883d;             /* 성공/완료 */
+--warning: #d97706;             /* 경고/대기 */
+--danger: #cf222e;              /* 오류/삭제 */
+--info: #0969da;                /* 정보 */
+
+/* 호버 효과 */
+--hover-bg: #f6f8fa;            /* 호버 배경 */
+--hover-border: #8c959f;        /* 호버 테두리 */
+```
+
+#### 🧩 필수 컴포넌트
+
+**1. 상단 바 (top-bar)**
+```css
+.top-bar {
+    background: white;
+    border: 1px solid #d0d7de;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+```
+
+**2. 메인 대시보드 (main-dashboard)**
+```css
+.main-dashboard {
+    background: white;
+    border: 1px solid #d0d7de;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dashboard-header {
+    background: #0078d4;
+    color: white;
+    padding: 15px 25px;
+    border-bottom: 1px solid #106ebe;
+}
+```
+
+**3. 버튼 스타일**
+```css
+.btn {
+    padding: 6px 16px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #1f883d;
+    border-color: #1f883d;
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: #24292f;
+}
+```
+
+#### 📱 반응형 가이드라인
+```css
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 0 10px;
+    }
+    
+    .dashboard-content {
+        padding: 12px;
+    }
+}
+```
+
+#### ✅ 스타일 준수 체크리스트
+- [ ] `container` → `top-bar` → `main-dashboard` 구조 사용
+- [ ] GitHub 색상 팔레트 적용 (`#f0f0f0`, `#d0d7de`, `#0078d4` 등)
+- [ ] 상단 바에 사용자 인사말과 액션 버튼 배치
+- [ ] `dashboard-header`에 페이지 제목 표시
+- [ ] 일관된 버튼 스타일 (`btn`, `btn-primary`, `btn-secondary`)
+- [ ] 모바일 반응형 디자인 적용
+- [ ] 호버 효과와 전환 애니메이션 포함
+
+#### 🚫 금지 사항
+- ❌ 그라데이션 배경 사용 금지 (GitHub 스타일 위배)
+- ❌ 독립적인 색상 체계 사용 금지
+- ❌ 카드형 레이아웃 대신 테이블형 우선 사용
+- ❌ 과도한 그림자 효과 금지
+
+**📌 참고 파일**: `main.jsp`, `system_settings.jsp`, `system_settings_edit.jsp`
+
+## 🛠️ 개발 환경 설정
+
+### Maven 기반 빌드 시스템
+```bash
+# 📌 Java 클래스 변경 시 필수 컴파일 명령어 (Tomcat 자동 종료 포함)
+.\mvnw.cmd compile
+
+# 강제 재컴파일 (캐시 문제 해결)
+.\mvnw.cmd clean compile
+
+# 테스트 실행 (한글 정상 출력)
+chcp 65001; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:MAVEN_OPTS="-Dfile.encoding=UTF-8"; .\mvnw.cmd test
+
+# 전체 빌드 (컴파일 + 테스트 + 패키징)
+.\mvnw.cmd clean compile test package
+```
+
+**⚡ 중요**: Java 클래스 파일(.java) 변경 후 반드시 `.\mvnw.cmd compile` 실행 필요
+- JSP 파일: 컴파일 불필요 (Tomcat 자동 처리)
+- Java 파일: 반드시 Maven 컴파일 후 Tomcat 재시작
+- **🔄 자동화**: `.\mvnw.cmd compile` 실행 시 Tomcat 자동 종료하여 클래스 로더 충돌 방지
+
+### 📋 Maven 컴파일 자동화 절차
+1. **컴파일 전 준비**: Tomcat 프로세스 자동 종료
+2. **Maven 컴파일**: 변경된 Java 클래스 컴파일
+3. **에이전트 제한**: **컴파일 완료 후 Tomcat 자동 재시작 금지**
+4. **수동 재시작**: 사용자가 직접 Tomcat 재시작
+   ```bash
+   # Tomcat 재시작 명령어
+   C:\tomcat9\bin\startup.bat
+   ```
+
+**🚫 에이전트 행동 제한사항**:
+- **절대 금지**: 컴파일 후 Tomcat 자동 재시작
+- **안내만 허용**: "컴파일 완료! 변경사항 적용을 위해 Tomcat을 재시작하세요." 메시지만 출력
+- **사용자 제어**: Tomcat 재시작은 반드시 사용자가 직접 수행
+
+**💡 이점**: 
+- NoSuchMethodError 방지 (클래스 로더 캐시 충돌 해결)
+- 컴파일 실패 시 안전한 롤백 가능
+- 사용자 제어권 보장 및 시스템 안정성 향상
+
+### 자동화 스크립트
+- `auto-compile-deploy.cmd`: 완전한 빌드/배포 파이프라인
+- `quick-compile.cmd`: 빠른 컴파일 전용
+- `test-maven.cmd`: 테스트 실행 전용
+
+## 🧪 테스트
+현재 **50개 테스트 케이스** 운영 중:
+- UserDAOTest: 4개
+- CandidateDAOTest: 5개  
+- InterviewScheduleDAOTest: 11개
+- InterviewQuestionDAOTest: 17개
+- InterviewResultDAOTest: 13개
+
+## 🚀 배포 절차
+
+### 1. JSP 파일만 변경
+```bash
+# 컴파일 불필요 - Tomcat 자동 처리
 git add *.jsp
-git commit -m "style: JSP UI 개선
-
-📄 JSP 파일만 수정:
-- 레이아웃 개선
-- CSS 스타일 조정
-- 사용자 인터페이스 개선
-
-⚡ 컴파일 불필요 (JSP 파일만 변경)"
-
-# 3. 컴파일 과정 생략하고 바로 푸시
+git commit -m "style: UI 개선"
 git push origin main
+# 브라우저에서 Ctrl+F5로 새로고침
 ```
 
-##### 🔍 JSP 전용 배포 조건
-- ✅ **변경 파일**: `.jsp` 확장자 파일만 수정
-- ✅ **Java 소스**: `src/com/example/` 하위 `.java` 파일 변경 없음
-- ✅ **설정 파일**: `web.xml`, `pom.xml` 변경 없음
-- ✅ **라이브러리**: `WEB-INF/lib/` 변경 없음
+### 2. Java 파일 변경
+```bash
+# 1. Maven 컴파일 (필수 단계)
+.\mvnw.cmd compile
 
-##### ⚠️ 주의사항 (JSP 전용 배포 시)
-- **Java 코드 변경 시**: 반드시 전체 Maven 검증 필요
-- **설정 변경 시**: web.xml, pom.xml 변경 시 전체 검증 필요
-- **혼재 변경 시**: JSP + Java 파일 동시 변경 시 전체 검증 필요
-
-#### PowerShell 기반 Maven Pre-push Hook (Java 파일 변경 시)
-- **수동 검증 필수**: Windows PowerShell 환경에서 Git hooks 자동 실행 제한으로 인해 **푸시 전 수동 검증 필수**
-- **검증 스크립트**: `.git/hooks/pre-push.ps1` PowerShell 스크립트로 Maven 빌드 및 테스트 수행
-- **실행 순서**: Maven Clean → Maven Compile → Maven Test-Compile → Maven Test → 빌드 결과 검증
-- **검증 항목**: 
-  - Maven 환경 설정 확인 (pom.xml, mvnw.cmd)
-  - 전체 소스 컴파일 (util, model, controller)
-  - 테스트 소스 컴파일 
-  - JUnit 테스트 실행 (총 20개 케이스)
-  - 빌드 결과물 검증 (WEB-INF/classes 확인)
-- **Windows PowerShell 최적화**: 컬러 출력, 단계별 진행 상황, 상세한 오류 메시지 제공
-- **푸시 절차**: 
-  1. **필수**: PowerShell 검증 실행
-  2. **검증 통과 시**: `git push origin main --no-verify`로 푸시
-  3. **검증 실패 시**: 문제 해결 후 재검증
-
-#### Hook 파일 구조
-- **`.git/hooks/pre-push`** (bash wrapper):
-  - Git이 자동으로 실행하는 진입점
-  - PowerShell 실행 정책 설정 및 스크립트 호출
-  - PowerShell 실행 결과에 따른 push 허용/차단 제어
-
-- **`.git/hooks/pre-push.ps1`** (PowerShell 스크립트):
-  - 실제 Maven 빌드 및 테스트 수행
-  - Windows 환경 최적화된 컬러 출력
-  - 상세한 오류 진단 및 해결 가이드
-
-#### 🚀 정상 동작 확인된 GitHub 푸시 절차
-
-##### 1단계: PowerShell Maven 검증 (필수)
-```powershell
-# Maven 전체 검증 실행
+# 2. Maven 검증 실행
 powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1
-```
 
-**검증 과정**:
-- ✅ Maven 환경 확인 (pom.xml, mvnw.cmd)
-- ✅ Maven Clean & Compile 
-- ✅ Maven Test-Compile
-- ✅ Maven JUnit Test (20개 케이스 실행)
-  - UserDAOTest: 4개
-  - CandidateDAOTest: 5개  
-  - InterviewScheduleDAOTest: 11개
-- ✅ 빌드 결과물 검증 (WEB-INF/classes)
-
-##### 2단계: 검증 성공 시 GitHub 푸시
-```powershell
-# 모든 변경사항 스테이징
+# 3. 검증 통과 시 푸시
 git add .
-
-# 의미있는 커밋 메시지 작성
-git commit -m "feat: 새로운 기능 추가
-
-✨ 주요 변경사항:
-- 기능 A 구현
-- 버그 B 수정
-- 문서 C 업데이트
-
-🧪 검증 완료:
-- Maven 컴파일: ✅
-- JUnit 테스트 (20개): ✅
-- 빌드 검증: ✅"
-
-# PowerShell 검증 통과 후 푸시
+git commit -m "feat: 새로운 기능 추가"
 git push origin main --no-verify
-```
 
-##### 대체 검증 방법
-```powershell
-# Maven 명령어로 동일한 검증 수행
-.\mvnw.cmd clean compile test-compile test
-
-# 단계별 실행 (문제 해결용)
-.\mvnw.cmd clean        # 이전 빌드 정리
-.\mvnw.cmd compile      # 소스 컴파일  
-.\mvnw.cmd test-compile # 테스트 컴파일
-.\mvnw.cmd test         # JUnit 테스트 실행
-```
-
-#### 🔒 보안 및 품질 보장
-- **Windows Git Hooks 제한**: PowerShell 환경에서 Git hooks 자동 실행 불가로 수동 검증 필수
-- **--no-verify 사용 조건**: PowerShell 검증 완전 통과 시에만 사용
-- **검증 실패 시 대응**: 
-  1. 오류 메시지 확인 및 문제 해결
-  2. 재검증 실행
-  3. 모든 테스트 통과 후 푸시
-
-#### ⚠️ 중요 주의사항
-- **절대 검증 없이 푸시 금지**: `--no-verify` 옵션은 검증 완료 후에만 사용
-- **테스트 실패 시 푸시 중단**: 20개 테스트 중 하나라도 실패하면 문제 해결 필수
-- **데이터베이스 연결 확인**: 테스트 실행 전 PostgreSQL 서버 상태 점검
-
-#### Windows PowerShell Git 명령어
-```powershell
-# Git 상태 확인
-git status
-
-# 파일 목록 확인 (Windows)
-dir .git\hooks\
-
-# 변경사항 스테이징
-git add .
-
-# 커밋
-git commit -m "커밋 메시지"
-
-# GitHub 푸시
-git push origin main
-
-# Hook 우회 푸시 (응급시만)
-git push origin main --no-verify
-```
-
-### 4-5. 컴파일 및 배포 명령어
-
-#### 4-5-1. JSP 파일 전용 배포 (컴파일 생략)
-**JSP 파일만 수정된 경우 컴파일 없이 즉시 배포 가능:**
-
-```cmd
-# JSP 파일 변경 확인
-git status
-
-# JSP 파일만 변경되었다면 컴파일 과정 생략
-# Tomcat이 JSP를 자동으로 컴파일하므로 별도 컴파일 불필요
-
-# 브라우저에서 즉시 확인 가능
-# http://localhost:8080/PromptSharing5_JSP/
-
-# 강제 새로고침으로 캐시 무시 (권장)
-# Ctrl + F5 또는 Ctrl + Shift + R
-```
-
-**JSP 전용 배포 장점:**
-- ⚡ **즉시 반영**: Tomcat이 JSP를 자동 컴파일
-- 🚀 **빠른 개발**: UI 수정 후 바로 확인 가능
-- 💡 **캐시 관리**: 브라우저 강제 새로고침으로 최신 변경사항 확인
-- 🔄 **Hot Deploy**: 서버 재시작 없이 변경사항 적용
-
-**JSP 전용 배포 제한사항:**
-- ❌ **Java 로직 변경**: Servlet, DAO, Model 클래스 변경 시 컴파일 필수
-- ❌ **의존성 변경**: 라이브러리 추가/변경 시 컴파일 필수
-- ❌ **설정 변경**: web.xml, pom.xml 변경 시 재시작 필요
-
-#### 4-5-2. 모든 클래스 파일 컴파일 명령어 (Java 파일 변경 시)
-```cmd
-# 방법 1: 개별 파일 지정 (권장)
-javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java src/com/example/model/User.java src/com/example/model/UserDAO.java src/com/example/model/Candidate.java src/com/example/model/CandidateDAO.java src/com/example/model/InterviewSchedule.java src/com/example/model/InterviewScheduleDAO.java src/com/example/controller/LoginServlet.java src/com/example/controller/LogoutServlet.java src/com/example/controller/RegisterServlet.java src/com/example/controller/CandidateServlet.java src/com/example/controller/InterviewScheduleServlet.java
-
-# 방법 2: 와일드카드 사용 (Windows)
-javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/*/*.java
-
-# 방법 3: 순차적 컴파일 (의존성 문제 시)
-javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/util/DatabaseUtil.java
-javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/model/*.java
-javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/controller/*.java
-```
-
-#### 4-5-3. 배포 후 Tomcat 중지 명령어 (Java 파일 변경 시)
-```cmd
-# Windows에서 Tomcat 중지만 수행
-# 1. Tomcat 중지
+# 4. Tomcat 재시작 (수동)
 taskkill /f /im java.exe
-# 또는 서비스 중지
-net stop tomcat9
-
-# 참고: 개발 편의상 시작은 수동으로 수행
-# 필요 시 아래 명령어로 수동 시작:
-# C:\tomcat9\bin\startup.bat
-# 또는 서비스 시작: net start tomcat9
-
-# 2. 웹 애플리케이션 재배포 (선택적)
-# - Tomcat Manager 사용하여 애플리케이션 재배포
-# - 또는 브라우저에서 강제 새로고침 (Ctrl + F5)
+C:\tomcat9\bin\startup.bat
 ```
 
-#### 4-5-4. 배포 확인 명령어
-```cmd
-# 컴파일된 클래스 파일 확인
-dir WEB-INF\classes\com\example\model\*.class
-dir WEB-INF\classes\com\example\controller\*.class
-dir WEB-INF\classes\com\example\util\*.class
+**📋 Java 파일 변경 체크리스트**:
+- ✅ 1단계: `.\mvnw.cmd compile` 실행
+- ✅ 2단계: 컴파일 성공 확인
+- ✅ 3단계: Tomcat 재시작 
+- ✅ 4단계: 브라우저 테스트
 
-# Tomcat 프로세스 확인
-tasklist | findstr java
+## 🔒 보안 규칙
 
-# 애플리케이션 접속 테스트
-# 브라우저에서 http://localhost:8080/PromptSharing5_JSP/ 접속
+### 🛡️ 다층 보안 시스템
+이 프로젝트는 **3단계 보안 검증**을 통해 무단 접근을 완전히 차단합니다:
+
+#### 1단계: AuthenticationFilter (서블릿 필터)
+```java
+// 모든 요청에 대해 자동 세션 검증
+@WebFilter("/*")
+public class AuthenticationFilter implements Filter {
+    // 로그인하지 않은 사용자의 모든 URL 직접 접근 차단
+    // 예외: /login, /register, CSS/JS 파일
+}
 ```
 
-#### 4-5-5. 컴파일 및 배포 상세 설명
-- **모든 Java 소스 파일**(util, model, controller)을 한 번에 컴파일
-- **servlet-api.jar**와 **WEB-INF/lib**의 모든 라이브러리를 classpath에 포함
-- **컴파일된 클래스**는 WEB-INF/classes 디렉토리에 저장
-- **변경사항 적용 후** 반드시 컴파일 → Tomcat 중지 → 테스트 순서로 진행 (시작은 수동)
-- **NoSuchMethodError 발생 시**: 반드시 Tomcat 중지 필요 (클래스 로더 캐시 문제)
-
-#### 4-5-6. 배포 스크립트 (배치 파일)
-```batch
-@echo off
-echo === JSP 프로젝트 컴파일 및 배포 ===
-
-echo 1. Java 소스 컴파일 중...
-javac -cp ".;WEB-INF/lib/*;C:/tomcat9/lib/servlet-api.jar" -d WEB-INF/classes src/com/example/*/*.java
-
-if %errorlevel% neq 0 (
-    echo 컴파일 실패!
-    pause
-    exit /b 1
-)
-
-echo 2. 컴파일 성공! Tomcat 중지 중...
-taskkill /f /im java.exe 2>nul
-timeout /t 3 /nobreak >nul
-
-echo 3. 배포 완료! 수동으로 Tomcat을 시작하세요.
-echo    명령어: C:\tomcat9\bin\startup.bat
-timeout /t 3 /nobreak >nul
-echo 완료!
-pause
+#### 2단계: 서블릿 세션 검증
+```java
+// ✅ 모든 서블릿에서 필수 구현
+HttpSession session = request.getSession(false);
+if (session == null || session.getAttribute("username") == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
 ```
 
-### 📋 배포 절차 요약
+#### 3단계: JSP 페이지 세션 검증
+```jsp
+<!-- ✅ 모든 JSP 페이지 상단에 필수 추가 -->
+<%
+    String username = (String)session.getAttribute("username");
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
+```
 
-#### 🔍 변경사항 유형별 배포 방법
+### 🎯 세션 검증 표준 (중요!)
+```java
+// ✅ 올바른 세션 검증 방법 - 모든 서블릿과 JSP에서 사용
+HttpSession session = request.getSession(false);
+if (session == null || session.getAttribute("username") == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
 
-| 변경 유형 | 컴파일 필요 | 테스트 필요 | Tomcat 재시작 | 배포 시간 |
-|----------|-------------|-------------|---------------|-----------|
-| **JSP 파일만** | ❌ 불필요 | ❌ 생략 가능 | ❌ 불필요 | ⚡ 즉시 |
-| **Java + JSP** | ✅ 필수 | ✅ 필수 | ✅ 권장 | 🐌 5-10분 |
-| **설정 파일** | ✅ 필수 | ✅ 필수 | ✅ 필수 | 🐌 5-10분 |
-| **라이브러리** | ✅ 필수 | ✅ 필수 | ✅ 필수 | 🐌 5-10분 |
+// ❌ 잘못된 방법 - userEmail 사용 금지
+if (session.getAttribute("userEmail") == null) { // 이렇게 하지 마세요!
+```
 
-#### 🚀 빠른 배포 체크리스트
+```jsp
+<!-- ✅ JSP에서 올바른 세션 검증 -->
+<%
+    String username = (String)session.getAttribute("username");
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 
-**JSP 파일만 수정한 경우:**
-- [ ] `git status`로 변경 파일 확인
-- [ ] JSP 파일만 변경되었는지 확인
-- [ ] `git add *.jsp && git commit -m "style: UI 개선"`
-- [ ] `git push origin main` (컴파일 생략)
-- [ ] 브라우저에서 `Ctrl + F5`로 강제 새로고침
+<!-- ❌ JSP에서 잘못된 세션 검증 -->
+<%
+    if (session.getAttribute("userEmail") == null) { // 이렇게 하지 마세요!
+%>
+```
 
-**Java 파일이 포함된 경우:**
-- [ ] PowerShell 검증 실행: `powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1`
-- [ ] 20개 테스트 모두 통과 확인
-- [ ] `git add . && git commit -m "의미있는 메시지"`
-- [ ] `git push origin main --no-verify`
-- [ ] Tomcat 재시작 권장
+**⚠️ 필수 준수사항**:
+- 로그인 시 설정: `session.setAttribute("username", username)`
+- 세션 검증 시: `session.getAttribute("username")`
+- 모든 서블릿과 JSP에서 일관성 유지
+- `userEmail` 속성 사용 절대 금지 (로그인 페이지 리다이렉트 오류 원인)
 
-## 5. 협업 및 문서화
-- **문서화**: 모든 주요 변경사항은 docs/에 마크다운 파일로 기록
-- **이슈/PR**: GitHub 이슈/PR 템플릿을 활용, 상세 설명 필수
-- **코드 리뷰**: 반드시 1인 이상 리뷰 후 병합
-- **체크리스트 관리**: 프로젝트가 진행될 때마다 관련된 내용을 반드시 `체크리스트.md` 파일에 반영
+### 🔐 보안 강화 완료 현황
+- ✅ **AuthenticationFilter 구현**: 모든 요청 자동 검증
+- ✅ **JSP 세션 검증 일괄 추가**: 28개 파일 보안 강화
+- ✅ **잘못된 userEmail 속성 수정**: username 표준으로 통일
+- ✅ **SQL Injection 방지**: PreparedStatement 사용
+- ✅ **XSS 방지**: HTML 이스케이프 처리
+- ✅ **비밀번호 암호화**: BCrypt 해싱 적용
 
-## 6. 기타 유의사항
-- **DB 정보**: DatabaseUtil.java에만 하드코딩, 외부 유출 금지
-- **라이브러리 관리**: WEB-INF/lib에 jar 직접 관리, 필요시 README에 명시
-- **환경설정**: Tomcat/JDK/PostgreSQL 버전은 README에 명확히 기록
+### 🚨 차단되는 공격 유형
+1. **직접 URL 접근**: `http://localhost:8080/PromptSharing5_JSP/main.jsp` → 자동 로그인 페이지 리다이렉트
+2. **세션 하이재킹**: 세션 ID 탈취해도 username 속성 검증으로 차단
+3. **AJAX 무단 접근**: 401 Unauthorized 응답으로 차단
+4. **SQL Injection**: PreparedStatement로 완전 차단
+5. **XSS 공격**: HTML 이스케이프로 차단
+
+### 🛡️ 보안 테스트 방법
+```bash
+# 1. 로그아웃 상태에서 직접 URL 접근 테스트
+curl -i http://localhost:8080/PromptSharing5_JSP/main.jsp
+# 결과: 302 Found → login.jsp 리다이렉트
+
+# 2. 잘못된 세션으로 접근 테스트  
+curl -i -H "Cookie: JSESSIONID=invalid" http://localhost:8080/PromptSharing5_JSP/candidates
+# 결과: 302 Found → login.jsp 리다이렉트
+
+# 3. AJAX 무단 접근 테스트
+curl -i -H "X-Requested-With: XMLHttpRequest" http://localhost:8080/PromptSharing5_JSP/statistics
+# 결과: 401 Unauthorized + JSON 에러 메시지
+```
+
+**🔒 보안 수준**: **Enterprise Grade** - 금융권 수준의 다층 보안 적용
+
+## 🤖 AI 에이전트 지침
+
+### 필수 준수 사항
+1. **GitHub 푸시**: 파일 변경 완료 후 반드시 사용자 확인 필요
+2. **Tomcat 재시작**: 자동 재시작 금지, 명령어만 제공
+3. **Maven 인코딩**: 한글 깨짐 방지 위해 UTF-8 설정 필수
+
+### 표준 응답 템플릿
+```
+✅ 작업 완료: [변경사항 요약]
+⚠️ 필요 조치: [컴파일/재시작 여부]
+🔄 다음 단계: [권장 명령어]
+
+GitHub에 변경사항을 푸시하시겠습니까?
+```
+
+## 📝 코딩 표준
+- **네이밍**: Java 표준 CamelCase
+- **주석**: 핵심 로직, 복잡한 쿼리에 필수
+- **들여쓰기**: 4칸
+- **커밋 메시지**: `feat:`, `fix:`, `style:` 등 prefix 사용
+
+## 🔧 참고 문서
+- **ERROR_GUIDE.md**: 에러 해결 가이드 및 트러블슈팅
+- **SECURITY_GUIDE.md**: 보안 관련 가이드
+- **변경이력.md**: 프로젝트 변경 사항 기록
+
+## ⚠️ 중요: web.xml 서블릿 매핑 규칙
+- **절대 추가 금지**: web.xml에 서블릿 매핑 추가하지 말 것
+- **@WebServlet 어노테이션 사용**: 모든 서블릿은 어노테이션 방식 적용
+- **충돌 방지**: 중복 매핑으로 인한 에러 방지
+
+## 파일 탐색 및 검색 명령어 사용 원칙
+- findstr, type 등 파일 탐색/검색 명령어는 작업 진행 중 자동으로 사용한다.
+- 해당 명령어 실행 여부를 사용자에게 묻지 않는다.
+- 파일 구조, 코드 위치, 특정 문자열 탐색 등은 자동으로 처리한다.
+
+## Java 코드 작성 원칙
+- Java 15 이상의 Text Block(""" ... """) 문법을 사용하지 않는다.
+- 모든 SQL 및 긴 문자열은 기존의 문자열 연결 방식(+, \n 등)으로 작성한다.
+
+## 자바 클래스 변경 시 자동 컴파일 및 톰캣 종료 정책
+
+- 자바(.java) 클래스 파일이 변경되면 반드시 아래 절차가 자동으로 실행됩니다.
+    1. **컴파일 전 톰캣 프로세스 자동 종료**: `taskkill /f /im java.exe` 명령어로 Tomcat(Java) 프로세스가 강제 종료됩니다.
+    2. **Maven 컴파일 자동 실행**: `.\mvnw.cmd compile` 명령어로 전체 자바 소스가 컴파일됩니다.
+- 이 정책은 클래스 로더 캐시 충돌 및 NoSuchMethodError 방지, 최신 코드 반영을 위해 필수입니다.
+- JSP 파일만 변경 시에는 컴파일/톰캣 종료가 필요하지 않습니다(브라우저 새로고침만 하면 됨).
+- 관련 자동화 로직은 mvnw.cmd, auto-compile-deploy.cmd 등에 구현되어 있습니다.
 
 ---
 
-> **이 지침서는 에이전트(Assistant)가 모든 자동화, 코드 생성, 문서화, 안내 시 반드시 참조해야 합니다.** 
+**📌 이 문서는 프로젝트의 핵심 가이드라인입니다. 모든 개발자는 이 문서를 숙지하고 준수해야 합니다.**

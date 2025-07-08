@@ -113,4 +113,48 @@ a:hover {
 
 .welcome-message {
     margin-bottom: 2rem;
+}
+
+/* 인터뷰 질문 필터/검색 영역 폰트 및 스타일 통일 및 확대 */
+.question-toolbar,
+.question-toolbar label,
+.question-toolbar select,
+.question-toolbar input[type="text"],
+.question-toolbar button {
+    font-size: 1.15rem;
+    font-family: inherit;
+    vertical-align: middle;
+}
+
+.question-toolbar label {
+    font-weight: 600;
+    margin-right: 12px;
+}
+
+.question-toolbar select,
+.question-toolbar input[type="text"] {
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    margin-right: 24px;
+}
+
+.question-toolbar button,
+.question-toolbar .btn-primary {
+    font-size: 1.15rem;
+    padding: 8px 22px;
+    border-radius: 6px;
+}
+
+.question-toolbar .btn-primary {
+    font-weight: 600;
+}
+
+/* 인터뷰 질문관리 드롭박스(카테고리, 난이도) 크기 확대 */
+.question-toolbar select {
+    font-size: 1.2rem !important;
+    height: 44px !important;
+    padding: 0 18px !important;
+    min-width: 120px;
 } 

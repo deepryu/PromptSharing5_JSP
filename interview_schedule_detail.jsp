@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    String username = (String)session.getAttribute("username");
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
@@ -238,24 +244,16 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>인터뷰 일정 상세</h1>
-            <nav>
-                <a href="main.jsp">홈</a>
-                <a href="candidates">지원자 관리</a>
-                <a href="interview/list" class="active">일정 관리</a>
-                <a href="logout">로그아웃</a>
-            </nav>
-        </div>
+
 
         <c:choose>
             <c:when test="${not empty schedule}">
                 <div class="detail-header">
-                    <h1>인터뷰 일정</h1>
+                    <h1>인터뷰 일정 상세</h1>
                     <div class="subtitle">
                         <a href="../candidates?action=detail&id=${schedule.candidateId}" class="candidate-link" style="color: white;">
-                            ${schedule.candidateName}
-                        </a>님과의 인터뷰
+                            후보자: ${schedule.candidateName}
+                        </a>
                     </div>
                 </div>
 
@@ -265,16 +263,16 @@
                             ${schedule.interviewDateFormatted} ${schedule.interviewTimeFormatted}
                         </div>
                         <div class="duration-info">
-                            소요시간: ${schedule.durationFormatted}
+                            인터뷰시간: ${schedule.durationFormatted}
                         </div>
                     </div>
 
                     <div class="detail-grid">
                         <div class="detail-section">
-                            <div class="section-title">기본 정보</div>
+                            <div class="section-title">후보자 정보</div>
                             
                             <div class="detail-item">
-                                <span class="detail-label">지원자</span>
+                                <span class="detail-label">후보자</span>
                                 <span class="detail-value">
                                     <a href="../candidates?action=detail&id=${schedule.candidateId}" class="candidate-link">
                                         ${schedule.candidateName}
@@ -288,7 +286,7 @@
                             </div>
                             
                             <div class="detail-item">
-                                <span class="detail-label">인터뷰 유형</span>
+                                <span class="detail-label">면접 유형</span>
                                 <span class="detail-value">
                                     <span class="interview-type">${schedule.interviewType}</span>
                                 </span>
@@ -301,10 +299,10 @@
                         </div>
 
                         <div class="detail-section">
-                            <div class="section-title">일정 상태</div>
+                            <div class="section-title">면접 정보</div>
                             
                             <div class="detail-item">
-                                <span class="detail-label">현재 상태</span>
+                                <span class="detail-label">면접 상태</span>
                                 <span class="detail-value">
                                     <span class="schedule-status status-${schedule.status}">
                                         ${schedule.statusDisplayName}
@@ -332,7 +330,7 @@
 
                     <c:if test="${not empty schedule.notes}">
                         <div class="notes-section">
-                            <div class="section-title">메모</div>
+                            <div class="section-title">면접 후기</div>
                             <div class="notes-content">${schedule.notes}</div>
                         </div>
                     </c:if>
@@ -342,14 +340,14 @@
                     <a href="edit?id=${schedule.id}" class="btn btn-primary">수정</a>
                     <a href="list" class="btn btn-secondary">목록으로</a>
                     <a href="delete?id=${schedule.id}" class="btn btn-danger" 
-                       onclick="return confirm('정말 이 인터뷰 일정을 삭제하시겠습니까?')">삭제</a>
+                       onclick="return confirm('?뺣쭚 ???명꽣酉??쇱젙????젣?섏떆寃좎뒿?덇퉴?')">삭제</a>
                 </div>
             </c:when>
             <c:otherwise>
                 <div class="detail-content" style="text-align: center; padding: 50px;">
-                    <h2>인터뷰 일정을 찾을 수 없습니다</h2>
-                    <p>요청하신 인터뷰 일정이 존재하지 않거나 삭제되었습니다.</p>
-                    <a href="list" class="btn btn-primary">목록으로 돌아가기</a>
+                    <h2>?명꽣酉??쇱젙??李얠쓣 ???놁뒿?덈떎</h2>
+                    <p>?붿껌?섏떊 ?명꽣酉??쇱젙??議댁옱?섏? ?딄굅????젣?섏뿀?듬땲??</p>
+                    <a href="list" class="btn btn-primary">紐⑸줉?쇰줈 ?뚯븘媛湲?/a>
                 </div>
             </c:otherwise>
         </c:choose>

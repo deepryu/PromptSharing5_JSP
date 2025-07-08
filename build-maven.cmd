@@ -99,6 +99,37 @@ if not exist "target\classes\com\example\controller\LoginServlet.class" (
     set MISSING_CLASSES=1
 )
 
+REM 새로 추가된 질문/평가 관련 클래스 확인
+if not exist "target\classes\com\example\model\InterviewQuestion.class" (
+    echo [WARNING] InterviewQuestion.class 누락
+    set MISSING_CLASSES=1
+)
+
+if not exist "target\classes\com\example\model\InterviewQuestionDAO.class" (
+    echo [WARNING] InterviewQuestionDAO.class 누락
+    set MISSING_CLASSES=1
+)
+
+if not exist "target\classes\com\example\model\EvaluationCriteria.class" (
+    echo [WARNING] EvaluationCriteria.class 누락
+    set MISSING_CLASSES=1
+)
+
+if not exist "target\classes\com\example\model\EvaluationCriteriaDAO.class" (
+    echo [WARNING] EvaluationCriteriaDAO.class 누락
+    set MISSING_CLASSES=1
+)
+
+if not exist "target\classes\com\example\controller\InterviewQuestionServlet.class" (
+    echo [WARNING] InterviewQuestionServlet.class 누락
+    set MISSING_CLASSES=1
+)
+
+if not exist "target\classes\com\example\controller\EvaluationCriteriaServlet.class" (
+    echo [WARNING] EvaluationCriteriaServlet.class 누락
+    set MISSING_CLASSES=1
+)
+
 if %MISSING_CLASSES%==1 (
     echo [ERROR] 일부 클래스 파일이 누락되었습니다.
     echo [TIP] 소스 코드와 Maven 설정을 확인해주세요.

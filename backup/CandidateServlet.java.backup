@@ -1,0 +1,173 @@
+package com.example.controller;
+
+import com.example.model.Candidate;
+import com.example.model.CandidateDAO;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/candidates")
+public class CandidateServlet extends HttpServlet {
+    private CandidateDAO candidateDAO;
+
+    @Override
+    public void init() {
+        candidateDAO = new CandidateDAO();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("=== CandidateServlet doGet called ===");
+        
+        String action = request.getParameter("action");
+        if (action == null) action = "list";
+        
+        System.out.println("Action: " + action);
+        
+        switch (action) {
+            case "new":
+                request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+                break;
+            case "edit":
+                int editId = Integer.parseInt(request.getParameter("id"));
+                Candidate editCandidate = candidateDAO.getCandidateById(editId);
+                request.setAttribute("candidate", editCandidate);
+                request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+                break;
+            case "delete":
+                int delId = Integer.parseInt(request.getParameter("id"));
+                candidateDAO.deleteCandidate(delId);
+                response.sendRedirect("candidates");
+                break;
+            case "detail":
+                int detailId = Integer.parseInt(request.getParameter("id"));
+                Candidate detailCandidate = candidateDAO.getCandidateById(detailId);
+                request.setAttribute("candidate", detailCandidate);
+                request.getRequestDispatcher("candidate_detail.jsp").forward(request, response);
+                break;
+            default:
+                List<Candidate> list = candidateDAO.getAllCandidates();
+                request.setAttribute("candidates", list);
+                System.out.println("Forwarding to candidates.jsp with " + list.size() + " candidates");
+                
+                // 임시로 직접 HTML 응답 출력
+                response.setContentType("text/html; charset=UTF-8");
+                response.getWriter().println("<!DOCTYPE html>");
+                response.getWriter().println("<html>");
+                response.getWriter().println("<head>");
+                response.getWriter().println("<meta charset='UTF-8'>");
+                response.getWriter().println("<title>지원자 목록</title>");
+                response.getWriter().println("<style>");
+                response.getWriter().println("body { font-family: Arial, sans-serif; margin: 20px; background: #f0f0f0; }");
+                response.getWriter().println(".container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border: 1px solid #ddd; }");
+                response.getWriter().println(".header { background: #0078d4; color: white; padding: 20px; margin: -20px -20px 20px -20px; }");
+                response.getWriter().println(".btn { padding: 8px 16px; background: #2da44e; color: white; text-decoration: none; margin: 5px; border-radius: 3px; }");
+                response.getWriter().println("</style>");
+                response.getWriter().println("</head>");
+                response.getWriter().println("<body>");
+                response.getWriter().println("<div class='container'>");
+                response.getWriter().println("<div class='header'>");
+                response.getWriter().println("<h1>📋 지원자 목록</h1>");
+                response.getWriter().println("</div>");
+                response.getWriter().println("<div>");
+                response.getWriter().println("<a href='candidates?action=new' class='btn'>➕ 새 지원자 추가</a>");
+                response.getWriter().println("<a href='main.jsp' class='btn'>🏠 메인으로</a>");
+                response.getWriter().println("</div>");
+                response.getWriter().println("<h3>총 " + list.size() + "명의 지원자가 등록되어 있습니다.</h3>");
+                
+                if (list.isEmpty()) {
+                    response.getWriter().println("<div style='text-align: center; padding: 40px; color: #666;'>");
+                    response.getWriter().println("<h3>📝 등록된 지원자가 없습니다</h3>");
+                    response.getWriter().println("<p>새로운 지원자를 추가하여 채용 과정을 시작하세요.</p>");
+                    response.getWriter().println("<a href='candidates?action=new' class='btn'>첫 번째 지원자 추가</a>");
+                    response.getWriter().println("</div>");
+                } else {
+                    response.getWriter().println("<table style='width: 100%; border-collapse: collapse; margin-top: 20px;'>");
+                    response.getWriter().println("<thead>");
+                    response.getWriter().println("<tr style='background: #f6f8fa;'>");
+                    response.getWriter().println("<th style='padding: 12px; border: 1px solid #ddd;'>ID</th>");
+                    response.getWriter().println("<th style='padding: 12px; border: 1px solid #ddd;'>이름</th>");
+                    response.getWriter().println("<th style='padding: 12px; border: 1px solid #ddd;'>이메일</th>");
+                    response.getWriter().println("<th style='padding: 12px; border: 1px solid #ddd;'>전화번호</th>");
+                    response.getWriter().println("<th style='padding: 12px; border: 1px solid #ddd;'>팀</th>");
+                    response.getWriter().println("<th style='padding: 12px; border: 1px solid #ddd;'>관리</th>");
+                    response.getWriter().println("</tr>");
+                    response.getWriter().println("</thead>");
+                    response.getWriter().println("<tbody>");
+                    
+                    for (Candidate candidate : list) {
+                        response.getWriter().println("<tr>");
+                        response.getWriter().println("<td style='padding: 12px; border: 1px solid #ddd;'>" + candidate.getId() + "</td>");
+                        response.getWriter().println("<td style='padding: 12px; border: 1px solid #ddd;'>" + candidate.getName() + "</td>");
+                        response.getWriter().println("<td style='padding: 12px; border: 1px solid #ddd;'>" + candidate.getEmail() + "</td>");
+                        response.getWriter().println("<td style='padding: 12px; border: 1px solid #ddd;'>" + candidate.getPhone() + "</td>");
+                        response.getWriter().println("<td style='padding: 12px; border: 1px solid #ddd;'>" + candidate.getTeam() + "</td>");
+                        response.getWriter().println("<td style='padding: 12px; border: 1px solid #ddd;'>");
+                        response.getWriter().println("<a href='candidates?action=detail&id=" + candidate.getId() + "' style='margin: 2px; padding: 4px 8px; background: #0078d4; color: white; text-decoration: none; border-radius: 2px;'>상세</a>");
+                        response.getWriter().println("<a href='candidates?action=edit&id=" + candidate.getId() + "' style='margin: 2px; padding: 4px 8px; background: #f39c12; color: white; text-decoration: none; border-radius: 2px;'>수정</a>");
+                        response.getWriter().println("</td>");
+                        response.getWriter().println("</tr>");
+                    }
+                    
+                    response.getWriter().println("</tbody>");
+                    response.getWriter().println("</table>");
+                }
+                
+                response.getWriter().println("</div>");
+                response.getWriter().println("</body>");
+                response.getWriter().println("</html>");
+                break;
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idStr = request.getParameter("id");
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String resume = request.getParameter("resume");
+        String team = request.getParameter("team");
+        Candidate candidate = new Candidate();
+        candidate.setName(name);
+        candidate.setEmail(email);
+        candidate.setPhone(phone);
+        candidate.setResume(resume);
+        candidate.setTeam(team);
+        String error = null;
+        boolean result = false;
+        if (idStr == null || idStr.isEmpty()) {
+            try {
+                result = candidateDAO.addCandidate(candidate);
+                if (!result) {
+                    error = "지원자 등록에 실패했습니다. (이메일 중복 등)";
+                    candidate.setId(0);
+                }
+            } catch (Exception e) {
+                error = e.getMessage();
+                candidate.setId(0);
+            }
+        } else {
+            candidate.setId(Integer.parseInt(idStr));
+            try {
+                result = candidateDAO.updateCandidate(candidate);
+                if (!result) error = "지원자 정보 수정에 실패했습니다.";
+            } catch (Exception e) {
+                error = e.getMessage();
+            }
+        }
+        if (error != null) {
+            request.setAttribute("error", error);
+            request.setAttribute("candidate", candidate);
+            request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("candidates");
+        }
+    }
+}

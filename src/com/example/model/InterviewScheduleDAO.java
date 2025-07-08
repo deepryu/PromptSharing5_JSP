@@ -28,8 +28,9 @@ public class InterviewScheduleDAO {
     }
 
     public List<InterviewSchedule> getAllSchedules() {
+        System.out.println("[DEBUG][DAO] getAllSchedules 호출");
         List<InterviewSchedule> list = new ArrayList<>();
-        String sql = "SELECT s.*, c.name as candidate_name FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id ORDER BY s.interview_date, s.interview_time";
+        String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id ORDER BY s.interview_date DESC, s.interview_time DESC";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -40,12 +41,13 @@ public class InterviewScheduleDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        System.out.println("[DEBUG][DAO] getAllSchedules 반환 size=" + list.size());
         return list;
     }
 
     public List<InterviewSchedule> getSchedulesByCandidateId(int candidateId) {
         List<InterviewSchedule> list = new ArrayList<>();
-        String sql = "SELECT s.*, c.name as candidate_name FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.candidate_id = ? ORDER BY s.interview_date, s.interview_time";
+        String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.candidate_id = ? ORDER BY s.interview_date DESC, s.interview_time DESC";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, candidateId);
@@ -63,7 +65,7 @@ public class InterviewScheduleDAO {
 
     public List<InterviewSchedule> getSchedulesByDate(Date date) {
         List<InterviewSchedule> list = new ArrayList<>();
-        String sql = "SELECT s.*, c.name as candidate_name FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.interview_date = ? ORDER BY s.interview_time";
+        String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.interview_date = ? ORDER BY s.interview_date DESC, s.interview_time DESC";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, date);
@@ -80,8 +82,9 @@ public class InterviewScheduleDAO {
     }
 
     public List<InterviewSchedule> getSchedulesByStatus(String status) {
+        System.out.println("[DEBUG][DAO] getSchedulesByStatus 호출, status=" + status);
         List<InterviewSchedule> list = new ArrayList<>();
-        String sql = "SELECT s.*, c.name as candidate_name FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.status = ? ORDER BY s.interview_date, s.interview_time";
+        String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.status = ? ORDER BY s.interview_date DESC, s.interview_time DESC";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
@@ -94,11 +97,12 @@ public class InterviewScheduleDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        System.out.println("[DEBUG][DAO] getSchedulesByStatus 반환 size=" + list.size());
         return list;
     }
 
     public InterviewSchedule getScheduleById(int id) {
-        String sql = "SELECT s.*, c.name as candidate_name FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.id = ?";
+        String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.id = ?";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -182,11 +186,39 @@ public class InterviewScheduleDAO {
         return (start1 < end2) && (start2 < end1);
     }
 
+    public List<InterviewSchedule> getSchedulesByDateRange(Date start, Date end, String status) {
+        System.out.println("[DEBUG][DAO] getSchedulesByDateRange 호출, start=" + start + ", end=" + end + ", status=" + status);
+        List<InterviewSchedule> list = new ArrayList<>();
+        String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.interview_date >= ? AND s.interview_date <= ?";
+        if (status != null && !status.isEmpty()) {
+            sql += " AND s.status = ?";
+        }
+        sql += " ORDER BY s.interview_date DESC, s.interview_time DESC";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, start);
+            ps.setDate(2, end);
+            if (status != null && !status.isEmpty()) {
+                ps.setString(3, status);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToSchedule(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("[DEBUG][DAO] getSchedulesByDateRange 반환 size=" + list.size());
+        return list;
+    }
+
     private InterviewSchedule mapResultSetToSchedule(ResultSet rs) throws SQLException {
         InterviewSchedule schedule = new InterviewSchedule();
         schedule.setId(rs.getInt("id"));
         schedule.setCandidateId(rs.getInt("candidate_id"));
         schedule.setCandidateName(rs.getString("candidate_name"));
+        schedule.setCandidatePosition(rs.getString("candidate_position"));
         schedule.setInterviewerName(rs.getString("interviewer_name"));
         schedule.setInterviewDate(rs.getDate("interview_date"));
         schedule.setInterviewTime(rs.getTime("interview_time"));

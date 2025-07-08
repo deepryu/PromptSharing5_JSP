@@ -162,53 +162,7 @@
             flex-shrink: 0 !important;
         }
         
-        .random-section {
-            background: #fff8dc;
-            border: 1px solid #e8a317;
-            color: #8a6914;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #fb8500;
-        }
-        
-        .random-section h3 {
-            margin: 0 0 8px 0;
-            font-size: 1.1rem;
-        }
-        
-        .random-section p {
-            margin: 0 0 12px 0;
-            font-size: 0.9rem;
-        }
-        
-        .random-controls {
-            display: flex !important;
-            gap: 25px !important;
-            align-items: center !important;
-            flex-wrap: nowrap !important;
-            justify-content: flex-start !important;
-        }
-        
-        .random-controls .control-group {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            flex-shrink: 0 !important;
-        }
-        
-        .random-controls label {
-            font-weight: 500 !important;
-            font-size: 0.9rem !important;
-            white-space: nowrap !important;
-            margin-right: 5px !important;
-        }
-        
-        .random-controls select {
-            min-width: 100px !important;
-            padding: 5px 8px !important;
-            border: 1px solid #d0d7de !important;
-            border-radius: 3px !important;
-        }
+
         
         .question-table {
             background: white;
@@ -482,10 +436,11 @@
                 <p>면접에서 사용할 질문들을 관리하고 난이도별로 분류할 수 있습니다</p>
             </div>
             <div class="nav-buttons">
-                <button class="btn btn-light" onclick="location.href='main.jsp'">🏠 홈</button>
-                <button class="btn btn-light" onclick="location.href='candidates'">👥 지원자관리</button>
-                <button class="btn btn-light" onclick="location.href='schedules'">📅 일정관리</button>
-                <button class="btn btn-light" onclick="location.href='criteria'">📊 평가기준</button>
+                <button class="btn btn-light" onclick="location.href='main.jsp'">🏠 메인</button>
+                <button class="btn btn-light" onclick="location.href='candidates'">👥 인터뷰 대상자 관리</button>
+                <button class="btn btn-light" onclick="location.href='interview/list'">📅 인터뷰 일정 관리</button>
+                <button class="btn btn-light" onclick="location.href='results'">📝 인터뷰 결과 기록/관리</button>
+                <button class="btn btn-light" onclick="location.href='statistics'">📊 통계 및 리포트</button>
                 <button class="btn btn-danger" onclick="location.href='logout'">🚪 로그아웃</button>
             </div>
         </div>
@@ -498,7 +453,31 @@
             </div>
             <div class="stat-card">
                 <div class="stat-number">${techQuestions}</div>
-                <div class="stat-label">기술 질문</div>
+                <div class="stat-label">일반 기술</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${javaBeginnerQuestions}</div>
+                <div class="stat-label">Java 초급</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${javaIntermediateQuestions}</div>
+                <div class="stat-label">Java 중급</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${javaAdvancedQuestions}</div>
+                <div class="stat-label">Java 고급</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${pythonBeginnerQuestions}</div>
+                <div class="stat-label">Python 초급</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${pythonIntermediateQuestions}</div>
+                <div class="stat-label">Python 중급</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${pythonAdvancedQuestions}</div>
+                <div class="stat-label">Python 고급</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">${personalityQuestions}</div>
@@ -514,133 +493,84 @@
             </div>
         </div>
 
-        <!-- 랜덤 질문 섹션 -->
-        <div class="random-section" style="background: #fff8dc; border: 1px solid #e8a317; color: #8a6914; padding: 15px 20px; margin-bottom: 20px; border-left: 4px solid #fb8500;">
-            <h3 style="margin: 0 0 8px 0; font-size: 1.1rem;">🎲 랜덤 질문 추출</h3>
-            <p style="margin: 0 0 12px 0; font-size: 0.9rem;">면접을 위한 랜덤 질문을 추출할 수 있습니다</p>
-            
-            <!-- 완전한 테이블 형태로 가로 배치 -->
-            <table style="width: 100%; border-collapse: separate; border-spacing: 10px;">
-                <tr>
-                    <form action="questions" method="get">
-                        <input type="hidden" name="action" value="random">
-                        
-                        <td style="text-align: left; white-space: nowrap; padding: 0;">
-                            <label style="font-weight: 500; margin-right: 8px;">개수:</label>
-                            <select name="limit" style="min-width: 70px; padding: 5px;">
-                                <option value="5" ${randomLimit == 5 ? 'selected' : ''}>5개</option>
-                                <option value="10" ${randomLimit == 10 ? 'selected' : ''}>10개</option>
-                                <option value="15" ${randomLimit == 15 ? 'selected' : ''}>15개</option>
-                                <option value="20" ${randomLimit == 20 ? 'selected' : ''}>20개</option>
-                            </select>
-                        </td>
-                        
-                        <td style="text-align: left; white-space: nowrap; padding: 0;">
-                            <label style="font-weight: 500; margin-right: 8px;">카테고리:</label>
-                            <select name="category" style="min-width: 70px; padding: 5px;">
-                                <option value="all" ${randomCategory == null ? 'selected' : ''}>전체</option>
-                                <option value="기술" ${randomCategory == '기술' ? 'selected' : ''}>기술</option>
-                                <option value="인성" ${randomCategory == '인성' ? 'selected' : ''}>인성</option>
-                                <option value="경험" ${randomCategory == '경험' ? 'selected' : ''}>경험</option>
-                                <option value="상황" ${randomCategory == '상황' ? 'selected' : ''}>상황</option>
-                            </select>
-                        </td>
-                        
-                        <td style="text-align: left; white-space: nowrap; padding: 0;">
-                            <label style="font-weight: 500; margin-right: 8px;">난이도:</label>
-                            <select name="difficulty" style="min-width: 70px; padding: 5px;">
-                                <option value="all" ${randomDifficulty == null ? 'selected' : ''}>전체</option>
-                                <option value="1" ${randomDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆</option>
-                                <option value="2" ${randomDifficulty == 2 ? 'selected' : ''}>★★☆☆☆</option>
-                                <option value="3" ${randomDifficulty == 3 ? 'selected' : ''}>★★★☆☆</option>
-                                <option value="4" ${randomDifficulty == 4 ? 'selected' : ''}>★★★★☆</option>
-                                <option value="5" ${randomDifficulty == 5 ? 'selected' : ''}>★★★★★</option>
-                            </select>
-                        </td>
-                        
-                        <td style="text-align: left; padding: 0;">
-                            <button type="submit" class="btn btn-light" style="background: #2da44e; color: white; border: 1px solid #2da44e; padding: 6px 12px; border-radius: 3px; cursor: pointer;">🎯 랜덤 추출</button>
-                        </td>
-                    </form>
-                </tr>
-            </table>
-        </div>
-
         <!-- 필터 및 검색 - 완전히 새로운 레이아웃 -->
         <div style="background: white; border: 1px solid #d0d7de; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             
-            <!-- 첫 번째 줄: 새 질문 등록 버튼과 검색 -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <button class="btn btn-primary" onclick="location.href='questions?action=new'" 
-                        style="background: #2da44e; color: white; border: 1px solid #2da44e; padding: 8px 16px; border-radius: 3px; cursor: pointer; font-weight: 500;">
-                    ➕ 새 질문 등록
-                </button>
-                
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <form action="questions" method="get" style="display: flex; align-items: center; gap: 8px;">
-                        <input type="hidden" name="action" value="search">
-                        <input type="text" name="keyword" placeholder="질문 내용 검색..." 
-                               value="${searchKeyword}" 
-                               style="padding: 8px 12px; border: 1px solid #d0d7de; border-radius: 3px; width: 200px;">
-                        <button type="submit" 
-                                style="background: #0969da; color: white; border: 1px solid #0969da; padding: 8px 16px; border-radius: 3px; cursor: pointer;">
-                            🔍 검색
-                        </button>
-                    </form>
-                    <c:if test="${searchKeyword != null}">
-                        <button onclick="location.href='questions'" 
-                                style="background: #f6f8fa; color: #24292f; border: 1px solid #d0d7de; padding: 8px 12px; border-radius: 3px; cursor: pointer;">
-                            ❌ 검색 초기화
-                        </button>
-                    </c:if>
-                </div>
-            </div>
-            
-            <!-- 두 번째 줄: 필터 옵션들 - 강제 일렬 배치 -->
-            <div style="display: flex !important; align-items: center !important; gap: 30px !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
+            <!-- 1줄 고정 배치: 카테고리, 난이도, 검색창, 검색버튼, 새질문등록 -->
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: nowrap; overflow-x: auto;">
                 
                 <!-- 카테고리 필터 -->
-                <div style="display: inline-flex !important; align-items: center !important; gap: 8px !important; white-space: nowrap !important; flex-shrink: 0 !important;">
-                    <label style="font-weight: 500 !important; color: #24292f !important; margin-right: 8px !important;">카테고리:</label>
-                    <form action="questions" method="get" style="display: inline !important; margin: 0 !important;">
+                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0;">
+                    <label style="font-weight: 500; color: #24292f; font-size: 14px;">카테고리:</label>
+                    <form action="questions" method="get" style="display: inline; margin: 0;">
                         <input type="hidden" name="action" value="filter">
                         <select name="category" onchange="this.form.submit()" 
-                                style="padding: 6px 10px !important; border: 1px solid #d0d7de !important; border-radius: 3px !important; background: white !important; min-width: 100px !important; font-size: 14px !important;">
+                                style="padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 3px; background: white; min-width: 120px; font-size: 14px; height: 32px;">
                             <option value="all">전체</option>
-                            <option value="기술" ${filterCategory == '기술' ? 'selected' : ''}>기술</option>
-                            <option value="인성" ${filterCategory == '인성' ? 'selected' : ''}>인성</option>
-                            <option value="경험" ${filterCategory == '경험' ? 'selected' : ''}>경험</option>
-                            <option value="상황" ${filterCategory == '상황' ? 'selected' : ''}>상황</option>
+                            <option value="기술" ${filterCategory == '기술' ? 'selected' : ''}>💻 기술</option>
+                            <option value="기술-Java-초급" ${filterCategory == '기술-Java-초급' ? 'selected' : ''}>☕ Java 초급</option>
+                            <option value="기술-Java-중급" ${filterCategory == '기술-Java-중급' ? 'selected' : ''}>☕ Java 중급</option>
+                            <option value="기술-Java-고급" ${filterCategory == '기술-Java-고급' ? 'selected' : ''}>☕ Java 고급</option>
+                            <option value="기술-Python-초급" ${filterCategory == '기술-Python-초급' ? 'selected' : ''}>🐍 Python 초급</option>
+                            <option value="기술-Python-중급" ${filterCategory == '기술-Python-중급' ? 'selected' : ''}>🐍 Python 중급</option>
+                            <option value="기술-Python-고급" ${filterCategory == '기술-Python-고급' ? 'selected' : ''}>🐍 Python 고급</option>
+                            <option value="인성" ${filterCategory == '인성' ? 'selected' : ''}>👤 인성</option>
+                            <option value="경험" ${filterCategory == '경험' ? 'selected' : ''}>📚 경험</option>
+                            <option value="상황" ${filterCategory == '상황' ? 'selected' : ''}>🎯 상황</option>
                         </select>
                     </form>
                 </div>
                 
                 <!-- 난이도 필터 -->
-                <div style="display: inline-flex !important; align-items: center !important; gap: 8px !important; white-space: nowrap !important; flex-shrink: 0 !important;">
-                    <label style="font-weight: 500 !important; color: #24292f !important; margin-right: 8px !important;">난이도:</label>
-                    <form action="questions" method="get" style="display: inline !important; margin: 0 !important;">
+                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0;">
+                    <label style="font-weight: 500; color: #24292f; font-size: 14px;">난이도:</label>
+                    <form action="questions" method="get" style="display: inline; margin: 0;">
                         <input type="hidden" name="action" value="filter">
                         <select name="difficulty" onchange="this.form.submit()" 
-                                style="padding: 6px 10px !important; border: 1px solid #d0d7de !important; border-radius: 3px !important; background: white !important; min-width: 150px !important; font-size: 14px !important;">
+                                style="padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 3px; background: white; min-width: 100px; font-size: 14px; height: 32px;">
                             <option value="all">전체</option>
-                            <option value="1" ${filterDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆ (매우 쉬움)</option>
-                            <option value="2" ${filterDifficulty == 2 ? 'selected' : ''}>★★☆☆☆ (쉬움)</option>
-                            <option value="3" ${filterDifficulty == 3 ? 'selected' : ''}>★★★☆☆ (보통)</option>
-                            <option value="4" ${filterDifficulty == 4 ? 'selected' : ''}>★★★★☆ (어려움)</option>
-                            <option value="5" ${filterDifficulty == 5 ? 'selected' : ''}>★★★★★ (매우 어려움)</option>
+                            <option value="1" ${filterDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆</option>
+                            <option value="2" ${filterDifficulty == 2 ? 'selected' : ''}>★★☆☆☆</option>
+                            <option value="3" ${filterDifficulty == 3 ? 'selected' : ''}>★★★☆☆</option>
+                            <option value="4" ${filterDifficulty == 4 ? 'selected' : ''}>★★★★☆</option>
+                            <option value="5" ${filterDifficulty == 5 ? 'selected' : ''}>★★★★★</option>
                         </select>
                     </form>
                 </div>
                 
-                <!-- 필터 초기화 버튼 -->
-                <c:if test="${filterCategory != null || filterDifficulty != null}">
-                    <div style="flex-shrink: 0 !important;">
-                        <button onclick="location.href='questions'" 
-                                style="background: #f6f8fa !important; color: #24292f !important; border: 1px solid #d0d7de !important; padding: 6px 12px !important; border-radius: 3px !important; cursor: pointer !important; white-space: nowrap !important;">
-                            🔄 필터 초기화
-                        </button>
-                    </div>
-                </c:if>
+                <!-- 필터 초기화 버튼 - 항상 표시 -->
+                <div style="flex-shrink: 0;">
+                    <button onclick="location.href='questions'" 
+                            style="background: #f6f8fa; color: #24292f; border: 1px solid #d0d7de; padding: 6px 12px; border-radius: 3px; cursor: pointer; white-space: nowrap; font-size: 14px; height: 32px;">
+                        🔄 필터 초기화
+                    </button>
+                </div>
+                
+                <!-- 검색창 -->
+                <div style="flex-shrink: 0;">
+                    <form action="questions" method="get" style="display: inline; margin: 0;">
+                        <input type="hidden" name="action" value="search">
+                        <input type="text" name="keyword" placeholder="질문 내용 검색..." 
+                               value="${searchKeyword}" 
+                               style="padding: 6px 12px; border: 1px solid #d0d7de; border-radius: 3px; width: 200px; font-size: 14px; height: 32px; box-sizing: border-box;">
+                    </form>
+                </div>
+                
+                <!-- 검색 버튼 -->
+                <div style="flex-shrink: 0;">
+                    <button onclick="document.querySelector('input[name=keyword]').form.submit()" 
+                            style="background: #0969da; color: white; border: 1px solid #0969da; padding: 6px 16px; border-radius: 3px; cursor: pointer; font-size: 14px; height: 32px; white-space: nowrap;">
+                        🔍 검색
+                    </button>
+                </div>
+                
+                <!-- 새 질문 등록 버튼 -->
+                <div style="margin-left: auto; flex-shrink: 0;">
+                    <button class="btn btn-primary" onclick="location.href='questions?action=new'" 
+                            style="background: #2da44e; color: white; border: 1px solid #2da44e; padding: 6px 16px; border-radius: 3px; cursor: pointer; font-weight: 500; font-size: 14px; height: 32px; white-space: nowrap;">
+                        ➕ 새 질문 등록
+                    </button>
+                </div>
             </div>
         </div>
 

@@ -1,525 +1,411 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="java.text.SimpleDateFormat, java.util.Date" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="java.text.SimpleDateFormat, java.util.Date, com.example.model.InterviewResultDAO, com.example.model.InterviewResult" %>
 <%
     // 오늘 날짜 설정
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String today = sdf.format(new Date());
     request.setAttribute("today", today);
+
+    InterviewResultDAO resultDAO = new InterviewResultDAO();
 %>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인터뷰 일정 관리</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>인터뷰 일정 관리 - 채용 관리 시스템</title>
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="css/common.css">
     <style>
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        /* 인터뷰 일정 페이지 전용 스타일 */
+        .schedule-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 3px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            transition: box-shadow 0.2s;
         }
         
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 20px;
+        .schedule-card:hover {
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
         }
-        
-        table {
-            width: 100%;
-            min-width: 1200px;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        table th, table td {
-            padding: 12px 15px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
-        
-        table th {
-            font-size: 1.1em;
-            font-weight: 600;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            border: none;
-            position: relative;
-        }
-        
-        table th::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-            pointer-events: none;
-        }
-        
-        table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        table tr:hover {
-            background-color: #e3f2fd;
-            transition: background-color 0.3s ease;
-        }
-        
-        /* 컬럼별 너비 조정 */
-        table th:nth-child(1), table td:nth-child(1) { width: 12%; } /* 날짜/시간 */
-        table th:nth-child(2), table td:nth-child(2) { width: 15%; } /* 지원자 */
-        table th:nth-child(3), table td:nth-child(3) { width: 12%; } /* 면접관 */
-        table th:nth-child(4), table td:nth-child(4) { width: 10%; } /* 유형 */
-        table th:nth-child(5), table td:nth-child(5) { width: 15%; } /* 장소 */
-        table th:nth-child(6), table td:nth-child(6) { width: 10%; } /* 소요시간 */
-        table th:nth-child(7), table td:nth-child(7) { width: 10%; } /* 상태 */
-        table th:nth-child(8), table td:nth-child(8) { width: 16%; } /* 관리 */
         
         .schedule-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: var(--space-sm);
         }
         
-        .filter-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .filter-controls select,
-        .filter-controls input {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        
-        .view-buttons {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        /* 지원자 목록과 동일한 버튼 스타일 */
-        button {
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            min-width: 80px;
-            text-align: center;
-        }
-        
-        button:hover {
-            background-color: #0056b3;
-        }
-        
-        /* 네비게이션 버튼 컨테이너 */
-        .nav-buttons {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .nav-buttons .nav-home-btn {
-            margin: 0 8px 10px 8px;
-        }
-        
-        /* 네비게이션 홈 버튼 스타일 */
-        .nav-home-btn {
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: white !important;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            text-decoration: none;
-            display: inline-block;
-            min-width: 80px;
-            text-align: center;
-        }
-        
-        .nav-home-btn:hover {
-            background-color: #0056b3;
-            text-decoration: none;
-        }
-        
-        /* 로그아웃 버튼 스타일 */
-        .nav-logout-btn {
-            background-color: #dc3545 !important;
-        }
-        
-        .nav-logout-btn:hover {
-            background-color: #c82333 !important;
-        }
-        
-        .view-btn {
-            padding: 8px 16px;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #333;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            min-width: 80px;
-            text-align: center;
-            display: inline-block;
-        }
-        
-        .view-btn:hover {
-            background: #e9ecef;
-        }
-        
-        .view-btn.active {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
+        .schedule-time {
+            font-weight: 600;
+            color: var(--blue-primary);
+            font-size: var(--font-lg);
         }
         
         .schedule-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            min-width: 60px;
-            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 3px;
+            font-size: var(--font-xs);
+            font-weight: 500;
         }
         
-        .status-scheduled { background: #e3f2fd; color: #1976d2; }
-        .status-in_progress { background: #fff3e0; color: #f57c00; }
-        .status-completed { background: #e8f5e8; color: #388e3c; }
-        .status-cancelled { background: #ffebee; color: #d32f2f; }
-        .status-postponed { background: #f3e5f5; color: #7b1fa2; }
-        
-        .interview-type {
-            padding: 2px 6px;
-            background: #f5f5f5;
-            border-radius: 4px;
-            font-size: 11px;
-            color: #666;
+        .status-scheduled {
+            background: #dcfce7;
+            color: #16a34a;
         }
         
-        .action-buttons {
+        .status-completed {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .status-cancelled {
+            background: #fecaca;
+            color: #dc2626;
+        }
+        
+        .candidate-info {
+            margin-bottom: var(--space-sm);
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .candidate-position {
+            color: var(--text-secondary);
+            font-size: var(--font-sm);
+        }
+        
+        .schedule-actions {
             display: flex;
-            gap: 5px;
-            justify-content: center;
-        }
-        
-        .action-buttons a {
-            color: #007bff;
-            text-decoration: none;
-            transition: text-decoration 0.2s;
-        }
-        
-        .action-buttons a:hover {
-            text-decoration: underline;
-        }
-        
-        .no-schedules {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-style: italic;
-        }
-        
-        .no-schedules h3 {
-            margin-bottom: 15px;
-        }
-        
-        .no-schedules p {
-            margin-bottom: 20px;
-        }
-        
-        .schedule-summary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .summary-stats {
-            display: flex;
-            gap: 20px;
+            gap: var(--space-xs);
             flex-wrap: wrap;
         }
         
-        .stat-item {
-            text-align: center;
+        .view-toggle {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
         }
         
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            display: block;
+        .view-btn {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-primary);
+            border-radius: 3px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: var(--font-sm);
+            transition: all 0.2s;
         }
         
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
+        .view-btn.active {
+            background: var(--blue-primary);
+            color: white;
+            border-color: var(--blue-primary);
         }
         
-        @media (max-width: 768px) {
-            .container {
-                max-width: 100%;
-                padding: 10px;
-            }
-            
+        .view-btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-secondary);
+        }
+        
+        .view-btn.active:hover {
+            background: var(--blue-secondary);
+        }
+        
+        @media (max-width: 767px) {
             .schedule-header {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: flex-start;
+                gap: var(--space-sm);
             }
             
-            .filter-controls {
+            .schedule-actions {
+                width: 100%;
+            }
+            
+            .schedule-actions .btn {
+                flex: 1;
                 justify-content: center;
-                flex-wrap: wrap;
-                gap: 8px;
+                min-height: 44px;
             }
-            
-            .view-buttons {
-                justify-content: center;
-                margin-top: 10px;
-            }
-            
-            .summary-stats {
-                justify-content: center;
-            }
-            
-            .table-container {
-                margin-top: 15px;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            }
-            
-            table {
-                min-width: 800px;
-                font-size: 14px;
-            }
-            
-            table th, table td {
-                padding: 8px 6px;
-            }
-            
-            /* 모바일에서 컬럼 너비 재조정 */
-            table th:nth-child(1), table td:nth-child(1) { width: 15%; }
-            table th:nth-child(2), table td:nth-child(2) { width: 18%; }
-            table th:nth-child(3), table td:nth-child(3) { width: 12%; }
-            table th:nth-child(4), table td:nth-child(4) { width: 8%; }
-            table th:nth-child(5), table td:nth-child(5) { width: 12%; }
-            table th:nth-child(6), table td:nth-child(6) { width: 8%; }
-            table th:nth-child(7), table td:nth-child(7) { width: 9%; }
-            table th:nth-child(8), table td:nth-child(8) { width: 18%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>인터뷰 일정 관리</h1>
+        <div class="top-bar">
+            <h2>📊 채용 관리 시스템</h2>
             <div class="nav-buttons">
-                <a href="../main.jsp" class="nav-home-btn">홈으로 이동</a>
-                <a href="../candidates" class="nav-home-btn">지원자 관리</a>
-                <a href="../logout" class="nav-home-btn nav-logout-btn">로그아웃</a>
+                <a href="main.jsp" class="btn">🏠 메인</a>
+                <a href="candidates" class="btn">👥 인터뷰 대상자 관리</a>
+                <a href="questions" class="btn">💡 질문/평가 항목 관리</a>
+                <a href="results" class="btn">📝 인터뷰 결과 기록/관리</a>
+                <a href="statistics" class="btn">📊 통계 및 리포트</a>
+                <a href="logout" class="btn btn-danger">🚪 로그아웃</a>
             </div>
         </div>
-
-        <div class="schedule-summary">
-            <div class="summary-stats">
-                <div class="stat-item">
-                    <span class="stat-number">${schedules.size()}</span>
-                    <span class="stat-label">전체 일정</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">
-                        <c:set var="todayCount" value="0"/>
-                        <c:forEach var="schedule" items="${schedules}">
-                            <c:if test="${schedule.interviewDateFormatted == today}">
-                                <c:set var="todayCount" value="${todayCount + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                        ${todayCount}
-                    </span>
-                    <span class="stat-label">오늘 일정</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">
-                        <c:set var="scheduledCount" value="0"/>
-                        <c:forEach var="schedule" items="${schedules}">
-                            <c:if test="${schedule.status == 'scheduled' || schedule.status == '예정'}">
-                                <c:set var="scheduledCount" value="${scheduledCount + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                        ${scheduledCount}
-                    </span>
-                    <span class="stat-label">예정 일정</span>
-                </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <h1>📅 인터뷰 일정 관리</h1>
             </div>
-        </div>
-
-        <div class="schedule-header">
-            <div class="filter-controls">
-                <select id="statusFilter" onchange="filterByStatus()">
-                    <option value="">전체 상태</option>
-                    <option value="scheduled" ${selectedStatus == 'scheduled' ? 'selected' : ''}>예정</option>
-                    <option value="in_progress" ${selectedStatus == 'in_progress' ? 'selected' : ''}>진행중</option>
-                    <option value="completed" ${selectedStatus == 'completed' ? 'selected' : ''}>완료</option>
-                    <option value="cancelled" ${selectedStatus == 'cancelled' ? 'selected' : ''}>취소</option>
-                    <option value="postponed" ${selectedStatus == 'postponed' ? 'selected' : ''}>연기</option>
-                </select>
-                
-                <input type="date" id="dateFilter" value="${selectedDate}" onchange="filterByDate()">
-                
-                <button onclick="clearFilters()">필터 초기화</button>
-            </div>
-            
-            <div class="view-buttons">
-                <a href="list" class="view-btn active">리스트</a>
-                <a href="calendar" class="view-btn">캘린더</a>
-                <a href="add"><button>새 일정 등록</button></a>
-            </div>
-        </div>
-
-        <c:if test="${not empty error}">
-            <div class="alert alert-error">${error}</div>
-        </c:if>
-
-        <c:choose>
-            <c:when test="${empty schedules}">
-                <div class="no-schedules">
-                    <h3>등록된 인터뷰 일정이 없습니다</h3>
-                    <p>새로운 인터뷰 일정을 등록해보세요.</p>
-                    <a href="add"><button>첫 일정 등록하기</button></a>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>날짜/시간</th>
-                                <th>지원자</th>
-                                <th>면접관</th>
-                                <th>유형</th>
-                                <th>장소</th>
-                                <th>소요시간</th>
-                                <th>상태</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <div class="content-body">
+                <!-- 통계 바 -->
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number">${fn:length(schedules)}</div>
+                        <div class="stat-label">총 일정</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            <c:set var="todayCount" value="0"/>
                             <c:forEach var="schedule" items="${schedules}">
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: bold;">${schedule.interviewDateFormatted}</div>
-                                        <div style="color: #666; font-size: 14px;">${schedule.interviewTimeFormatted}</div>
-                                    </td>
-                                    <td>
-                                        <a href="../candidates?action=detail&id=${schedule.candidateId}" 
-                                           style="color: #007bff; text-decoration: none;">
-                                            ${schedule.candidateName}
-                                        </a>
-                                    </td>
-                                    <td>${schedule.interviewerName}</td>
-                                    <td>
-                                        <span class="interview-type">${schedule.interviewType}</span>
-                                    </td>
-                                    <td>${schedule.location}</td>
-                                    <td>${schedule.durationFormatted}</td>
-                                    <td>
-                                        <span class="schedule-status status-${schedule.status}">
-                                            ${schedule.statusDisplayName}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <a href="detail?id=${schedule.id}">상세</a> |
-                                            <a href="edit?id=${schedule.id}">수정</a> |
-                                            <a href="delete?id=${schedule.id}" 
-                                               onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <c:if test="${schedule.interviewDate eq today}">
+                                    <c:set var="todayCount" value="${todayCount + 1}"/>
+                                </c:if>
                             </c:forEach>
-                        </tbody>
-                    </table>
+                            ${todayCount}
+                        </div>
+                        <div class="stat-label">오늘 면접</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            <c:set var="scheduledCount" value="0"/>
+                            <c:forEach var="schedule" items="${schedules}">
+                                <c:if test="${schedule.status eq 'SCHEDULED'}">
+                                    <c:set var="scheduledCount" value="${scheduledCount + 1}"/>
+                                </c:if>
+                            </c:forEach>
+                            ${scheduledCount}
+                        </div>
+                        <div class="stat-label">예정된 면접</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            <c:set var="completedCount" value="0"/>
+                            <c:forEach var="schedule" items="${schedules}">
+                                <c:if test="${schedule.status eq 'COMPLETED'}">
+                                    <c:set var="completedCount" value="${completedCount + 1}"/>
+                                </c:if>
+                            </c:forEach>
+                            ${completedCount}
+                        </div>
+                        <div class="stat-label">완료된 면접</div>
+                    </div>
                 </div>
-            </c:otherwise>
-        </c:choose>
+                
+                <!-- 컨트롤 섹션 -->
+                <div class="controls-section">
+                    <div class="filter-controls">
+                        <input type="date" id="dateFilter" value="${today}" onchange="filterByDate()">
+                        <select id="statusFilter" onchange="filterByStatus()">
+                            <option value="">전체 상태</option>
+                            <option value="SCHEDULED">예정</option>
+                            <option value="COMPLETED">완료</option>
+                            <option value="CANCELLED">취소</option>
+                        </select>
+                        <input type="text" id="searchInput" placeholder="지원자명으로 검색..." onkeyup="searchSchedules()">
+                        <button type="button" class="btn" onclick="clearFilters()">🔄 초기화</button>
+                    </div>
+                    <div class="view-controls">
+                        <a href="interview/add" class="btn btn-primary">➕ 새 일정 추가</a>
+                        <a href="interview/calendar" class="btn">📅 캘린더 보기</a>
+                    </div>
+                </div>
+                
+                <!-- 뷰 전환 버튼 -->
+                <div class="view-toggle">
+                    <a href="?view=list" class="view-btn ${empty param.view or param.view eq 'list' ? 'active' : ''}">📋 목록 보기</a>
+                    <a href="?view=card" class="view-btn ${param.view eq 'card' ? 'active' : ''}">📇 카드 보기</a>
+                </div>
+                
+                <!-- 일정 목록/카드 -->
+                <c:choose>
+                    <c:when test="${param.view eq 'card'}">
+                        <!-- 카드 뷰 -->
+                        <div class="schedules-container">
+                            <c:choose>
+                                <c:when test="${not empty schedules}">
+                                    <c:forEach var="schedule" items="${schedules}">
+                                        <div class="schedule-card" data-date="${schedule.interviewDate}" data-status="${schedule.status}">
+                                            <div class="schedule-header">
+                                                <div class="schedule-time">${schedule.interviewDate} ${schedule.interviewTime}</div>
+                                                <div class="schedule-status status-${fn:toLowerCase(schedule.status)}">${schedule.status}</div>
+                                            </div>
+                                            <div class="candidate-info">
+                                                <div class="candidate-name">${schedule.candidateName}</div>
+                                                <div class="candidate-position">${schedule.candidatePosition}</div>
+                                            </div>
+                                            <div class="schedule-actions">
+                                                <a href="interview/detail?id=${schedule.id}" class="btn">👁️ 보기</a>
+                                                <a href="interview/edit?id=${schedule.id}" class="btn">✏️ 수정</a>
+                                                <c:if test="${schedule.status eq 'SCHEDULED'}">
+                                                    <a href="results/add?scheduleId=${schedule.id}" class="btn btn-primary">📝 결과 기록</a>
+                                                </c:if>
+                                                <a href="interview/delete?id=${schedule.id}" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">🗑️ 삭제</a>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-info">등록된 인터뷰 일정이 없습니다.</div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 테이블 뷰 -->
+                        <div class="table-container">
+                            <table id="schedulesTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>지원자명</th>
+                                        <th>지원직무</th>
+                                        <th>면접일</th>
+                                        <th>면접시간</th>
+                                        <th>면접관</th>
+                                        <th>상태</th>
+                                        <th>액션</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:choose>
+                                        <c:when test="${not empty schedules}">
+                                            <c:forEach var="schedule" items="${schedules}">
+                                                <tr data-date="${schedule.interviewDate}" data-status="${schedule.status}">
+                                                    <td data-label="ID">${schedule.id}</td>
+                                                    <td data-label="지원자명">${schedule.candidateName}</td>
+                                                    <td data-label="지원직무">${schedule.candidatePosition}</td>
+                                                    <td data-label="면접일">${schedule.interviewDate}</td>
+                                                    <td data-label="면접시간">${schedule.interviewTime}</td>
+                                                    <td data-label="면접관">${schedule.interviewerName}</td>
+                                                    <td data-label="상태">
+                                                        <span class="status-badge status-${fn:toLowerCase(schedule.status)}">${schedule.status}</span>
+                                                    </td>
+                                                    <td data-label="액션">
+                                                        <div class="action-buttons">
+                                                            <a href="interview/detail?id=${schedule.id}" class="btn">👁️ 보기</a>
+                                                            <a href="interview/edit?id=${schedule.id}" class="btn">✏️ 수정</a>
+                                                            <c:if test="${schedule.status eq 'SCHEDULED'}">
+                                                                <a href="results/add?scheduleId=${schedule.id}" class="btn btn-primary">📝 결과 기록</a>
+                                                            </c:if>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <tr>
+                                                <td colspan="8" class="text-center">등록된 인터뷰 일정이 없습니다.</td>
+                                            </tr>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
     </div>
 
-    <script>
-        function filterByStatus() {
-            const status = document.getElementById('statusFilter').value;
-            const currentDate = document.getElementById('dateFilter').value;
-            let url = 'list';
-            const params = new URLSearchParams();
-            
-            if (status) params.append('status', status);
-            if (currentDate) params.append('date', currentDate);
-            
-            if (params.toString()) {
-                url += '?' + params.toString();
-            }
-            
-            window.location.href = url;
+<script>
+// 날짜별 필터링
+function filterByDate() {
+    const dateFilter = document.getElementById('dateFilter').value;
+    const rows = document.querySelectorAll('#schedulesTable tbody tr, .schedule-card');
+    
+    rows.forEach(row => {
+        const rowDate = row.getAttribute('data-date');
+        if (!dateFilter || rowDate === dateFilter) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
         }
-        
-        function filterByDate() {
-            const date = document.getElementById('dateFilter').value;
-            const currentStatus = document.getElementById('statusFilter').value;
-            let url = 'list';
-            const params = new URLSearchParams();
-            
-            if (date) params.append('date', date);
-            if (currentStatus) params.append('status', currentStatus);
-            
-            if (params.toString()) {
-                url += '?' + params.toString();
-            }
-            
-            window.location.href = url;
+    });
+}
+
+// 상태별 필터링
+function filterByStatus() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#schedulesTable tbody tr, .schedule-card');
+    
+    rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        if (!statusFilter || rowStatus === statusFilter) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
         }
-        
-        function clearFilters() {
-            window.location.href = 'list';
-        }
-        
-        // 오늘 날짜 설정
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            // 현재 날짜가 없으면 오늘 날짜로 설정
-            const dateFilter = document.getElementById('dateFilter');
-            if (!dateFilter.value) {
-                dateFilter.value = today;
+    });
+}
+
+// 검색 기능
+function searchSchedules() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const table = document.getElementById('schedulesTable');
+    const cards = document.querySelectorAll('.schedule-card');
+    
+    if (table) {
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const candidateName = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+            
+            if (candidateName.includes(searchInput)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
             }
-        });
-    </script>
+        }
+    }
+    
+    cards.forEach(card => {
+        const candidateName = card.querySelector('.candidate-name').textContent.toLowerCase();
+        if (candidateName.includes(searchInput)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// 필터 초기화
+function clearFilters() {
+    document.getElementById('dateFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('searchInput').value = '';
+    
+    const rows = document.querySelectorAll('#schedulesTable tbody tr, .schedule-card');
+    rows.forEach(row => {
+        row.style.display = '';
+    });
+}
+
+// 모바일 테이블 변환
+function toggleMobileTable() {
+    const table = document.getElementById('schedulesTable');
+    if (table && window.innerWidth <= 767) {
+        table.classList.add('table-mobile-cards');
+    } else if (table) {
+        table.classList.remove('table-mobile-cards');
+    }
+}
+
+// 페이지 로드 시와 창 크기 변경 시 실행
+window.addEventListener('load', toggleMobileTable);
+window.addEventListener('resize', toggleMobileTable);
+</script>
+
 </body>
 </html> 

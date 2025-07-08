@@ -1,0 +1,121 @@
+package com.example.controller;
+
+import com.example.model.Candidate;
+import com.example.model.CandidateDAO;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/candidates")
+public class CandidateServlet extends HttpServlet {
+    private CandidateDAO candidateDAO;
+
+    @Override
+    public void init() {
+        candidateDAO = new CandidateDAO();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // 세션 검증
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("username") == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+        
+        String action = request.getParameter("action");
+        
+        if ("new".equals(action)) {
+            // 새 지원자 추가 폼
+            request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+        } else if ("edit".equals(action)) {
+            // 지원자 편집 폼
+            int id = Integer.parseInt(request.getParameter("id"));
+            Candidate candidate = candidateDAO.getCandidateById(id);
+            request.setAttribute("candidate", candidate);
+            request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+        } else if ("detail".equals(action)) {
+            // 지원자 상세보기
+            int id = Integer.parseInt(request.getParameter("id"));
+            Candidate candidate = candidateDAO.getCandidateById(id);
+            request.setAttribute("candidate", candidate);
+            request.getRequestDispatcher("candidate_detail.jsp").forward(request, response);
+        } else {
+            // 지원자 목록 (기본) - JSP 방식 사용
+            List<Candidate> candidates = candidateDAO.getAllCandidates();
+            request.setAttribute("candidates", candidates);
+            System.out.println("CandidateServlet: candidates.jsp로 포워딩, 지원자 수: " + candidates.size());
+            request.getRequestDispatcher("candidates.jsp").forward(request, response);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // 세션 검증
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("username") == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+        
+        request.setCharacterEncoding("UTF-8");
+        
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String team = request.getParameter("team");
+        String resume = request.getParameter("resume");
+        String idStr = request.getParameter("id");
+        
+        try {
+            Candidate candidate = new Candidate();
+            candidate.setName(name);
+            candidate.setEmail(email);
+            candidate.setPhone(phone);
+            candidate.setTeam(team);
+            candidate.setResume(resume);
+            
+            boolean success = false;
+            String errorMessage = null;
+            
+            if (idStr != null && !idStr.isEmpty()) {
+                // 수정
+                candidate.setId(Integer.parseInt(idStr));
+                success = candidateDAO.updateCandidate(candidate);
+                if (!success) {
+                    errorMessage = "이메일 주소 '" + email + "'이(가) 이미 다른 지원자에 의해 사용되고 있습니다. 다른 이메일 주소를 입력해주세요.";
+                }
+            } else {
+                // 새 등록
+                success = candidateDAO.addCandidate(candidate);
+                if (!success) {
+                    errorMessage = "이메일 주소 '" + email + "'이(가) 이미 등록되어 있습니다. 다른 이메일 주소를 입력해주세요.";
+                }
+            }
+            
+            if (success) {
+                response.sendRedirect("candidates");
+            } else {
+                // 에러 발생 시 입력된 데이터를 유지하면서 폼으로 돌아가기
+                request.setAttribute("error", errorMessage);
+                request.setAttribute("candidate", candidate);
+                request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+            }
+            
+        } catch (Exception e) {
+            request.setAttribute("error", "저장 중 오류가 발생했습니다: " + e.getMessage());
+            request.getRequestDispatcher("candidate_form.jsp").forward(request, response);
+        }
+    }
+}

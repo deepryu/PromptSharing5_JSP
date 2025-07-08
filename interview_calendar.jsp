@@ -1,11 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    String username = (String)session.getAttribute("username");
+    if (username == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인터뷰 일정 캘린더</title>
+    <title>인터뷰 일정 캘린더 - 채용 관리 시스템</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
         .calendar-header {
@@ -147,10 +153,10 @@
         }
         
         .schedule-item.type-기술면접 { background: #28a745; }
-        .schedule-item.type-인성면접 { background: #17a2b8; }
+        .schedule-item.type-실무면접 { background: #17a2b8; }
         .schedule-item.type-임원면접 { background: #dc3545; }
-        .schedule-item.type-화상면접 { background: #6f42c1; }
-        .schedule-item.type-전화면접 { background: #fd7e14; }
+        .schedule-item.type-인성면접 { background: #6f42c1; }
+        .schedule-item.type-화상면접 { background: #fd7e14; }
         
         .schedule-item.status-completed { opacity: 0.6; }
         .schedule-item.status-cancelled { background: #6c757d; }
@@ -238,15 +244,15 @@
         <div class="header">
             <h1>인터뷰 일정 관리</h1>
             <nav>
-                <a href="../main.jsp">홈</a>
-                <a href="../candidates">지원자 관리</a>
-                <a href="list" class="active">일정 관리</a>
+                <a href="../main.jsp">메인</a>
+                <a href="../candidates">지원자관리</a>
+                <a href="list" class="active">일정관리</a>
                 <a href="../logout">로그아웃</a>
             </nav>
         </div>
 
         <div class="calendar-header">
-            <h2>인터뷰 캘린더</h2>
+            <h2>인터뷰 일정 캘린더</h2>
             <div class="view-buttons">
                 <a href="list" class="view-btn">리스트</a>
                 <a href="calendar" class="view-btn active">캘린더</a>
@@ -256,9 +262,9 @@
 
         <div class="calendar-container">
             <div class="calendar-nav">
-                <button class="nav-button" onclick="previousMonth()">◀</button>
+                <button class="nav-button" onclick="previousMonth()">이전</button>
                 <div class="calendar-title" id="currentMonth"></div>
-                <button class="nav-button" onclick="nextMonth()">▶</button>
+                <button class="nav-button" onclick="nextMonth()">다음</button>
             </div>
             
             <div class="calendar-grid">
@@ -271,7 +277,7 @@
                 <div class="calendar-header-cell">금</div>
                 <div class="calendar-header-cell">토</div>
                 
-                <!-- 캘린더 셀들 (JavaScript로 동적 생성) -->
+                <!-- 캘린더 셀들 -->
                 <div id="calendarCells"></div>
             </div>
         </div>
@@ -283,7 +289,7 @@
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #17a2b8;"></div>
-                <span>인성면접</span>
+                <span>실무면접</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #dc3545;"></div>
@@ -291,21 +297,21 @@
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #6f42c1;"></div>
-                <span>화상면접</span>
+                <span>인성면접</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #fd7e14;"></div>
-                <span>전화면접</span>
+                <span>화상면접</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #6c757d;"></div>
-                <span>취소됨</span>
+                <span>취소</span>
             </div>
         </div>
     </div>
 
     <script>
-        // 서버에서 전달받은 일정 데이터
+        // 일정 데이터
         const schedules = [
             <c:forEach var="schedule" items="${schedules}" varStatus="status">
             {
@@ -329,23 +335,23 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
-            // 월 제목 업데이트
+            // 현재 월 표시
             document.getElementById('currentMonth').textContent = 
                 `${year}년 ${month + 1}월`;
             
-            // 캘린더 셀 컨테이너
+            // 캘린더 셀들 초기화
             const cellsContainer = document.getElementById('calendarCells');
             cellsContainer.innerHTML = '';
             
-            // 이번 달 첫 날과 마지막 날
+            // 해당 월의 첫째 날과 마지막 날 계산
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             
-            // 캘린더 시작일 (이전 달 마지막 주 포함)
+            // 캘린더 시작일 계산 (월의 첫째 날을 기준으로 일요일로 맞춤)
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
             
-            // 6주 * 7일 = 42셀 생성
+            // 6일 * 7주 = 42셀 생성
             for (let i = 0; i < 42; i++) {
                 const cellDate = new Date(startDate);
                 cellDate.setDate(startDate.getDate() + i);
@@ -364,7 +370,7 @@
             const isCurrentMonth = date.getMonth() === currentMonth;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
             
-            // 클래스 설정
+            // 셀 클래스 추가
             if (!isCurrentMonth) {
                 cell.classList.add('other-month');
             }
@@ -372,20 +378,20 @@
                 cell.classList.add('today');
             }
             
-            // 해당 날짜의 일정들 찾기
+            // 해당 날짜의 일정 가져오기
             const daySchedules = schedules.filter(s => s.date === dateStr);
             
             if (daySchedules.length > 0) {
                 cell.classList.add('has-schedules');
             }
             
-            // 날짜 번호
+            // 날짜 표시
             const dateElement = document.createElement('div');
             dateElement.className = 'date-number';
             dateElement.textContent = dayNumber;
             cell.appendChild(dateElement);
             
-            // 일정들 추가 (최대 3개까지 표시)
+            // 일정 표시 (최대 3개까지만 표시)
             const maxDisplay = 3;
             daySchedules.slice(0, maxDisplay).forEach(schedule => {
                 const scheduleElement = document.createElement('a');
@@ -399,21 +405,21 @@
                 cell.appendChild(scheduleElement);
             });
             
-            // 더 많은 일정이 있으면 카운트 표시
+            // 일정 더보기 표시
             if (daySchedules.length > maxDisplay) {
                 const moreElement = document.createElement('div');
                 moreElement.className = 'schedule-count';
-                moreElement.textContent = `+${daySchedules.length - maxDisplay}개 더`;
+                moreElement.textContent = `+${daySchedules.length - maxDisplay}개`;
                 cell.appendChild(moreElement);
             }
             
-            // 새 일정 추가 버튼 (현재 월에만)
+            // 일정 추가 버튼 표시
             if (isCurrentMonth && date >= new Date().setHours(0,0,0,0)) {
                 const addBtn = document.createElement('a');
                 addBtn.className = 'add-schedule-btn';
                 addBtn.href = `add?date=${dateStr}`;
                 addBtn.textContent = '+';
-                addBtn.title = '새 일정 추가';
+                addBtn.title = '일정 추가';
                 cell.appendChild(addBtn);
             }
             

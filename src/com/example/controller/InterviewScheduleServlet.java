@@ -86,26 +86,59 @@ public class InterviewScheduleServlet extends HttpServlet {
     private void listSchedules(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String status = request.getParameter("status");
-        String dateParam = request.getParameter("date");
-        
+        String startDateParam = request.getParameter("startDate");
+        String endDateParam = request.getParameter("endDate");
+        String filter = request.getParameter("filter");
+        System.out.println("[DEBUG] status=" + status + ", startDate=" + startDateParam + ", endDate=" + endDateParam + ", filter=" + filter);
+
+        // filter 파라미터 처리
+        if ((startDateParam == null || startDateParam.isEmpty() || endDateParam == null || endDateParam.isEmpty()) 
+            && filter != null && !filter.isEmpty()) {
+            java.time.LocalDate today = java.time.LocalDate.now();
+            switch (filter) {
+                case "today":
+                    startDateParam = endDateParam = today.toString();
+                    break;
+                case "week":
+                    java.time.DayOfWeek firstDayOfWeek = java.time.DayOfWeek.MONDAY;
+                    java.time.LocalDate weekStart = today.with(java.time.temporal.TemporalAdjusters.previousOrSame(firstDayOfWeek));
+                    java.time.LocalDate weekEnd = weekStart.plusDays(6);
+                    startDateParam = weekStart.toString();
+                    endDateParam = weekEnd.toString();
+                    break;
+                case "month":
+                    java.time.LocalDate monthStart = today.withDayOfMonth(1);
+                    java.time.LocalDate monthEnd = today.withDayOfMonth(today.lengthOfMonth());
+                    startDateParam = monthStart.toString();
+                    endDateParam = monthEnd.toString();
+                    break;
+            }
+            System.out.println("[DEBUG] filter 적용 후 startDate=" + startDateParam + ", endDate=" + endDateParam);
+        }
+
         List<InterviewSchedule> schedules;
-        
-        if (status != null && !status.isEmpty()) {
-            schedules = scheduleDAO.getSchedulesByStatus(status);
-        } else if (dateParam != null && !dateParam.isEmpty()) {
+        if (startDateParam != null && !startDateParam.isEmpty() && endDateParam != null && !endDateParam.isEmpty()) {
             try {
-                Date date = Date.valueOf(dateParam);
-                schedules = scheduleDAO.getSchedulesByDate(date);
+                Date start = Date.valueOf(startDateParam);
+                Date end = Date.valueOf(endDateParam);
+                System.out.println("[DEBUG] DAO.getSchedulesByDateRange 호출");
+                schedules = scheduleDAO.getSchedulesByDateRange(start, end, status);
             } catch (IllegalArgumentException e) {
+                System.out.println("[DEBUG] 날짜 파싱 오류, DAO.getAllSchedules 호출");
                 schedules = scheduleDAO.getAllSchedules();
             }
+        } else if (status != null && !status.isEmpty()) {
+            System.out.println("[DEBUG] DAO.getSchedulesByStatus 호출");
+            schedules = scheduleDAO.getSchedulesByStatus(status);
         } else {
+            System.out.println("[DEBUG] DAO.getAllSchedules 호출");
             schedules = scheduleDAO.getAllSchedules();
         }
-        
+        System.out.println("[DEBUG] schedules.size=" + (schedules != null ? schedules.size() : -1));
         request.setAttribute("schedules", schedules);
         request.setAttribute("selectedStatus", status);
-        request.setAttribute("selectedDate", dateParam);
+        request.setAttribute("selectedStartDate", startDateParam);
+        request.setAttribute("selectedEndDate", endDateParam);
         request.getRequestDispatcher("/interview_schedules.jsp").forward(request, response);
     }
 
@@ -140,6 +173,8 @@ public class InterviewScheduleServlet extends HttpServlet {
         
         if (schedule != null) {
             request.setAttribute("schedule", schedule);
+            response.setContentType("text/html; charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
             request.getRequestDispatcher("/interview_schedule_detail.jsp").forward(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -178,7 +213,12 @@ public class InterviewScheduleServlet extends HttpServlet {
             }
             
             if (scheduleDAO.addSchedule(schedule)) {
-                response.sendRedirect(request.getContextPath() + "/interview/list");
+                String from = request.getParameter("from");
+                if (from != null && from.equals("candidates")) {
+                    response.sendRedirect(request.getContextPath() + "/candidates");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/interview/list");
+                }
             } else {
                 request.setAttribute("error", "일정 등록 중 오류가 발생했습니다.");
                 showAddForm(request, response);
@@ -205,7 +245,12 @@ public class InterviewScheduleServlet extends HttpServlet {
             }
             
             if (scheduleDAO.updateSchedule(schedule)) {
-                response.sendRedirect(request.getContextPath() + "/interview/list");
+                String from = request.getParameter("from");
+                if ("candidates".equals(from)) {
+                    response.sendRedirect(request.getContextPath() + "/candidates");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/interview/list");
+                }
             } else {
                 request.setAttribute("error", "일정 수정 중 오류가 발생했습니다.");
                 showEditForm(request, response);

@@ -1,5 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    String username = (String)session.getAttribute("username");
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -149,7 +155,7 @@
         <div class="header">
             <h1>인터뷰 일정 관리</h1>
             <nav>
-                <a href="../main.jsp">홈</a>
+                <a href="../main.jsp">메인</a>
                 <a href="../candidates">지원자 관리</a>
                 <a href="list" class="active">일정 관리</a>
                 <a href="../logout">로그아웃</a>
@@ -166,12 +172,15 @@
             </c:if>
 
             <div class="time-conflict-warning" id="conflictWarning">
-                <strong>⚠️ 시간 충돌 경고:</strong> 해당 시간에 이미 다른 면접이 예정되어 있습니다.
+                <strong>종료 시간 중복 경고:</strong> 현재 일정과 겹치는 일정이 있습니다. 확인해주세요.
             </div>
 
             <form method="post" action="${empty schedule ? 'add' : 'edit'}" onsubmit="return validateForm()">
                 <c:if test="${not empty schedule}">
                     <input type="hidden" name="id" value="${schedule.id}">
+                </c:if>
+                <c:if test="${not empty param.from}">
+                    <input type="hidden" name="from" value="${param.from}">
                 </c:if>
 
                 <div class="form-group">
@@ -192,9 +201,9 @@
                 </div>
 
                 <div class="candidate-info" id="candidateInfo" style="display: none;">
-                    <h4>선택된 지원자 정보</h4>
+                    <h4>선택한 지원자 정보</h4>
                     <p><strong>이름:</strong> <span id="candidateName"></span></p>
-                    <p><strong>지원팀:</strong> <span id="candidateTeam"></span></p>
+                    <p><strong>팀:</strong> <span id="candidateTeam"></span></p>
                     <p><strong>이메일:</strong> <span id="candidateEmail"></span></p>
                 </div>
 
@@ -222,7 +231,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="duration">소요시간 (분) <span class="required">*</span></label>
+                    <label for="duration">면접 시간 (분 <span class="required">*</span></label>
                     <input type="number" name="duration" id="duration" 
                            value="${empty schedule ? '60' : schedule.duration}" 
                            min="15" max="480" required onchange="checkTimeConflict()">
@@ -238,21 +247,21 @@
                     <div class="form-group">
                         <label for="interviewType">면접 유형</label>
                         <select name="interviewType" id="interviewType">
-                            <option value="기술면접" ${schedule.interviewType == '기술면접' ? 'selected' : ''}>기술면접</option>
-                            <option value="인성면접" ${schedule.interviewType == '인성면접' ? 'selected' : ''}>인성면접</option>
+                            <option value="1차면접" ${schedule.interviewType == '1차면접' ? 'selected' : ''}>1차면접</option>
+                            <option value="2차면접" ${schedule.interviewType == '2차면접' ? 'selected' : ''}>2차면접</option>
+                            <option value="3차면접" ${schedule.interviewType == '3차면접' ? 'selected' : ''}>3차면접</option>
                             <option value="임원면접" ${schedule.interviewType == '임원면접' ? 'selected' : ''}>임원면접</option>
-                            <option value="화상면접" ${schedule.interviewType == '화상면접' ? 'selected' : ''}>화상면접</option>
-                            <option value="전화면접" ${schedule.interviewType == '전화면접' ? 'selected' : ''}>전화면접</option>
+                            <option value="기타" ${schedule.interviewType == '기타' ? 'selected' : ''}>기타</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="status">상태</label>
                         <select name="status" id="status">
-                            <option value="scheduled" ${schedule.status == 'scheduled' || empty schedule ? 'selected' : ''}>예정</option>
-                            <option value="in_progress" ${schedule.status == 'in_progress' ? 'selected' : ''}>진행중</option>
-                            <option value="completed" ${schedule.status == 'completed' ? 'selected' : ''}>완료</option>
-                            <option value="cancelled" ${schedule.status == 'cancelled' ? 'selected' : ''}>취소</option>
-                            <option value="postponed" ${schedule.status == 'postponed' ? 'selected' : ''}>연기</option>
+                            <option value="예정" ${schedule.status == '예정' || empty schedule ? 'selected' : ''}>예정</option>
+                            <option value="진행 중" ${schedule.status == '진행 중' ? 'selected' : ''}>진행 중</option>
+                            <option value="완료" ${schedule.status == '완료' ? 'selected' : ''}>완료</option>
+                            <option value="취소" ${schedule.status == '취소' ? 'selected' : ''}>취소</option>
+                            <option value="연기" ${schedule.status == '연기' ? 'selected' : ''}>연기</option>
                         </select>
                     </div>
                 </div>
@@ -261,13 +270,13 @@
                     <label for="location">면접 장소</label>
                     <input type="text" name="location" id="location" 
                            value="${schedule.location}" 
-                           placeholder="예: 회의실 A, 화상회의, 임원실 등">
+                           placeholder="예시: 온라인 회의, 오프라인 회의, 오프라인 면접 등">
                 </div>
 
                 <div class="form-group">
-                    <label for="notes">참고사항</label>
+                    <label for="notes">면접 메모</label>
                     <textarea name="notes" id="notes" 
-                              placeholder="면접 관련 특이사항이나 준비할 내용을 입력하세요">${schedule.notes}</textarea>
+                              placeholder="면접 일정에 대한 추가 메모를 입력하세요">${schedule.notes}</textarea>
                 </div>
 
                 <div class="form-buttons">
@@ -288,8 +297,8 @@
             
             if (select.value) {
                 document.getElementById('candidateName').textContent = option.dataset.name;
-                document.getElementById('candidateTeam').textContent = option.dataset.team || '미지정';
-                document.getElementById('candidateEmail').textContent = option.dataset.email || '미입력';
+                document.getElementById('candidateTeam').textContent = option.dataset.team || '팀 정보 없음';
+                document.getElementById('candidateEmail').textContent = option.dataset.email || '이메일 정보 없음';
                 info.style.display = 'block';
             } else {
                 info.style.display = 'none';
@@ -299,7 +308,7 @@
         function setDuration(minutes) {
             document.getElementById('duration').value = minutes;
             
-            // 활성 상태 업데이트
+            // 자동 완성 기능을 위한 코드
             document.querySelectorAll('.duration-preset').forEach(preset => {
                 preset.classList.remove('active');
             });
@@ -309,8 +318,8 @@
         }
         
         function checkTimeConflict() {
-            // 실제 구현에서는 AJAX로 서버에 시간 충돌 체크 요청
-            // 여기서는 UI만 구현
+            // 중복 검사를 위한 AJAX 요청
+            // 이 부분은 클라이언트 측에서 처리할 수 있도록 유지
         }
         
         function validateForm() {
@@ -321,47 +330,47 @@
             const duration = document.getElementById('duration').value;
             
             if (!candidateId) {
-                alert('지원자를 선택해주세요.');
+                alert('지원자를 선택하세요');
                 return false;
             }
             
             if (!interviewerName) {
-                alert('면접관 이름을 입력해주세요.');
+                alert('면접관 이름을 입력하세요');
                 return false;
             }
             
             if (!interviewDate) {
-                alert('면접 날짜를 선택해주세요.');
+                alert('면접 날짜를 입력하세요');
                 return false;
             }
             
             if (!interviewTime) {
-                alert('면접 시간을 선택해주세요.');
+                alert('면접 시간을 입력하세요');
                 return false;
             }
             
             if (!duration || duration < 15) {
-                alert('소요시간은 최소 15분 이상이어야 합니다.');
+                alert('면접 시간은 15분 이상이어야 합니다');
                 return false;
             }
             
-            // 과거 날짜 체크
+            // 종료 시간 검사
             const selectedDate = new Date(interviewDate + 'T' + interviewTime);
             const now = new Date();
             
             if (selectedDate < now) {
-                alert('과거 날짜/시간은 선택할 수 없습니다.');
+                alert('종료 시간이 현재 시간보다 이전입니다');
                 return false;
             }
             
             return true;
         }
         
-        // 페이지 로드 시 지원자 정보 업데이트
+        // 페이지 로드 시 후처리
         document.addEventListener('DOMContentLoaded', function() {
             updateCandidateInfo();
             
-            // 기본 소요시간에 따른 프리셋 활성화
+            // 자동 완성을 위한 코드
             const duration = document.getElementById('duration').value;
             document.querySelectorAll('.duration-preset').forEach(preset => {
                 preset.classList.remove('active');

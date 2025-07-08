@@ -9,6 +9,7 @@ public class InterviewSchedule {
     private int id;
     private int candidateId;
     private String candidateName; // 조인을 위한 필드
+    private String candidatePosition; // 조인을 위한 필드 추가
     private String interviewerName;
     private Date interviewDate;
     private Time interviewTime;
@@ -32,6 +33,9 @@ public class InterviewSchedule {
 
     public String getCandidateName() { return candidateName; }
     public void setCandidateName(String candidateName) { this.candidateName = candidateName; }
+
+    public String getCandidatePosition() { return candidatePosition; }
+    public void setCandidatePosition(String candidatePosition) { this.candidatePosition = candidatePosition; }
 
     public String getInterviewerName() { return interviewerName; }
     public void setInterviewerName(String interviewerName) { this.interviewerName = interviewerName; }
