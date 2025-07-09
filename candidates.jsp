@@ -192,7 +192,8 @@
                                 <th>전화번호</th>
                                 <th>지원분야</th>
                                 <th>상태</th>
-                                <th>등록일</th>
+                                <th>인터뷰날짜</th>
+                                <th>시간</th>
                                 <th>액션</th>
                             </tr>
                         </thead>
@@ -213,36 +214,49 @@
                                                 <%= candidate.getStatus() %>
                                             </span>
                                         </td>
-                                        <td data-label="등록일">
+                                        <td data-label="인터뷰날짜">
                                             <% 
-                                                if (candidate.getCreatedAt() != null) {
-                                                    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                                                    out.print(dateFormat.format(candidate.getCreatedAt()));
+                                                String interviewDateTime = candidate.getInterviewDateTime();
+                                                if (interviewDateTime != null && !interviewDateTime.trim().isEmpty()) {
+                                                    try {
+                                                        // "yyyy-MM-dd HH:mm" 형식에서 날짜 부분만 추출
+                                                        String[] dateTimeParts = interviewDateTime.split(" ");
+                                                        if (dateTimeParts.length >= 1) {
+                                                            out.print(dateTimeParts[0]); // 날짜 부분
+                                                        } else {
+                                                            out.print("미정");
+                                                        }
+                                                    } catch (Exception e) {
+                                                        out.print("미정");
+                                                    }
+                                                } else {
+                                                    out.print("미정");
+                                                }
+                                            %>
+                                        </td>
+                                        <td data-label="시간">
+                                            <% 
+                                                if (interviewDateTime != null && !interviewDateTime.trim().isEmpty()) {
+                                                    try {
+                                                        // "yyyy-MM-dd HH:mm" 형식에서 시간 부분만 추출
+                                                        String[] dateTimeParts = interviewDateTime.split(" ");
+                                                        if (dateTimeParts.length >= 2) {
+                                                            out.print(dateTimeParts[1]); // 시간 부분
+                                                        } else {
+                                                            out.print("미정");
+                                                        }
+                                                    } catch (Exception e) {
+                                                        out.print("미정");
+                                                    }
                                                 } else {
                                                     out.print("미정");
                                                 }
                                             %>
                                         </td>
                                         <td data-label="액션">
-                                            <%
-                                                // 지원자별 일정과 결과 조회
-                                                List<InterviewSchedule> candidateSchedules = scheduleDAO.getSchedulesByCandidateId(candidate.getId());
-                                                List<InterviewResult> candidateResults = resultDAO.getResultsByCandidateId(candidate.getId());
-                                                
-                                                boolean hasSchedule = candidateSchedules != null && !candidateSchedules.isEmpty();
-                                                boolean hasResult = candidateResults != null && !candidateResults.isEmpty();
-                                                
-                                                // 최신 일정과 결과 ID 가져오기
-                                                int latestScheduleId = 0;
-                                                int latestResultId = 0;
-                                                
-                                                if (hasSchedule) {
-                                                    latestScheduleId = candidateSchedules.get(0).getId();
-                                                }
-                                                if (hasResult) {
-                                                    latestResultId = candidateResults.get(0).getId();
-                                                }
-                                            %>
+                                            <!-- 디버깅: 상태 값 출력 -->
+                                            <!-- DEBUG: ID=<%= candidate.getId() %>, hasSchedule=<%= candidate.getHasInterviewSchedule() %>, hasResult=<%= candidate.getHasInterviewResult() %> -->
+                                            
                                             <div class="action-buttons">
                                                 <!-- 1. 지원자보기 -->
                                                 <a href="${pageContext.request.contextPath}/candidates/detail?id=<%= candidate.getId() %>" class="btn btn-view" title="지원자 상세정보 보기">
@@ -254,29 +268,49 @@
                                                     ✏️ 수정
                                                 </a>
                                                 
-                                                <!-- 3. 일정등록 (일정이 없을 때만 표시) -->
-                                                <% if (!hasSchedule) { %>
+                                                <!-- 3. 일정등록 (항상 표시, 일정이 있으면 비활성화) -->
+                                                <% if (candidate.getHasInterviewSchedule()) { %>
+                                                <span class="btn btn-schedule-add disabled" title="이미 인터뷰 일정이 등록되어 있습니다" style="background-color: #898989 !important; color: white !important; cursor: not-allowed;">
+                                                    📅 일정등록
+                                                </span>
+                                                <% } else { %>
                                                 <a href="${pageContext.request.contextPath}/interview/add?candidateId=<%= candidate.getId() %>" class="btn btn-schedule-add" title="새 인터뷰 일정 등록">
                                                     📅 일정등록
                                                 </a>
                                                 <% } %>
                                                 
                                                 <!-- 4. 일정수정 (기존 일정이 있을 때만) -->
-                                                <% if (hasSchedule) { %>
-                                                <a href="${pageContext.request.contextPath}/interview/edit?id=<%= latestScheduleId %>" class="btn btn-schedule-edit" title="기존 인터뷰 일정 수정">
+                                                <% if (candidate.getHasInterviewSchedule() && candidate.getInterviewScheduleId() != null) { %>
+                                                <a href="${pageContext.request.contextPath}/interview/edit?id=<%= candidate.getInterviewScheduleId() %>" class="btn btn-schedule-edit" title="기존 인터뷰 일정 수정">
                                                     📝 일정수정
                                                 </a>
                                                 <% } %>
                                                 
-                                                <!-- 5. 결과등록 (일정이 있을 때만) -->
-                                                <% if (hasSchedule) { %>
-                                                <a href="${pageContext.request.contextPath}/results/add?candidateId=<%= candidate.getId() %>&scheduleId=<%= latestScheduleId %>" class="btn btn-result-add" title="인터뷰 결과 등록">
+                                                <!-- 5. 결과등록 (항상 표시, 일정이 없거나 결과가 있으면 비활성화) -->
+                                                <% if (!candidate.getHasInterviewSchedule()) { %>
+                                                <span class="btn btn-result-add disabled" title="먼저 인터뷰 일정을 등록해주세요" style="background-color: #898989 !important; color: white !important; cursor: not-allowed;">
+                                                    📊 결과등록
+                                                </span>
+                                                <% } else if (candidate.getHasInterviewResult()) { %>
+                                                <span class="btn btn-result-add disabled" title="이미 인터뷰 결과가 등록되어 있습니다" style="background-color: #898989 !important; color: white !important; cursor: not-allowed;">
+                                                    📊 결과등록
+                                                </span>
+                                                <% } else { %>
+                                                <a href="${pageContext.request.contextPath}/results/add?candidateId=<%= candidate.getId() %>&scheduleId=<%= candidate.getInterviewScheduleId() %>" class="btn btn-result-add" title="인터뷰 결과 등록">
                                                     📊 결과등록
                                                 </a>
                                                 <% } %>
                                                 
                                                 <!-- 6. 결과수정 (기존 결과가 있을 때만) -->
-                                                <% if (hasResult) { %>
+                                                <% if (candidate.getHasInterviewResult()) { %>
+                                                <%
+                                                    // 최신 결과 ID 가져오기
+                                                    List<InterviewResult> candidateResults = resultDAO.getResultsByCandidateId(candidate.getId());
+                                                    int latestResultId = 0;
+                                                    if (candidateResults != null && !candidateResults.isEmpty()) {
+                                                        latestResultId = candidateResults.get(0).getId();
+                                                    }
+                                                %>
                                                 <a href="${pageContext.request.contextPath}/results/edit?id=<%= latestResultId %>" class="btn btn-result-edit" title="기존 인터뷰 결과 수정">
                                                     📈 결과수정
                                                 </a>
@@ -287,7 +321,7 @@
                                 <% } %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="8" class="text-center">등록된 지원자가 없습니다.</td>
+                                    <td colspan="9" class="text-center">등록된 지원자가 없습니다.</td>
                                 </tr>
                             <% } %>
                         </tbody>

@@ -157,4 +157,139 @@ a:hover {
     height: 44px !important;
     padding: 0 18px !important;
     min-width: 120px;
+}
+
+/* 버튼 disabled 상태 스타일 */
+.btn.disabled,
+.btn:disabled,
+.btn[disabled] {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+.btn.disabled:hover,
+.btn:disabled:hover,
+.btn[disabled]:hover {
+    opacity: 0.6 !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+    transform: none !important;
+    text-decoration: none !important;
+}
+
+/* 특정 버튼 타입별 disabled 스타일 강화 */
+.btn-schedule-add.disabled,
+.btn-result-add.disabled {
+    background-color: #898989 !important;
+    border: 1px solid #898989 !important;
+    color: #ffffff !important;
+    opacity: 0.7 !important;
+}
+
+/* 테이블 스타일 - 컬럼값 2줄 표시 방지 */
+#candidatesTable {
+    font-size: 0.7rem; /* 글자 크기 더 작게 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    table-layout: auto; /* 자동 테이블 레이아웃 */
+}
+
+#candidatesTable th {
+    padding: 6px 4px; /* 패딩 더 줄이기 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    font-size: 0.72rem; /* 헤더 글자 크기 약간 크게 */
+    font-weight: 600; /* 헤더는 굵게 */
+    line-height: 1.2; /* 줄 간격 조정 */
+}
+
+#candidatesTable td {
+    padding: 6px 4px; /* 패딩 더 줄이기 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 내용 숨기기 */
+    text-overflow: ellipsis; /* 말줄임표 표시 */
+    font-size: 0.7rem; /* 글자 크기 더 작게 */
+    line-height: 1.2; /* 줄 간격 조정 */
+}
+
+/* 특정 컬럼 너비 조정 */
+#candidatesTable th:nth-child(1), /* ID */
+#candidatesTable td:nth-child(1) {
+    min-width: 50px;
+    max-width: 60px;
+}
+
+#candidatesTable th:nth-child(2), /* 이름 */
+#candidatesTable td:nth-child(2) {
+    min-width: 70px;
+    max-width: 90px;
+}
+
+#candidatesTable th:nth-child(3), /* 이메일 */
+#candidatesTable td:nth-child(3) {
+    min-width: 140px;
+    max-width: 180px;
+}
+
+#candidatesTable th:nth-child(4), /* 전화번호 */
+#candidatesTable td:nth-child(4) {
+    min-width: 90px;
+    max-width: 110px;
+}
+
+#candidatesTable th:nth-child(5), /* 지원분야 */
+#candidatesTable td:nth-child(5) {
+    min-width: 60px;
+    max-width: 80px;
+}
+
+#candidatesTable th:nth-child(6), /* 상태 */
+#candidatesTable td:nth-child(6) {
+    min-width: 50px;
+    max-width: 70px;
+}
+
+#candidatesTable th:nth-child(7), /* 인터뷰날짜 (기존 8번) */
+#candidatesTable td:nth-child(7) {
+    min-width: 95px;
+    max-width: 105px;
+}
+
+#candidatesTable th:nth-child(8), /* 시간 (기존 9번) */
+#candidatesTable td:nth-child(8) {
+    min-width: 55px;
+    max-width: 65px;
+}
+
+#candidatesTable th:nth-child(9), /* 액션 (기존 10번) */
+#candidatesTable td:nth-child(9) {
+    min-width: 300px; /* 버튼들이 충분히 표시될 수 있도록 */
+}
+
+/* 액션 버튼들 크기 조정 */
+.action-buttons .btn {
+    font-size: 0.65rem; /* 버튼 글자 더 작게 */
+    padding: 3px 6px; /* 패딩 더 줄이기 */
+    margin: 1px;
+    border-radius: 3px;
+    line-height: 1.1; /* 줄 간격 조정 */
+}
+
+/* 테이블 컨테이너 스크롤 */
+.table-container {
+    overflow-x: auto; /* 가로 스크롤 허용 */
+    width: 100%;
+}
+
+/* 상태 배지 크기 조정 */
+.status-badge {
+    font-size: 0.65rem; /* 상태 배지 글자 더 작게 */
+    padding: 1px 4px; /* 패딩 더 줄이기 */
+    border-radius: 3px;
+    white-space: nowrap;
+    line-height: 1.1; /* 줄 간격 조정 */
 } 

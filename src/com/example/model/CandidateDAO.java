@@ -2,6 +2,7 @@ package com.example.model;
 
 import com.example.util.DatabaseUtil;
 import com.example.util.FileUploadUtil;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,7 @@ public class CandidateDAO {
     public List<Candidate> getAllCandidatesWithInterviewSchedule() {
         List<Candidate> list = new ArrayList<>();
         InterviewResultDAO resultDAO = new InterviewResultDAO();
+        InterviewScheduleDAO scheduleDAO = new InterviewScheduleDAO();
         String sql =
             "SELECT c.*, s.id AS interview_schedule_id, s.interview_date, s.interview_time " +
             "FROM candidates c " +
@@ -140,6 +142,18 @@ public class CandidateDAO {
                 if (interviewDate != null && interviewTime != null) {
                     c.setInterviewDateTime(interviewDate.toString() + " " + interviewTime.toString().substring(0, 5));
                 }
+                
+                // 버튼 상태 제어를 위한 데이터 설정
+                // 1. 인터뷰 일정 존재 여부 확인
+                List<InterviewSchedule> candidateSchedules = scheduleDAO.getSchedulesByCandidateId(c.getId());
+                boolean hasSchedule = candidateSchedules != null && !candidateSchedules.isEmpty();
+                c.setHasInterviewSchedule(hasSchedule);
+                
+                // 2. 인터뷰 결과 존재 여부 확인
+                List<InterviewResult> candidateResults = resultDAO.getResultsByCandidateId(c.getId());
+                boolean hasResult = candidateResults != null && !candidateResults.isEmpty();
+                c.setHasInterviewResult(hasResult);
+                
                 list.add(c);
             }
         } catch (SQLException e) {

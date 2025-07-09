@@ -26,6 +26,10 @@ public class Candidate {
     private String resumeFileType;      // 파일 형식 (pdf, hwp, doc, docx)
     private Timestamp resumeUploadedAt; // 업로드 일시
 
+    // 버튼 상태 제어를 위한 필드
+    private boolean hasInterviewSchedule; // 인터뷰 일정 존재 여부
+    private boolean hasInterviewResult;   // 인터뷰 결과 존재 여부
+
     // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -53,6 +57,13 @@ public class Candidate {
     public void setInterviewResultStatus(String interviewResultStatus) { this.interviewResultStatus = interviewResultStatus; }
     public String getInterviewType() { return interviewType; }
     public void setInterviewType(String interviewType) { this.interviewType = interviewType; }
+    
+    // 버튼 상태 제어를 위한 Getters and Setters
+    public boolean getHasInterviewSchedule() { return hasInterviewSchedule; }
+    public void setHasInterviewSchedule(boolean hasInterviewSchedule) { this.hasInterviewSchedule = hasInterviewSchedule; }
+    
+    public boolean getHasInterviewResult() { return hasInterviewResult; }
+    public void setHasInterviewResult(boolean hasInterviewResult) { this.hasInterviewResult = hasInterviewResult; }
     
     // 이력서 파일 관련 Getters and Setters
     public String getResumeFileName() { return resumeFileName; }
