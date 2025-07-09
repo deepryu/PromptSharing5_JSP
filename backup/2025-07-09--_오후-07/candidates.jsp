@@ -191,9 +191,9 @@
                                 <th>이메일</th>
                                 <th>전화번호</th>
                                 <th>지원분야</th>
+                                <th>상태</th>
                                 <th>인터뷰날짜</th>
                                 <th>시간</th>
-                                <th>상태</th>
                                 <th>액션</th>
                             </tr>
                         </thead>
@@ -206,6 +206,14 @@
                                         <td data-label="이메일"><%= candidate.getEmail() %></td>
                                         <td data-label="전화번호"><%= candidate.getPhone() %></td>
                                         <td data-label="지원분야"><%= candidate.getTeam() != null ? candidate.getTeam() : "미정" %></td>
+                                        <td data-label="상태">
+                                            <span class="status-badge 
+                                                <% if ("활성".equals(candidate.getStatus()) || "ACTIVE".equals(candidate.getStatus())) { %>status-pending
+                                                <% } else if ("채용완료".equals(candidate.getStatus()) || "HIRED".equals(candidate.getStatus()) || "면접완료".equals(candidate.getStatus()) || "INTERVIEWED".equals(candidate.getStatus())) { %>status-completed
+                                                <% } else { %>status-pending<% } %>">
+                                                <%= candidate.getStatus() %>
+                                            </span>
+                                        </td>
                                         <td data-label="인터뷰날짜">
                                             <% 
                                                 String interviewDateTime = candidate.getInterviewDateTime();
@@ -244,37 +252,6 @@
                                                     out.print("미정");
                                                 }
                                             %>
-                                        </td>
-                                        <td data-label="상태">
-                                            <%
-                                                // 면접유형과 인터뷰결과를 합쳐서 표시
-                                                String interviewType = candidate.getInterviewType();
-                                                String resultStatus = candidate.getInterviewResultStatus();
-                                                
-                                                String combinedStatus = "";
-                                                if (interviewType != null && !"-".equals(interviewType) && !interviewType.trim().isEmpty()) {
-                                                    combinedStatus = interviewType;
-                                                }
-                                                
-                                                if (resultStatus != null && !resultStatus.trim().isEmpty() && !"미등록".equals(resultStatus)) {
-                                                    if (!combinedStatus.isEmpty()) {
-                                                        combinedStatus += " / " + resultStatus;
-                                                    } else {
-                                                        combinedStatus = resultStatus;
-                                                    }
-                                                }
-                                                
-                                                if (combinedStatus.isEmpty()) {
-                                                    combinedStatus = "미등록";
-                                                }
-                                            %>
-                                            <span class="status-badge 
-                                                <% if ("미등록".equals(combinedStatus)) { %>status-pending
-                                                <% } else if (combinedStatus.contains("합격") || combinedStatus.contains("채용") || combinedStatus.contains("통과")) { %>status-completed
-                                                <% } else if (combinedStatus.contains("불합격") || combinedStatus.contains("탈락")) { %>status-rejected
-                                                <% } else { %>status-in-progress<% } %>">
-                                                <%= combinedStatus %>
-                                            </span>
                                         </td>
                                         <td data-label="액션">
                                             <!-- 디버깅: 상태 값 출력 -->

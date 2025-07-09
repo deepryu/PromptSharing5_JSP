@@ -247,25 +247,25 @@ a:hover {
     max-width: 80px;
 }
 
-#candidatesTable th:nth-child(6), /* 상태 */
+#candidatesTable th:nth-child(6), /* 인터뷰날짜 */
 #candidatesTable td:nth-child(6) {
-    min-width: 50px;
-    max-width: 70px;
-}
-
-#candidatesTable th:nth-child(7), /* 인터뷰날짜 (기존 8번) */
-#candidatesTable td:nth-child(7) {
     min-width: 95px;
     max-width: 105px;
 }
 
-#candidatesTable th:nth-child(8), /* 시간 (기존 9번) */
-#candidatesTable td:nth-child(8) {
+#candidatesTable th:nth-child(7), /* 시간 */
+#candidatesTable td:nth-child(7) {
     min-width: 55px;
     max-width: 65px;
 }
 
-#candidatesTable th:nth-child(9), /* 액션 (기존 10번) */
+#candidatesTable th:nth-child(8), /* 상태 */
+#candidatesTable td:nth-child(8) {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+#candidatesTable th:nth-child(9), /* 액션 */
 #candidatesTable td:nth-child(9) {
     min-width: 300px; /* 버튼들이 충분히 표시될 수 있도록 */
 }
@@ -285,11 +285,32 @@ a:hover {
     width: 100%;
 }
 
-/* 상태 배지 크기 조정 */
+/* 테이블 상태 배지 */
 .status-badge {
-    font-size: 0.65rem; /* 상태 배지 글자 더 작게 */
-    padding: 1px 4px; /* 패딩 더 줄이기 */
+    padding: 3px 6px;
     border-radius: 3px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-align: center;
     white-space: nowrap;
-    line-height: 1.1; /* 줄 간격 조정 */
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-completed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-rejected {
+    background-color: #fecaca;
+    color: #991b1b;
+}
+
+.status-in-progress {
+    background-color: #e0e7ff;
+    color: #1e40af;
 } 
