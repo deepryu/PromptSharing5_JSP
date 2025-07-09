@@ -205,6 +205,7 @@ a:hover {
     font-size: 0.72rem; /* 헤더 글자 크기 약간 크게 */
     font-weight: 600; /* 헤더는 굵게 */
     line-height: 1.2; /* 줄 간격 조정 */
+    text-align: left; /* 헤더 왼쪽 정렬 */
 }
 
 #candidatesTable td {
@@ -214,6 +215,7 @@ a:hover {
     text-overflow: ellipsis; /* 말줄임표 표시 */
     font-size: 0.7rem; /* 글자 크기 더 작게 */
     line-height: 1.2; /* 줄 간격 조정 */
+    text-align: left; /* 데이터 왼쪽 정렬 */
 }
 
 /* 특정 컬럼 너비 조정 */
@@ -221,6 +223,7 @@ a:hover {
 #candidatesTable td:nth-child(1) {
     min-width: 50px;
     max-width: 60px;
+    text-align: center; /* ID는 중앙 정렬 */
 }
 
 #candidatesTable th:nth-child(2), /* 이름 */
@@ -251,23 +254,27 @@ a:hover {
 #candidatesTable td:nth-child(6) {
     min-width: 95px;
     max-width: 105px;
+    text-align: center; /* 날짜는 중앙 정렬 */
 }
 
 #candidatesTable th:nth-child(7), /* 시간 */
 #candidatesTable td:nth-child(7) {
     min-width: 55px;
     max-width: 65px;
+    text-align: center; /* 시간은 중앙 정렬 */
 }
 
 #candidatesTable th:nth-child(8), /* 상태 */
 #candidatesTable td:nth-child(8) {
     min-width: 80px;
     max-width: 100px;
+    text-align: center; /* 상태는 중앙 정렬 */
 }
 
 #candidatesTable th:nth-child(9), /* 액션 */
 #candidatesTable td:nth-child(9) {
     min-width: 300px; /* 버튼들이 충분히 표시될 수 있도록 */
+    text-align: center; /* 액션 버튼은 중앙 정렬 */
 }
 
 /* 액션 버튼들 크기 조정 */

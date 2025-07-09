@@ -575,20 +575,6 @@ public class InterviewResultServlet extends HttpServlet {
         String idParam = request.getParameter("id");
         if (idParam != null && !idParam.trim().isEmpty() && !idParam.equals("0")) {
             result.setId(Integer.parseInt(idParam));
-            
-            // 수정 모드인 경우 기존 schedule_id를 유지 (scheduleId 파라미터가 없으면)
-            if (scheduleIdStr == null || scheduleIdStr.trim().isEmpty()) {
-                try {
-                    InterviewResultDAO dao = new InterviewResultDAO();
-                    InterviewResult existingResult = dao.getResultById(Integer.parseInt(idParam));
-                    if (existingResult != null && existingResult.getScheduleId() > 0) {
-                        result.setScheduleId(existingResult.getScheduleId());
-                        System.out.println("🔗 [InterviewResultServlet] 기존 schedule_id 유지: " + existingResult.getScheduleId());
-                    }
-                } catch (Exception e) {
-                    System.err.println("⚠️ [InterviewResultServlet] 기존 schedule_id 조회 중 오류: " + e.getMessage());
-                }
-            }
         } else {
             // scheduleId로 InterviewResult를 찾아서 id 세팅
             String scheduleIdParam = request.getParameter("scheduleId");
