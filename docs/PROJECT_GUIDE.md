@@ -62,6 +62,49 @@ ADD COLUMN resume_uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 | 인터뷰 결과 관리 | ✅ 완료 | 결과 기록, 평가 항목 관리 |
 | 질문 관리 | ✅ 완료 | 질문 생성/분류, 평가 기준 |
 
+## 🚀 Git 및 배포 관리
+
+### 📦 Maven 컴파일 후 GitHub 푸시 정책
+
+**⚡ 에이전트 동작 규칙**:
+- `.\mvnw.cmd compile` 실행 완료 후 반드시 사용자에게 GitHub 푸시 여부를 확인
+- **예시 질문**: "컴파일이 완료되었습니다. 변경사항을 GitHub에 푸시하시겠습니까? (yes/no)"
+- 사용자가 "yes" 응답 시에만 Git 명령어 실행
+- 사용자가 "no" 응답 시 푸시 작업 건너뛰기
+
+**🔄 표준 Git 푸시 절차**:
+```bash
+# 1단계: 변경사항 확인
+git status
+
+# 2단계: 파일 추가
+git add .
+
+# 3단계: 커밋 (의미있는 메시지 작성)
+git commit -m "feat: [구체적인 변경내용 설명]"
+
+# 4단계: 푸시 (검증 과정 포함)
+powershell -ExecutionPolicy Bypass -File .git\hooks\pre-push.ps1
+git push origin main --no-verify
+```
+
+**📝 커밋 메시지 가이드라인**:
+```
+타입: 간단한 설명
+
+예시:
+- feat: 면접유형을 1차/2차면접으로 제한하고 2차면접 완료시 자동 상태 업데이트
+- fix: 면접결과 수정 화면에서 면접유형 값이 표시되지 않는 문제 해결
+- refactor: 시간 선택을 30분 간격으로 변경
+- docs: PROJECT_GUIDE에 GitHub 푸시 정책 추가
+```
+
+**⚠️ 필수 준수사항**:
+- 컴파일 성공 후에만 푸시 여부 질문
+- 사용자 응답 대기 (자동 실행 금지)
+- "yes" 명시적 응답 시에만 Git 명령어 실행
+- PowerShell 검증 스크립트 실행 후 푸시 진행
+
 ## ⚡ 코드 수정 안전 가이드라인 (중요!)
 
 ### 🛡️ 정상 동작 코드 수정 시 주의사항

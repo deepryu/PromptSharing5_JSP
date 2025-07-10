@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.example.model.*" %>
 <%@ page import="java.util.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     // 세션 검증
     HttpSession userSession = request.getSession(false);
@@ -877,11 +878,8 @@
                                 <label for="interviewType">면접 유형 <span class="required">*</span></label>
                                 <select name="interviewType" id="interviewType" required>
                                     <option value="">면접 유형 선택</option>
-                                    <option value="1차 면접" <%= (isEdit && "1차 면접".equals(result.getInterviewType())) || (request.getAttribute("schedule") != null && "1차 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType())) ? "selected" : "" %>>1차 면접</option>
-                                    <option value="2차 면접" <%= (isEdit && "2차 면접".equals(result.getInterviewType())) || (request.getAttribute("schedule") != null && "2차 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType())) ? "selected" : "" %>>2차 면접</option>
-                                    <option value="최종 면접" <%= (isEdit && "최종 면접".equals(result.getInterviewType())) || (request.getAttribute("schedule") != null && "최종 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType())) ? "selected" : "" %>>최종 면접</option>
-                                    <option value="기술 면접" <%= (isEdit && "기술 면접".equals(result.getInterviewType())) || (request.getAttribute("schedule") != null && "기술 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType())) ? "selected" : "" %>>기술 면접</option>
-                                    <option value="인성 면접" <%= (isEdit && "인성 면접".equals(result.getInterviewType())) || (request.getAttribute("schedule") != null && "인성 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType())) ? "selected" : "" %>>인성 면접</option>
+                                    <option value="1차면접" <%= (isEdit && ("1차면접".equals(result.getInterviewType()) || "1차 면접".equals(result.getInterviewType()))) || (request.getAttribute("schedule") != null && ("1차면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType()) || "1차 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType()))) ? "selected" : "" %>>1차면접</option>
+                                    <option value="2차면접" <%= (isEdit && ("2차면접".equals(result.getInterviewType()) || "2차 면접".equals(result.getInterviewType()))) || (request.getAttribute("schedule") != null && ("2차면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType()) || "2차 면접".equals(((com.example.model.InterviewSchedule)request.getAttribute("schedule")).getInterviewType()))) ? "selected" : "" %>>2차면접</option>
                                 </select>
                             </div>
                         </div>
@@ -1117,7 +1115,14 @@
                     
                     <!-- 폼 액션 버튼 -->
                     <div class="form-actions">
-                        <a href="results" class="btn btn-secondary">취소</a>
+                        <c:choose>
+                            <c:when test="${param.from == 'candidates'}">
+                                <a href="../candidates" class="btn btn-secondary">취소</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="results" class="btn btn-secondary">취소</a>
+                            </c:otherwise>
+                        </c:choose>
                         <button type="submit" class="btn btn-primary">
                             <%= isEdit ? "수정 완료" : "등록 완료" %>
                         </button>

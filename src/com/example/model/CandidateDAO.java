@@ -380,4 +380,23 @@ public class CandidateDAO {
         
         return c;
     }
+    
+    /**
+     * 지원자의 상태를 업데이트합니다.
+     * @param candidateId 지원자 ID
+     * @param status 새로운 상태 (예: "면접완료", "활성", "비활성" 등)
+     * @return 업데이트 성공 여부
+     */
+    public boolean updateCandidateStatus(int candidateId, String status) {
+        String sql = "UPDATE candidates SET status = ?, updated_at = now() WHERE id = ?";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, candidateId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 } 

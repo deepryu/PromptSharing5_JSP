@@ -297,14 +297,14 @@
                                                     📅 일정등록
                                                 </span>
                                                 <% } else { %>
-                                                <a href="${pageContext.request.contextPath}/interview/add?candidateId=<%= candidate.getId() %>" class="btn btn-schedule-add" title="새 인터뷰 일정 등록">
+                                                <a href="${pageContext.request.contextPath}/interview/add?candidateId=<%= candidate.getId() %>&from=candidates" class="btn btn-schedule-add" title="새 인터뷰 일정 등록">
                                                     📅 일정등록
                                                 </a>
                                                 <% } %>
                                                 
                                                 <!-- 4. 일정수정 (기존 일정이 있을 때만) -->
                                                 <% if (candidate.getHasInterviewSchedule() && candidate.getInterviewScheduleId() != null) { %>
-                                                <a href="${pageContext.request.contextPath}/interview/edit?id=<%= candidate.getInterviewScheduleId() %>" class="btn btn-schedule-edit" title="기존 인터뷰 일정 수정">
+                                                <a href="${pageContext.request.contextPath}/interview/edit?id=<%= candidate.getInterviewScheduleId() %>&from=candidates" class="btn btn-schedule-edit" title="기존 인터뷰 일정 수정">
                                                     📝 일정수정
                                                 </a>
                                                 <% } %>
@@ -319,7 +319,7 @@
                                                     📊 결과등록
                                                 </span>
                                                 <% } else { %>
-                                                <a href="${pageContext.request.contextPath}/results/add?candidateId=<%= candidate.getId() %>&scheduleId=<%= candidate.getInterviewScheduleId() %>" class="btn btn-result-add" title="인터뷰 결과 등록">
+                                                <a href="${pageContext.request.contextPath}/results/add?candidateId=<%= candidate.getId() %>&scheduleId=<%= candidate.getInterviewScheduleId() %>&from=candidates" class="btn btn-result-add" title="인터뷰 결과 등록">
                                                     📊 결과등록
                                                 </a>
                                                 <% } %>
@@ -334,7 +334,7 @@
                                                         latestResultId = candidateResults.get(0).getId();
                                                     }
                                                 %>
-                                                <a href="${pageContext.request.contextPath}/results/edit?id=<%= latestResultId %>" class="btn btn-result-edit" title="기존 인터뷰 결과 수정">
+                                                <a href="${pageContext.request.contextPath}/results/edit?id=<%= latestResultId %>&from=candidates" class="btn btn-result-edit" title="기존 인터뷰 결과 수정">
                                                     📈 결과수정
                                                 </a>
                                                 <% } %>

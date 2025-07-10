@@ -6,6 +6,7 @@
         return;
     }
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -133,6 +134,17 @@
             border-color: #007bff;
         }
         
+        .time-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .time-input-container select {
+            flex: 1;
+            min-width: 80px;
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -224,9 +236,26 @@
                     </div>
                     <div class="form-group">
                         <label for="interviewTime">면접 시간 <span class="required">*</span></label>
-                        <input type="time" name="interviewTime" id="interviewTime" 
-                               value="${schedule.interviewTimeFormatted}" required
-                               onchange="checkTimeConflict()">
+                        <div class="time-input-container">
+                            <select name="interviewHour" id="interviewHour" required onchange="updateTimeAndCheck()">
+                                <option value="">시</option>
+                                <c:forEach var="i" begin="0" end="23">
+                                    <option value="${i < 10 ? '0' : ''}${i}" 
+                                            ${not empty schedule && schedule.interviewTimeFormatted != null && 
+                                              fn:substring(schedule.interviewTimeFormatted, 0, 2) == (i < 10 ? '0' : '').concat(i) ? 'selected' : ''}>
+                                        ${i < 10 ? '0' : ''}${i}시
+                                    </option>
+                                </c:forEach>
+                            </select>
+                            <select name="interviewMinute" id="interviewMinute" required onchange="updateTimeAndCheck()">
+                                <option value="">분</option>
+                                <option value="00" ${not empty schedule && schedule.interviewTimeFormatted != null && 
+                                                     fn:substring(schedule.interviewTimeFormatted, 3, 5) == '00' ? 'selected' : ''}>00분</option>
+                                <option value="30" ${not empty schedule && schedule.interviewTimeFormatted != null && 
+                                                     fn:substring(schedule.interviewTimeFormatted, 3, 5) == '30' ? 'selected' : ''}>30분</option>
+                            </select>
+                            <input type="hidden" name="interviewTime" id="interviewTime" value="${schedule.interviewTimeFormatted}">
+                        </div>
                     </div>
                 </div>
 
@@ -283,7 +312,14 @@
                     <button type="submit" class="btn btn-primary">
                         ${empty schedule ? '등록' : '수정'}
                     </button>
-                    <a href="list" class="btn btn-secondary">취소</a>
+                    <c:choose>
+                        <c:when test="${param.from == 'candidates'}">
+                            <a href="../candidates" class="btn btn-secondary">취소</a>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="list" class="btn btn-secondary">취소</a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </form>
         </div>
@@ -317,6 +353,20 @@
             checkTimeConflict();
         }
         
+        function updateTimeAndCheck() {
+            const hour = document.getElementById('interviewHour').value;
+            const minute = document.getElementById('interviewMinute').value;
+            const timeInput = document.getElementById('interviewTime');
+            
+            if (hour && minute) {
+                timeInput.value = hour + ':' + minute;
+            } else {
+                timeInput.value = '';
+            }
+            
+            checkTimeConflict();
+        }
+        
         function checkTimeConflict() {
             // 중복 검사를 위한 AJAX 요청
             // 이 부분은 클라이언트 측에서 처리할 수 있도록 유지
@@ -326,7 +376,6 @@
             const candidateId = document.getElementById('candidateId').value;
             const interviewerName = document.getElementById('interviewerName').value.trim();
             const interviewDate = document.getElementById('interviewDate').value;
-            const interviewTime = document.getElementById('interviewTime').value;
             const duration = document.getElementById('duration').value;
             
             if (!candidateId) {
@@ -344,10 +393,15 @@
                 return false;
             }
             
-            if (!interviewTime) {
-                alert('면접 시간을 입력하세요');
+            const interviewHour = document.getElementById('interviewHour').value;
+            const interviewMinute = document.getElementById('interviewMinute').value;
+            
+            if (!interviewHour || !interviewMinute) {
+                alert('면접 시간을 선택하세요');
                 return false;
             }
+            
+            const interviewTime = interviewHour + ':' + interviewMinute;
             
             if (!duration || duration < 15) {
                 alert('면접 시간은 15분 이상이어야 합니다');
@@ -369,6 +423,16 @@
         // 페이지 로드 시 후처리
         document.addEventListener('DOMContentLoaded', function() {
             updateCandidateInfo();
+            
+            // 기존 시간 값 설정
+            const existingTime = document.getElementById('interviewTime').value;
+            if (existingTime) {
+                const timeParts = existingTime.split(':');
+                if (timeParts.length >= 2) {
+                    document.getElementById('interviewHour').value = timeParts[0];
+                    document.getElementById('interviewMinute').value = timeParts[1];
+                }
+            }
             
             // 자동 완성을 위한 코드
             const duration = document.getElementById('duration').value;
