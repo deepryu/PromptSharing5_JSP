@@ -440,10 +440,9 @@
 <body>
     <div class="container">
         <div class="top-bar">
-            <h2>👨‍💼 면접관(관리자) 관리</h2>
+            <h2>📊 채용 관리 시스템</h2>
             <div class="nav-buttons">
                 <a href="main.jsp" class="btn">🏠 메인</a>
-                <a href="candidates" class="btn">👥 인터뷰 대상자 관리</a>
                 <a href="interview/list" class="btn">📅 인터뷰 일정 관리</a>
                 <a href="questions" class="btn">💡 질문/평가 항목 관리</a>
                 <a href="results" class="btn">📝 인터뷰 결과 기록/관리</a>
