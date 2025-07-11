@@ -22,7 +22,7 @@
 <html>
 <head>
     <title>면접관 관리</title>
-    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         body {
             background: #f0f0f0;
@@ -53,7 +53,6 @@
             font-size: 1.2rem;
             font-weight: 600;
         }
-
         
         .main-dashboard {
             background: white;
@@ -441,9 +440,10 @@
 <body>
     <div class="container">
         <div class="top-bar">
-            <h2>📊 채용 관리 시스템</h2>
+            <h2>👨‍💼 면접관(관리자) 관리</h2>
             <div class="nav-buttons">
                 <a href="main.jsp" class="btn">🏠 메인</a>
+                <a href="candidates" class="btn">👥 인터뷰 대상자 관리</a>
                 <a href="interview/list" class="btn">📅 인터뷰 일정 관리</a>
                 <a href="questions" class="btn">💡 질문/평가 항목 관리</a>
                 <a href="results" class="btn">📝 인터뷰 결과 기록/관리</a>
@@ -454,7 +454,7 @@
         
         <div class="main-dashboard">
             <div class="dashboard-header">
-                <h1 style="text-align: center;">👨‍💼 면접관 관리</h1>
+                <h1>면접관 관리</h1>
                 <a href="interviewers?action=new" class="btn-primary">➕ 새 면접관 등록</a>
             </div>
             <div class="dashboard-content">

@@ -323,7 +323,7 @@
         <!-- 메인 대시보드 -->
         <div class="main-dashboard">
             <div class="dashboard-header">
-                <h1 style="text-align: center;">📊 채용 관리 시스템 통계</h1>
+                <h1>📊 채용 관리 시스템 통계</h1>
             </div>
             <div class="dashboard-content">
                 <% if (errorMessage != null) { %>

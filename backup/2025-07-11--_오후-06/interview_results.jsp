@@ -582,7 +582,7 @@
         
         <div class="main-content">
             <div class="content-header">
-                <h1 style="text-align: center;">📝 인터뷰 결과 목록</h1>
+                <h1>인터뷰 결과 목록</h1>
             </div>
             <div class="content-body">
                 <!-- 통계 바 -->

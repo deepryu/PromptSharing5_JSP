@@ -295,7 +295,7 @@
         
         <div class="main-dashboard">
             <div class="dashboard-header">
-                <h1 style="text-align: center;">⚙️ 시스템 설정 관리</h1>
+                <h1>시스템 설정 관리</h1>
             </div>
             <div class="dashboard-content">
                 <% if (successMessage != null) { %>

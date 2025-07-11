@@ -311,7 +311,7 @@
         
         <div class="main-content">
             <div class="content-header">
-                <h1 style="text-align: center;">👥 인터뷰 대상자 관리</h1>
+                <h1>👥 인터뷰 대상자 관리</h1>
             </div>
             <div class="content-body">
                 <!-- 통계 바 -->

@@ -17,14 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-// Apache POI imports for Excel export
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @WebServlet(urlPatterns = {"/candidates", "/candidates/*"})
 @MultipartConfig(
@@ -104,9 +98,9 @@ public class CandidateServlet extends HttpServlet {
             // 이력서 파일 다운로드 처리
             handleResumeDownload(request, response);
         } else if (path.equals("/candidates/export")) {
-            System.out.println("📊 [CandidateServlet-GET] Excel 내보내기 요청 처리");
-            // Excel 내보내기
-            handleExcelExport(request, response);
+            // Excel 내보내기 (향후 구현)
+            response.setContentType("text/plain; charset=UTF-8");
+            response.getWriter().write("Excel 내보내기 기능은 준비 중입니다.");
         } else {
             // 기존 action 파라미터 방식도 지원 (하위 호환성)
             String action = request.getParameter("action");
@@ -328,196 +322,5 @@ public class CandidateServlet extends HttpServlet {
         }
         
         response.sendRedirect("candidates");
-    }
-    
-    /**
-     * Excel 내보내기를 처리합니다.
-     */
-    private void handleExcelExport(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        try {
-            System.out.println("📊 [CandidateServlet] Excel 내보내기 시작");
-            
-            // 모든 지원자 데이터 가져오기
-            List<Candidate> candidates = candidateDAO.getAllCandidatesWithInterviewSchedule();
-            System.out.println("📊 [CandidateServlet] 지원자 데이터 조회 완료: " + candidates.size() + "명");
-            
-            // Excel 워크북 생성
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("인터뷰 대상자 목록");
-            
-            // 스타일 생성
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            headerFont.setFontHeightInPoints((short) 12);
-            headerStyle.setFont(headerFont);
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            headerStyle.setBorderTop(BorderStyle.THIN);
-            headerStyle.setBorderBottom(BorderStyle.THIN);
-            headerStyle.setBorderLeft(BorderStyle.THIN);
-            headerStyle.setBorderRight(BorderStyle.THIN);
-            
-            CellStyle dataStyle = workbook.createCellStyle();
-            dataStyle.setBorderTop(BorderStyle.THIN);
-            dataStyle.setBorderBottom(BorderStyle.THIN);
-            dataStyle.setBorderLeft(BorderStyle.THIN);
-            dataStyle.setBorderRight(BorderStyle.THIN);
-            
-            // 헤더 행 생성
-            Row headerRow = sheet.createRow(0);
-            String[] headers = {
-                "ID", "이름", "이메일", "전화번호", "지원분야", 
-                "인터뷰날짜", "인터뷰시간", "면접유형", "결과상태", "등록일시"
-            };
-            
-            for (int i = 0; i < headers.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-                cell.setCellStyle(headerStyle);
-            }
-            
-            // 데이터 행 생성
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            
-            for (int i = 0; i < candidates.size(); i++) {
-                Candidate candidate = candidates.get(i);
-                Row row = sheet.createRow(i + 1);
-                
-                // ID
-                Cell cell0 = row.createCell(0);
-                cell0.setCellValue(candidate.getId());
-                cell0.setCellStyle(dataStyle);
-                
-                // 이름
-                Cell cell1 = row.createCell(1);
-                cell1.setCellValue(candidate.getName() != null ? candidate.getName() : "");
-                cell1.setCellStyle(dataStyle);
-                
-                // 이메일
-                Cell cell2 = row.createCell(2);
-                cell2.setCellValue(candidate.getEmail() != null ? candidate.getEmail() : "");
-                cell2.setCellStyle(dataStyle);
-                
-                // 전화번호
-                Cell cell3 = row.createCell(3);
-                cell3.setCellValue(candidate.getPhone() != null ? candidate.getPhone() : "");
-                cell3.setCellStyle(dataStyle);
-                
-                // 지원분야
-                Cell cell4 = row.createCell(4);
-                cell4.setCellValue(candidate.getTeam() != null ? candidate.getTeam() : "미정");
-                cell4.setCellStyle(dataStyle);
-                
-                // 인터뷰날짜
-                Cell cell5 = row.createCell(5);
-                String interviewDate = "";
-                if (candidate.getInterviewDateTime() != null && !candidate.getInterviewDateTime().trim().isEmpty()) {
-                    try {
-                        String[] dateTimeParts = candidate.getInterviewDateTime().split(" ");
-                        if (dateTimeParts.length >= 1) {
-                            interviewDate = dateTimeParts[0];
-                        }
-                    } catch (Exception e) {
-                        interviewDate = "미정";
-                    }
-                } else {
-                    interviewDate = "미정";
-                }
-                cell5.setCellValue(interviewDate);
-                cell5.setCellStyle(dataStyle);
-                
-                // 인터뷰시간
-                Cell cell6 = row.createCell(6);
-                String interviewTime = "";
-                if (candidate.getInterviewDateTime() != null && !candidate.getInterviewDateTime().trim().isEmpty()) {
-                    try {
-                        String[] dateTimeParts = candidate.getInterviewDateTime().split(" ");
-                        if (dateTimeParts.length >= 2) {
-                            interviewTime = dateTimeParts[1];
-                        }
-                    } catch (Exception e) {
-                        interviewTime = "미정";
-                    }
-                } else {
-                    interviewTime = "미정";
-                }
-                cell6.setCellValue(interviewTime);
-                cell6.setCellStyle(dataStyle);
-                
-                // 면접유형
-                Cell cell7 = row.createCell(7);
-                cell7.setCellValue(candidate.getInterviewType() != null ? candidate.getInterviewType() : "미정");
-                cell7.setCellStyle(dataStyle);
-                
-                // 결과상태
-                Cell cell8 = row.createCell(8);
-                String resultStatus = candidate.getInterviewResultStatus();
-                if (resultStatus != null && !resultStatus.trim().isEmpty() && !"미등록".equals(resultStatus)) {
-                    if ("pass".equals(resultStatus)) {
-                        resultStatus = "합격";
-                    } else if ("fail".equals(resultStatus)) {
-                        resultStatus = "불합격";
-                    } else if ("hold".equals(resultStatus)) {
-                        resultStatus = "보류";
-                    } else if ("pending".equals(resultStatus)) {
-                        resultStatus = "대기";
-                    }
-                } else {
-                    resultStatus = "미등록";
-                }
-                cell8.setCellValue(resultStatus);
-                cell8.setCellStyle(dataStyle);
-                
-                // 등록일시
-                Cell cell9 = row.createCell(9);
-                if (candidate.getCreatedAt() != null) {
-                    cell9.setCellValue(dateTimeFormat.format(candidate.getCreatedAt()));
-                } else {
-                    cell9.setCellValue("");
-                }
-                cell9.setCellStyle(dataStyle);
-            }
-            
-            // 컬럼 너비 자동 조정
-            for (int i = 0; i < headers.length; i++) {
-                sheet.autoSizeColumn(i);
-                // 최소 너비 설정 (한글 텍스트를 위해)
-                int currentWidth = sheet.getColumnWidth(i);
-                if (currentWidth < 3000) {
-                    sheet.setColumnWidth(i, 3000);
-                }
-            }
-            
-            // 파일명 생성 (한글 파일명 지원)
-            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String fileName = "인터뷰_대상자_목록_" + timestamp + ".xlsx";
-            
-            // 응답 헤더 설정
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + 
-                java.net.URLEncoder.encode(fileName, "UTF-8"));
-            
-            // Excel 파일을 응답으로 전송
-            try (OutputStream out = response.getOutputStream()) {
-                workbook.write(out);
-                out.flush();
-                System.out.println("📊 [CandidateServlet] Excel 파일 전송 완료: " + fileName);
-            }
-            
-            workbook.close();
-            System.out.println("📊 [CandidateServlet] Excel 내보내기 완료");
-            
-        } catch (Exception e) {
-            System.err.println("❌ [CandidateServlet] Excel 내보내기 실패: " + e.getMessage());
-            e.printStackTrace();
-            
-            response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().write("<script>alert('Excel 내보내기 중 오류가 발생했습니다: " + 
-                e.getMessage() + "'); history.back();</script>");
-        }
     }
 }

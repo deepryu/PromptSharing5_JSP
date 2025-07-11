@@ -119,7 +119,7 @@
         
         <div class="main-dashboard">
             <div class="dashboard-header">
-                <h1 style="text-align: center;">관리자 메인 대시보드 V1.0</h1>
+                <h1>관리자 메인 대시보드 V1.0</h1>
             </div>
             <div class="dashboard-content">
                 <div class="table-container">
