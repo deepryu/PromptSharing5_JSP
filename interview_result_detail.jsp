@@ -1,19 +1,21 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.example.model.InterviewResult" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
-    String username = (String)session.getAttribute("username");
-    if (username == null) {
+    // 세션 검증
+    if (session.getAttribute("username") == null) {
         response.sendRedirect("login.jsp");
         return;
     }
-%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?명꽣酉?寃곌낵 ?곸꽭蹂닿린 - 梨꾩슜 愿由??쒖뒪??/title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>인터뷰 결과 상세보기 - 채용 관리 시스템</title>
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         body {
             background: #f0f0f0;
@@ -45,37 +47,93 @@
             font-weight: 600;
         }
         
-        .main-dashboard {
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 3px;
+            background: white;
+            color: #24292f;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #f6f8fa;
+            border-color: #8c959f;
+        }
+        
+        .btn-primary {
+            background: #2da44e;
+            color: white;
+            border-color: #2da44e;
+        }
+        
+        .btn-primary:hover {
+            background: #2c974b;
+            border-color: #2c974b;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5c636a;
+            border-color: #5c636a;
+        }
+        
+        .btn-danger {
+            background: #cf222e;
+            color: white;
+            border-color: #cf222e;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c28;
+            border-color: #b91c28;
+        }
+        
+        .main-content {
             background: white;
             border: 1px solid #d0d7de;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
-        .dashboard-header {
+        .content-header {
             background: #0078d4;
             color: white;
             padding: 15px 25px;
             border-bottom: 1px solid #106ebe;
         }
         
-        .dashboard-header h1 {
+        .content-header h1 {
             margin: 0;
             font-size: 1.3rem;
             font-weight: 600;
         }
         
-        .dashboard-content {
+        .content-body {
             padding: 20px;
         }
 
-        .detail-container {
+        .detail-section {
             background: white;
             border: 1px solid #d0d7de;
             margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .detail-header {
+        .section-header {
             background: #f6f8fa;
             padding: 12px 20px;
             border-bottom: 1px solid #d0d7de;
@@ -84,7 +142,7 @@
             color: #24292f;
         }
 
-        .detail-content {
+        .section-content {
             padding: 20px;
         }
 
@@ -118,24 +176,24 @@
             flex: 1;
         }
 
-        .score-grid {
+        .score-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1px;
-            background: #d0d7de;
-            border: 1px solid #d0d7de;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-        .score-item {
+        .score-card {
             background: white;
-            padding: 15px 20px;
+            border: 1px solid #d0d7de;
+            padding: 15px;
             text-align: center;
+            border-radius: 3px;
         }
 
-        .score-item.overall-score {
+        .score-card.overall {
             background: #f6ffed;
-            border-left: 4px solid #52c41a;
+            border-color: #52c41a;
         }
 
         .score-label {
@@ -151,9 +209,15 @@
             color: #0969da;
         }
 
-        .overall-score .score-value {
+        .score-card.overall .score-value {
             color: #1a7f37;
             font-size: 1.6rem;
+        }
+
+        .score-stars {
+            color: #ffc107;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
         }
 
         .status-badge {
@@ -162,28 +226,31 @@
             border-radius: 3px;
             font-size: 0.75rem;
             font-weight: 600;
-            text-transform: uppercase;
+            border: 1px solid;
         }
 
         .status-pending { 
-            background: #fef3c7;
-            color: #d97706;
-            border: 1px solid #fcd34d;
+            background: #fff8e1;
+            color: #f57c00;
+            border-color: #ffcc02;
         }
+        
         .status-pass { 
             background: #dcfce7;
             color: #16a34a;
-            border: 1px solid #86efac;
+            border-color: #86efac;
         }
+        
         .status-fail { 
-            background: #fee2e2;
+            background: #fecaca;
             color: #dc2626;
-            border: 1px solid #fca5a5;
+            border-color: #fca5a5;
         }
+        
         .status-hold { 
-            background: #f3e8ff;
-            color: #9333ea;
-            border: 1px solid #c4b5fd;
+            background: #e0f2fe;
+            color: #0288d1;
+            border-color: #81d4fa;
         }
 
         .recommendation-badge {
@@ -192,335 +259,287 @@
             border-radius: 3px;
             font-size: 0.75rem;
             font-weight: 600;
+            border: 1px solid;
         }
 
         .recommendation-yes { 
             background: #dcfce7;
             color: #16a34a;
-            border: 1px solid #86efac;
-        }
-        .recommendation-no { 
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
-        }
-
-        .text-section {
-            margin-bottom: 20px;
-        }
-
-        .text-content {
-            background: #f6f8fa;
-            border: 1px solid #d0d7de;
-            padding: 15px;
-            min-height: 60px;
-            white-space: pre-wrap;
-            font-family: inherit;
-            font-size: 0.9rem;
-            color: #24292f;
-        }
-
-        .empty-content {
-            color: #656d76;
-            font-style: italic;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            padding: 20px;
-            background: #f6f8fa;
-            border-top: 1px solid #d0d7de;
-            margin: 20px -20px -20px -20px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 3px;
-            font-weight: 500;
-            text-decoration: none;
-            border: 1px solid #d0d7de;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-        }
-
-        .btn-primary {
-            background: #0078d4;
-            color: white;
-            border-color: #106ebe;
-        }
-
-        .btn-primary:hover {
-            background: #106ebe;
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #24292f;
-            border-color: #d0d7de;
-        }
-
-        .btn-secondary:hover {
-            background: #f6f8fa;
-            border-color: #8c959f;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-            border-color: #b91c1c;
-        }
-
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-
-        .alert {
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            border-radius: 3px;
-            border: 1px solid;
-            font-size: 0.9rem;
-        }
-
-        .alert-success {
-            background: #dcfce7;
-            color: #16a34a;
             border-color: #86efac;
         }
-
-        .alert-error {
-            background: #fee2e2;
+        
+        .recommendation-no { 
+            background: #fecaca;
             color: #dc2626;
             border-color: #fca5a5;
         }
 
-        .metadata {
-            font-size: 0.8rem;
+        .type-badge {
+            background: #f6f8fa;
             color: #656d76;
-            padding-top: 15px;
-            border-top: 1px solid #d0d7de;
-            text-align: center;
+            border: 1px solid #d0d7de;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .top-bar {
-                margin: -10px -10px 20px -10px;
-                padding: 12px;
-            }
-            
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .score-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                margin: 20px -10px -10px -10px;
-            }
+        .comment-section {
+            background: #f6f8fa;
+            padding: 15px;
+            border-radius: 3px;
+            border-left: 4px solid #0969da;
+        }
+
+        .comment-title {
+            font-weight: 600;
+            color: #24292f;
+            margin-bottom: 8px;
+        }
+
+        .comment-content {
+            color: #656d76;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .action-buttons {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #d0d7de;
+            margin-top: 20px;
+        }
+
+        .action-buttons .btn {
+            margin: 0 10px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            border: 1px solid;
+        }
+
+        .alert-error {
+            background: #fecaca;
+            color: #dc2626;
+            border-color: #fca5a5;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="top-bar">
-            <h2>?뱤 梨꾩슜 愿由??쒖뒪??/h2>
+            <h2>📝 인터뷰 결과 상세보기</h2>
+            <div class="nav-buttons">
+                <a href="main.jsp" class="btn">🏠 메인</a>
+                <a href="results" class="btn">📋 결과 목록</a>
+                <a href="candidates" class="btn">👥 지원자 관리</a>
+                <a href="interview/list" class="btn">📅 일정 관리</a>
+                <a href="logout" class="btn btn-danger">🚪 로그아웃</a>
+            </div>
         </div>
 
-        <div class="main-dashboard">
-            <div class="dashboard-header">
-                <h1>?명꽣酉?寃곌낵 ?곸꽭蹂닿린</h1>
+        <div class="main-content">
+            <div class="content-header">
+                <h1>인터뷰 결과 상세 정보</h1>
             </div>
-            
-            <div class="dashboard-content">
-                <!-- ?깃났/?ㅻ쪟 硫붿떆吏 -->
-                <c:if test="${not empty successMessage}">
-                    <div class="alert alert-success">
-                        ${successMessage}
-                    </div>
-                </c:if>
-                
+            <div class="content-body">
                 <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-error">
-                        ${errorMessage}
-                    </div>
+                    <div class="alert alert-error">${errorMessage}</div>
                 </c:if>
 
                 <c:if test="${not empty result}">
-                    <!-- 湲곕낯 ?뺣낫 -->
-                    <div class="detail-container">
-                        <div class="detail-header">湲곕낯 ?뺣낫</div>
-                        <div class="detail-content">
+                    <!-- 기본 정보 -->
+                    <div class="detail-section">
+                        <div class="section-header">
+                            👤 기본 정보
+                        </div>
+                        <div class="section-content">
                             <div class="info-grid">
                                 <div class="info-item">
-                                    <span class="info-label">吏?먯옄紐?</span>
-                                    <span class="info-value">${result.candidateName}</span>
+                                    <span class="info-label">지원자명:</span>
+                                    <span class="info-value">
+                                        <a href="candidates?action=detail&id=${result.candidateId}" 
+                                           style="color: #0969da; text-decoration: none;">
+                                            ${result.candidateName}
+                                        </a>
+                                    </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">硫댁젒愿:</span>
+                                    <span class="info-label">면접관:</span>
                                     <span class="info-value">${result.interviewerName}</span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">硫댁젒?쇱옄:</span>
+                                    <span class="info-label">면접일:</span>
                                     <span class="info-value">${result.interviewDateFormatted}</span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">硫댁젒?좏삎:</span>
-                                    <span class="info-value">${result.interviewType}</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">寃곌낵?곹깭:</span>
+                                    <span class="info-label">면접 유형:</span>
                                     <span class="info-value">
-                                        <span class="status-badge status-${result.resultStatus}">${result.resultStatusDisplayName}</span>
+                                        <span class="type-badge">${result.interviewType}</span>
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">梨꾩슜異붿쿇:</span>
+                                    <span class="info-label">결과 상태:</span>
                                     <span class="info-value">
-                                        <span class="recommendation-badge recommendation-${result.hireRecommendation}">${result.hireRecommendationDisplayName}</span>
+                                        <span class="status-badge ${result.resultStatusClass}">
+                                            ${result.resultStatusDisplayName}
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">채용 추천:</span>
+                                    <span class="info-value">
+                                        <span class="recommendation-badge ${result.hireRecommendationClass}">
+                                            ${result.hireRecommendationDisplayName}
+                                        </span>
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ?됯? ?먯닔 -->
-                    <div class="detail-container">
-                        <div class="detail-header">?됯? ?먯닔</div>
-                        <div class="detail-content">
-                            <div class="score-grid">
-                                <div class="score-item">
-                                    <div class="score-label">湲곗닠??웾</div>
-                                    <div class="score-value">${result.technicalScore != null ? result.technicalScore : '誘명룊媛'}</div>
-                                </div>
-                                <div class="score-item">
-                                    <div class="score-label">?섏궗?뚰넻</div>
-                                    <div class="score-value">${result.communicationScore != null ? result.communicationScore : '誘명룊媛'}</div>
-                                </div>
-                                <div class="score-item">
-                                    <div class="score-label">臾몄젣?닿껐</div>
-                                    <div class="score-value">${result.problemSolvingScore != null ? result.problemSolvingScore : '誘명룊媛'}</div>
-                                </div>
-                                <div class="score-item">
-                                    <div class="score-label">?낅Т?쒕룄</div>
-                                    <div class="score-value">${result.attitudeScore != null ? result.attitudeScore : '誘명룊媛'}</div>
-                                </div>
-                                <div class="score-item overall-score">
-                                    <div class="score-label">醫낇빀?먯닔</div>
-                                    <div class="score-value">${result.overallScoreFormatted}</div>
-                                </div>
+                    <!-- 점수 정보 -->
+                    <div class="detail-section">
+                        <div class="section-header">
+                            📊 평가 점수
+                        </div>
+                        <div class="section-content">
+                            <div class="score-section">
+                                <c:if test="${result.overallScore != null}">
+                                    <div class="score-card overall">
+                                        <div class="score-label">전체 점수</div>
+                                        <div class="score-stars">${result.overallScoreStars}</div>
+                                        <div class="score-value">${result.overallScoreFormatted}점</div>
+                                    </div>
+                                </c:if>
+                                
+                                <c:if test="${result.technicalScore != null}">
+                                    <div class="score-card">
+                                        <div class="score-label">기술 역량</div>
+                                        <div class="score-stars">${result.getScoreStars(result.technicalScore)}</div>
+                                        <div class="score-value">${result.technicalScore}점</div>
+                                    </div>
+                                </c:if>
+                                
+                                <c:if test="${result.communicationScore != null}">
+                                    <div class="score-card">
+                                        <div class="score-label">의사소통</div>
+                                        <div class="score-stars">${result.getScoreStars(result.communicationScore)}</div>
+                                        <div class="score-value">${result.communicationScore}점</div>
+                                    </div>
+                                </c:if>
+                                
+                                <c:if test="${result.problemSolvingScore != null}">
+                                    <div class="score-card">
+                                        <div class="score-label">문제해결</div>
+                                        <div class="score-stars">${result.getScoreStars(result.problemSolvingScore)}</div>
+                                        <div class="score-value">${result.problemSolvingScore}점</div>
+                                    </div>
+                                </c:if>
+                                
+                                <c:if test="${result.attitudeScore != null}">
+                                    <div class="score-card">
+                                        <div class="score-label">태도/자세</div>
+                                        <div class="score-stars">${result.getScoreStars(result.attitudeScore)}</div>
+                                        <div class="score-value">${result.attitudeScore}점</div>
+                                    </div>
+                                </c:if>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ?됯? ?댁슜 -->
-                    <div class="detail-container">
-                        <div class="detail-header">?됯? ?댁슜</div>
-                        <div class="detail-content">
-                            <div class="text-section">
-                                <div class="info-label">媛뺤젏</div>
-                                <div class="text-content">
-                                    <c:choose>
-                                        <c:when test="${not empty result.strengths}">
-                                            ${result.strengths}
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="empty-content">媛뺤젏??????됯?媛 ?낅젰?섏? ?딆븯?듬땲??</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
+                    <!-- 상세 피드백 -->
+                    <c:if test="${not empty result.detailedFeedback}">
+                        <div class="detail-section">
+                            <div class="section-header">
+                                💬 면접관 피드백
                             </div>
-
-                            <div class="text-section">
-                                <div class="info-label">?쎌젏</div>
-                                <div class="text-content">
-                                    <c:choose>
-                                        <c:when test="${not empty result.weaknesses}">
-                                            ${result.weaknesses}
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="empty-content">?쎌젏??????됯?媛 ?낅젰?섏? ?딆븯?듬땲??</span>
-                                        </c:otherwise>
-                                    </c:choose>
+                            <div class="section-content">
+                                <div class="comment-section">
+                                    <div class="comment-content">${result.detailedFeedback}</div>
                                 </div>
-                            </div>
-
-                            <div class="text-section">
-                                <div class="info-label">?곸꽭 ?쇰뱶諛?/div>
-                                <div class="text-content">
-                                    <c:choose>
-                                        <c:when test="${not empty result.detailedFeedback}">
-                                            ${result.detailedFeedback}
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="empty-content">?곸꽭 ?쇰뱶諛깆씠 ?낅젰?섏? ?딆븯?듬땲??</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                            </div>
-
-                            <div class="text-section">
-                                <div class="info-label">媛쒖꽑 ?쒖븞?ы빆</div>
-                                <div class="text-content">
-                                    <c:choose>
-                                        <c:when test="${not empty result.improvementSuggestions}">
-                                            ${result.improvementSuggestions}
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="empty-content">媛쒖꽑 ?쒖븞?ы빆???낅젰?섏? ?딆븯?듬땲??</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                            </div>
-
-                            <c:if test="${not empty result.nextStep}">
-                                <div class="text-section">
-                                    <div class="info-label">?ㅼ쓬 ?④퀎</div>
-                                    <div class="text-content">${result.nextStep}</div>
-                                </div>
-                            </c:if>
-
-                            <div class="metadata">
-                                ?깅줉?? ${result.formattedCreatedAt} | ?섏젙?? ${result.formattedUpdatedAt}
                             </div>
                         </div>
-                    </div>
-                </c:if>
-
-                <c:if test="${empty result}">
-                    <div class="alert alert-error">
-                        ?명꽣酉?寃곌낵瑜?李얠쓣 ???놁뒿?덈떎.
-                    </div>
-                </c:if>
-
-                <!-- ?≪뀡 踰꾪듉 -->
-                <div class="action-buttons">
-                    <a href="results" class="btn btn-secondary">
-                        ??紐⑸줉?쇰줈
-                    </a>
-                    
-                    <c:if test="${not empty result}">
-                        <a href="results?action=edit&id=${result.id}" class="btn btn-primary">
-                            ?륅툘 ?섏젙
-                        </a>
-                        
-                        <a href="results?action=delete&id=${result.id}" class="btn btn-danger" 
-                           onclick="return confirm('?뺣쭚濡????명꽣酉?寃곌낵瑜???젣?섏떆寃좎뒿?덇퉴?')">
-                            ?뿊截???젣
-                        </a>
                     </c:if>
-                </div>
+
+                    <!-- 강점과 약점 -->
+                    <c:if test="${not empty result.strengths || not empty result.weaknesses}">
+                        <div class="detail-section">
+                            <div class="section-header">
+                                📝 평가 상세
+                            </div>
+                            <div class="section-content">
+                                <c:if test="${not empty result.strengths}">
+                                    <div class="comment-section" style="margin-bottom: 15px;">
+                                        <div class="comment-title">💪 강점</div>
+                                        <div class="comment-content">${result.strengths}</div>
+                                    </div>
+                                </c:if>
+                                
+                                <c:if test="${not empty result.weaknesses}">
+                                    <div class="comment-section" style="margin-bottom: 15px; border-left-color: #ff6b6b;">
+                                        <div class="comment-title">🔍 개선점</div>
+                                        <div class="comment-content">${result.weaknesses}</div>
+                                    </div>
+                                </c:if>
+                                
+                                <c:if test="${not empty result.improvementSuggestions}">
+                                    <div class="comment-section" style="border-left-color: #ffa500;">
+                                        <div class="comment-title">💡 개선 제안</div>
+                                        <div class="comment-content">${result.improvementSuggestions}</div>
+                                    </div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- 다음 단계 -->
+                    <c:if test="${not empty result.nextStep}">
+                        <div class="detail-section">
+                            <div class="section-header">
+                                🚀 다음 단계
+                            </div>
+                            <div class="section-content">
+                                <div class="comment-section" style="border-left-color: #28a745;">
+                                    <div class="comment-content">${result.nextStep}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- 메타 정보 -->
+                    <div class="detail-section">
+                        <div class="section-header">
+                            📅 등록 정보
+                        </div>
+                        <div class="section-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">등록일시:</span>
+                                    <span class="info-value">${result.formattedCreatedAt}</span>
+                                </div>
+                                <c:if test="${not empty result.formattedUpdatedAt}">
+                                    <div class="info-item">
+                                        <span class="info-label">최종 수정:</span>
+                                        <span class="info-value">${result.formattedUpdatedAt}</span>
+                                    </div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 액션 버튼 -->
+                    <div class="action-buttons">
+                        <a href="results?action=edit&id=${result.id}" class="btn btn-primary">✏️ 수정</a>
+                        <a href="results" class="btn btn-secondary">📋 목록으로</a>
+                        <a href="results?action=delete&id=${result.id}" 
+                           class="btn btn-danger"
+                           onclick="return confirm('정말로 이 인터뷰 결과를 삭제하시겠습니까?');">🗑️ 삭제</a>
+                    </div>
+                </c:if>
             </div>
         </div>
     </div>

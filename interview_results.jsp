@@ -14,6 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <title>인터뷰 결과 관리 - 채용 관리 시스템</title>
+    <base href="${pageContext.request.contextPath}/">
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
@@ -192,44 +193,56 @@
         }
         
         .controls-grid {
-            display: grid;
-            grid-template-columns: 1fr auto auto auto;
-            gap: 15px;
-            align-items: end;
-        }
-        
-        .search-container {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
-        .search-container input {
+        .controls-left {
+            display: flex;
+            gap: 15px;
+            align-items: center;
             flex: 1;
+        }
+        
+        .controls-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .search-input {
+            flex: 0 0 300px;
             padding: 6px 12px;
             border: 1px solid #d0d7de;
             border-radius: 3px;
             font-size: 0.85rem;
             background: white;
+            width: 300px;
         }
         
-        .search-container input:focus {
+        .search-input:focus {
             border-color: #0969da;
             outline: none;
             box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.3);
         }
         
-        .filter-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .filter-container select {
+        .filter-select {
             padding: 6px 12px;
             border: 1px solid #d0d7de;
             border-radius: 3px;
             font-size: 0.85rem;
             background: white;
+            flex-shrink: 0;
+        }
+        
+        .filter-select:focus {
+            border-color: #0969da;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.3);
         }
         
         .results-table-container {
@@ -241,27 +254,104 @@
         .table {
             width: 100%;
             border-collapse: collapse;
+            margin: 0;
+            background: white;
         }
         
         .table th {
+            text-align: center;
             background: #f6f8fa;
-            border-bottom: 1px solid #d0d7de;
-            padding: 12px 15px;
-            text-align: left;
+            border-bottom: 2px solid #d0d7de;
+            border-right: 1px solid #d0d7de;
+            padding: 12px 8px;
             font-weight: 600;
             color: #24292f;
             font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .table th:last-child {
+            border-right: none;
         }
         
         .table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #d0d7de;
             vertical-align: middle;
+            border-bottom: 1px solid #eaeef2;
+            border-right: 1px solid #eaeef2;
+            padding: 10px 8px;
             font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .table td:last-child {
+            border-right: none;
+        }
+        
+        /* 컬럼별 정렬 및 스타일 설정 */
+        .table th:nth-child(1), 
+        .table td:nth-child(1) { /* 지원자 */
+            text-align: left;
+            font-weight: 600;
+            color: #24292f;
+        }
+        
+        .table th:nth-child(2), 
+        .table td:nth-child(2) { /* 면접관 */
+            text-align: left;
+            color: #24292f;
+        }
+        
+        .table th:nth-child(3), 
+        .table td:nth-child(3) { /* 면접일 */
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .table th:nth-child(4), 
+        .table td:nth-child(4) { /* 유형 */
+            text-align: center;
+        }
+        
+        .table th:nth-child(5), 
+        .table td:nth-child(5) { /* 전체점수 */
+            text-align: center;
+        }
+        
+        .table th:nth-child(6), 
+        .table td:nth-child(6) { /* 상태 */
+            text-align: center;
+        }
+        
+        .table th:nth-child(7), 
+        .table td:nth-child(7) { /* 추천여부 */
+            text-align: center;
+        }
+        
+        .table th:nth-child(8), 
+        .table td:nth-child(8) { /* 등록일 */
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .table th:nth-child(9), 
+        .table td:nth-child(9) { /* 관리 */
+            text-align: center;
+        }
+        
+        /* 스트라이프 테이블 스타일 */
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .table tbody tr:nth-child(odd) {
+            background-color: white;
         }
         
         .table tbody tr:hover {
-            background: #f6f8fa;
+            background-color: #e6f3ff !important;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
         }
         
         .table tbody tr:last-child td {
@@ -347,30 +437,50 @@
         
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .action-buttons .btn {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
         }
         
         .action-links {
             display: flex;
-            gap: 8px;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         .action-link {
             color: #0969da;
             text-decoration: none;
-            font-size: 0.85rem;
-            padding: 2px 4px;
-            border-radius: 2px;
-            transition: background-color 0.2s;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border: 1px solid #d0d7de;
+            border-radius: 3px;
+            background: white;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
         
         .action-link:hover {
             background: #f6f8fa;
-            text-decoration: underline;
+            border-color: #8c959f;
+            text-decoration: none;
         }
         
         .action-link.delete {
             color: #cf222e;
+            border-color: #cf222e;
+        }
+        
+        .action-link.delete:hover {
+            background: #fdf2f2;
+            border-color: #cf222e;
         }
         
         .empty-state {
@@ -395,6 +505,44 @@
             background: #dcfce7;
             color: #16a34a;
             border-color: #86efac;
+        }
+        
+        /* 반응형 테이블 */
+        @media (max-width: 768px) {
+            .table {
+                font-size: 0.8rem;
+            }
+            
+            .action-links .action-link {
+                padding: 3px 6px;
+                font-size: 0.75rem;
+            }
+            
+            .controls-grid {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .controls-left,
+            .controls-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .search-input {
+                width: 100%;
+                flex: 1 1 auto;
+                margin-bottom: 10px;
+            }
+            
+            .filter-select {
+                margin-bottom: 10px;
+            }
+            
+            .btn {
+                margin-bottom: 5px;
+            }
         }
         
         .alert-error {
@@ -475,35 +623,22 @@
                 <!-- 컨트롤 섹션 -->
                 <div class="controls-section">
                     <div class="controls-grid">
-                        <!-- 검색 -->
-                        <div class="search-container">
-                            <form action="results" method="get" style="display: flex; gap: 10px; width: 100%;">
-                                <input type="hidden" name="action" value="search">
-                                <input type="text" name="keyword" placeholder="지원자명, 면접관명으로 검색..." 
-                                       value="${searchKeyword}" style="flex: 1;">
-                                <button type="submit" class="btn btn-primary">🔍 검색</button>
-                            </form>
+                        <div class="controls-left">
+                            <input type="text" id="searchKeyword" placeholder="지원자명, 면접관명으로 검색..." 
+                                   value="${searchKeyword}" class="search-input">
+                            <button type="button" class="btn btn-primary" onclick="searchResults()">🔍 검색</button>
+                            <select id="statusFilter" onchange="filterResults()" class="filter-select">
+                                <option value="all" ${filterStatus == 'all' || filterStatus == null ? 'selected' : ''}>전체 상태</option>
+                                <option value="pending" ${filterStatus == 'pending' ? 'selected' : ''}>검토중</option>
+                                <option value="pass" ${filterStatus == 'pass' ? 'selected' : ''}>합격</option>
+                                <option value="fail" ${filterStatus == 'fail' ? 'selected' : ''}>불합격</option>
+                                <option value="hold" ${filterStatus == 'hold' ? 'selected' : ''}>보류</option>
+                            </select>
+                            <a href="results" class="btn btn-secondary">🔄 초기화</a>
                         </div>
-                        
-                        <!-- 필터 -->
-                        <div class="filter-container">
-                            <form action="results" method="get" style="display: flex; gap: 10px;">
-                                <input type="hidden" name="action" value="filter">
-                                <select name="status" onchange="this.form.submit()">
-                                    <option value="all" ${filterStatus == 'all' || filterStatus == null ? 'selected' : ''}>전체 상태</option>
-                                    <option value="pending" ${filterStatus == 'pending' ? 'selected' : ''}>검토중</option>
-                                    <option value="pass" ${filterStatus == 'pass' ? 'selected' : ''}>합격</option>
-                                    <option value="fail" ${filterStatus == 'fail' ? 'selected' : ''}>불합격</option>
-                                    <option value="hold" ${filterStatus == 'hold' ? 'selected' : ''}>보류</option>
-                                </select>
-                            </form>
+                        <div class="controls-right">
+                            <a href="results?action=new" class="btn btn-primary">➕ 새 결과 등록</a>
                         </div>
-                        
-                        <!-- 초기화 -->
-                        <a href="results" class="btn btn-secondary">🔄 초기화</a>
-                        
-                        <!-- 새 결과 등록 -->
-                        <a href="results?action=new" class="btn btn-primary">➕ 새 결과 등록</a>
                     </div>
                 </div>
 
@@ -604,5 +739,32 @@
             </div>
         </div>
     </div>
+    
+    <script>
+    function searchResults() {
+        const keyword = document.getElementById('searchKeyword').value;
+        if (keyword.trim()) {
+            location.href = 'results?action=search&keyword=' + encodeURIComponent(keyword);
+        } else {
+            location.href = 'results';
+        }
+    }
+    
+    function filterResults() {
+        const status = document.getElementById('statusFilter').value;
+        if (status && status !== 'all') {
+            location.href = 'results?action=filter&status=' + status;
+        } else {
+            location.href = 'results';
+        }
+    }
+    
+    // Enter 키 검색 기능
+    document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchResults();
+        }
+    });
+    </script>
 </body>
 </html>

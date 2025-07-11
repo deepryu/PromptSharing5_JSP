@@ -324,6 +324,80 @@
             margin: 0 0 10px 0;
             color: #24292f;
         }
+        
+        /* 클릭 가능한 통계 카드 스타일 */
+        .stat-item.clickable {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .stat-item.clickable:hover {
+            background: #e6f3ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: #bfdbfe;
+        }
+        
+        .stat-item.clickable.active {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 
+                        0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .stat-item.clickable.active .stat-number {
+            color: #1d4ed8;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(29, 78, 216, 0.1);
+        }
+        
+        .stat-item.clickable.active .stat-label {
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .stat-item.clickable::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            border-radius: 6px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+        
+        .stat-item.clickable.active::before {
+            opacity: 0.1;
+        }
+        
+        .stat-item.clickable::after {
+            content: '👆';
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .stat-item.clickable:hover::after {
+            opacity: 0.7;
+        }
+        
+        .stat-item.clickable.active::after {
+            content: '✓';
+            opacity: 1;
+            color: #1d4ed8;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
 
     </style>
 </head>
@@ -349,12 +423,16 @@
             <div class="content-body">
                 <!-- 통계 바 -->
                 <div class="stats-bar">
-                    <div class="stat-item">
+                    <div class="stat-item clickable ${filterCategory == null || filterCategory == 'all' ? 'active' : ''}" 
+                         onclick="filterByCategory('all')" 
+                         title="전체 질문 보기">
                         <div class="stat-number">${totalQuestions}</div>
                         <div class="stat-label">총 질문</div>
                     </div>
                     <c:forEach var="entry" items="${categoryStatistics}">
-                        <div class="stat-item">
+                        <div class="stat-item clickable ${filterCategory == entry.key ? 'active' : ''}" 
+                             onclick="filterByCategory('${entry.key}')" 
+                             title="${entry.key} 카테고리 질문만 보기">
                             <div class="stat-number">${entry.value}</div>
                             <div class="stat-label">
                                 <c:choose>
@@ -387,18 +465,19 @@
                             <button type="button" class="btn" onclick="clearSearch()">🔄 초기화</button>
                         </div>
                         <div class="filter-controls">
-                            <form action="questions" method="get" style="display: inline; margin: 0;">
+                            <form id="filterForm" action="questions" method="get" style="display: inline; margin: 0;">
                                 <input type="hidden" name="action" value="filter">
-                                <select name="category" onchange="this.form.submit()">
+                                <input type="hidden" id="hiddenCategory" name="category" value="${filterCategory != null ? filterCategory : 'all'}">
+                                <input type="hidden" id="hiddenDifficulty" name="difficulty" value="${filterDifficulty != null ? filterDifficulty : 'all'}">
+                                
+                                <select name="category" id="categorySelect" onchange="applyFilters()">
                                     <option value="all">전체 카테고리</option>
                                     <c:forEach var="cat" items="${categories}">
                                         <option value="${cat}" ${filterCategory == cat ? 'selected' : ''}>${cat}</option>
                                     </c:forEach>
                                 </select>
-                            </form>
-                            <form action="questions" method="get" style="display: inline; margin: 0;">
-                                <input type="hidden" name="action" value="filter">
-                                <select name="difficulty" onchange="this.form.submit()">
+                                
+                                <select name="difficulty" id="difficultySelect" onchange="applyFilters()">
                                     <option value="all">전체 난이도</option>
                                     <option value="1" ${filterDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆ (1단계)</option>
                                     <option value="2" ${filterDifficulty == 2 ? 'selected' : ''}>★★☆☆☆ (2단계)</option>
@@ -406,10 +485,11 @@
                                     <option value="4" ${filterDifficulty == 4 ? 'selected' : ''}>★★★★☆ (4단계)</option>
                                     <option value="5" ${filterDifficulty == 5 ? 'selected' : ''}>★★★★★ (5단계)</option>
                                 </select>
+                                
+                                <button type="button" class="btn" onclick="clearAllFilters()">🔄 필터 초기화</button>
                             </form>
                         </div>
                         <a href="questions?action=new" class="btn btn-primary">➕ 새 질문 등록</a>
-                        <a href="questions?action=random&limit=10" class="btn">🎲 랜덤 10개</a>
                     </div>
                 </div>
 
@@ -542,9 +622,142 @@
             }
         }
         
-        // 메시지 자동 숨김
+        // 카테고리별 필터링 함수 (기존 난이도 필터 유지)
+        function filterByCategory(category) {
+            // 시각적 피드백을 위한 즉시 업데이트
+            updateActiveStatCard(category);
+            
+            // 현재 난이도 필터 값 가져오기
+            const difficultySelect = document.getElementById('difficultySelect');
+            const currentDifficulty = difficultySelect ? difficultySelect.value : 'all';
+            
+            // 셀렉트 박스 동기화
+            const categorySelect = document.getElementById('categorySelect');
+            if (categorySelect) {
+                categorySelect.value = category;
+            }
+            
+            // 복합 필터링 적용
+            applyComplexFilter(category, currentDifficulty);
+        }
+        
+        // 복합 필터링 적용 함수
+        function applyComplexFilter(category, difficulty) {
+            const params = new URLSearchParams();
+            
+            // 전체가 아닌 경우만 파라미터 추가
+            if (category && category !== 'all') {
+                params.set('category', category);
+            }
+            if (difficulty && difficulty !== 'all') {
+                params.set('difficulty', difficulty);
+            }
+            
+            // 필터가 있으면 filter 액션, 없으면 기본 페이지
+            if (params.toString()) {
+                params.set('action', 'filter');
+                location.href = 'questions?' + params.toString();
+            } else {
+                location.href = 'questions';
+            }
+        }
+        
+        // 필터 적용 함수 (셀렉트 박스 변경 시)
+        function applyFilters() {
+            const categorySelect = document.getElementById('categorySelect');
+            const difficultySelect = document.getElementById('difficultySelect');
+            
+            const category = categorySelect ? categorySelect.value : 'all';
+            const difficulty = difficultySelect ? difficultySelect.value : 'all';
+            
+            // 카테고리 버튼 상태 업데이트
+            updateActiveStatCard(category);
+            
+            // 복합 필터링 적용
+            applyComplexFilter(category, difficulty);
+        }
+        
+        // 모든 필터 초기화
+        function clearAllFilters() {
+            // 셀렉트 박스 초기화
+            const categorySelect = document.getElementById('categorySelect');
+            const difficultySelect = document.getElementById('difficultySelect');
+            
+            if (categorySelect) categorySelect.value = 'all';
+            if (difficultySelect) difficultySelect.value = 'all';
+            
+            // 카테고리 버튼 상태 초기화
+            updateActiveStatCard('all');
+            
+            // 전체 목록으로 이동
+            location.href = 'questions';
+        }
+        
+        // 활성 상태 카드 업데이트 (즉시 시각적 피드백)
+        function updateActiveStatCard(selectedCategory) {
+            const statItems = document.querySelectorAll('.stat-item.clickable');
+            statItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 해당 카테고리 카드 활성화
+            statItems.forEach(item => {
+                const onclick = item.getAttribute('onclick');
+                if (onclick && onclick.includes("'" + selectedCategory + "'")) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // 페이지 로드 시 현재 필터 상태 반영
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentCategory = '${filterCategory}' || 'all';
+            const currentDifficulty = '${filterDifficulty}' || 'all';
+            
+            updateActiveStatCard(currentCategory);
+            
+            // 복합 필터 정보 표시
+            if ((currentCategory && currentCategory !== 'all') || (currentDifficulty && currentDifficulty !== 'all')) {
+                showComplexFilterInfo(currentCategory, currentDifficulty);
+            }
+        });
+        
+        // 복합 필터 정보 표시 함수
+        function showComplexFilterInfo(category, difficulty) {
+            const existingAlert = document.querySelector('.complex-filter-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            let filterText = '<strong>🔍 활성 필터:</strong> ';
+            const filters = [];
+            
+            if (category && category !== 'all') {
+                filters.push(`카테고리: ${category}`);
+            }
+            if (difficulty && difficulty !== 'all') {
+                const difficultyText = ['', '★☆☆☆☆ (1단계)', '★★☆☆☆ (2단계)', '★★★☆☆ (3단계)', '★★★★☆ (4단계)', '★★★★★ (5단계)'][difficulty];
+                filters.push(`난이도: ${difficultyText}`);
+            }
+            
+            filterText += filters.join(' + ');
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-info complex-filter-alert';
+            alertDiv.innerHTML = `
+                ${filterText}
+                <button type="button" class="btn" onclick="clearAllFilters()" style="margin-left: 10px; padding: 2px 8px; font-size: 0.8rem;">
+                    ❌ 모든 필터 해제
+                </button>
+            `;
+            
+            const controlsSection = document.querySelector('.controls-section');
+            controlsSection.parentNode.insertBefore(alertDiv, controlsSection.nextSibling);
+        }
+        
+        // 메시지 자동 숨김 (필터 알림은 제외)
         setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
+            const alerts = document.querySelectorAll('.alert:not(.complex-filter-alert)');
             alerts.forEach(alert => {
                 alert.style.opacity = '0';
                 setTimeout(() => alert.style.display = 'none', 300);

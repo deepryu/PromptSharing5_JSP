@@ -407,13 +407,25 @@ public class InterviewQuestionServlet extends HttpServlet {
         }
         
         try {
+            // 검색된 질문 목록
             List<InterviewQuestion> questions = questionDAO.searchQuestions(keyword);
             List<String> categories = questionDAO.getAllCategories();
             
+            // 전체 통계 정보 (카테고리 버튼들을 유지하기 위해)
+            int totalQuestions = questionDAO.getTotalActiveQuestionCount();
+            java.util.Map<String, Integer> categoryStats = questionDAO.getCategoryStatistics();
+            java.util.Map<Integer, Integer> difficultyStats = questionDAO.getDifficultyStatistics();
+            
+            // 검색 결과 설정
             request.setAttribute("questions", questions);
             request.setAttribute("categories", categories);
             request.setAttribute("searchKeyword", keyword);
-            request.setAttribute("totalQuestions", questions.size());
+            request.setAttribute("searchResultCount", questions.size());
+            
+            // 전체 통계 정보 설정 (버튼 유지를 위해)
+            request.setAttribute("totalQuestions", totalQuestions);
+            request.setAttribute("categoryStatistics", categoryStats);
+            request.setAttribute("difficultyStatistics", difficultyStats);
             
             request.getRequestDispatcher("/interview_questions.jsp").forward(request, response);
         } catch (Exception e) {
@@ -423,25 +435,61 @@ public class InterviewQuestionServlet extends HttpServlet {
     }
     
     /**
-     * 카테고리별 질문 필터링
+     * 질문 필터링 (카테고리 + 난이도 복합 필터링 지원)
      */
     private void filterQuestions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
+        if (questionDAO == null) {
+            showQuestionList(request, response);
+            return;
+        }
+        
+        // 필터 파라미터 가져오기
         String category = request.getParameter("category");
-        if (category == null || category.trim().isEmpty() || questionDAO == null) {
+        String difficultyParam = request.getParameter("difficulty");
+        
+        // 빈 값들을 null로 처리
+        if (category != null && (category.trim().isEmpty() || "all".equals(category))) {
+            category = null;
+        }
+        
+        Integer difficulty = null;
+        if (difficultyParam != null && !difficultyParam.trim().isEmpty() && !"all".equals(difficultyParam)) {
+            try {
+                difficulty = Integer.parseInt(difficultyParam);
+            } catch (NumberFormatException e) {
+                difficulty = null;
+            }
+        }
+        
+        // 두 필터 모두 null이면 전체 목록 표시
+        if (category == null && difficulty == null) {
             showQuestionList(request, response);
             return;
         }
         
         try {
-            List<InterviewQuestion> questions = questionDAO.getQuestionsByCategory(category);
+            // 복합 필터링된 질문 목록
+            List<InterviewQuestion> questions = questionDAO.getQuestionsByCategoryAndDifficulty(category, difficulty);
             List<String> categories = questionDAO.getAllCategories();
             
+            // 전체 통계 정보 (카테고리 버튼들을 유지하기 위해)
+            int totalQuestions = questionDAO.getTotalActiveQuestionCount();
+            java.util.Map<String, Integer> categoryStats = questionDAO.getCategoryStatistics();
+            java.util.Map<Integer, Integer> difficultyStats = questionDAO.getDifficultyStatistics();
+            
+            // 필터링 결과 설정
             request.setAttribute("questions", questions);
             request.setAttribute("categories", categories);
-            request.setAttribute("selectedCategory", category);
-            request.setAttribute("totalQuestions", questions.size());
+            request.setAttribute("filterCategory", category);
+            request.setAttribute("filterDifficulty", difficulty);
+            request.setAttribute("filterResultCount", questions.size());
+            
+            // 전체 통계 정보 설정 (버튼 유지를 위해)
+            request.setAttribute("totalQuestions", totalQuestions);
+            request.setAttribute("categoryStatistics", categoryStats);
+            request.setAttribute("difficultyStatistics", difficultyStats);
             
             request.getRequestDispatcher("/interview_questions.jsp").forward(request, response);
         } catch (Exception e) {
@@ -476,14 +524,25 @@ public class InterviewQuestionServlet extends HttpServlet {
         }
         
         try {
+            // 랜덤 질문 목록
             List<InterviewQuestion> questions = questionDAO.getRandomQuestions(count, null, null);
             List<String> categories = questionDAO.getAllCategories();
             
+            // 전체 통계 정보 (카테고리 버튼들을 유지하기 위해)
+            int totalQuestions = questionDAO.getTotalActiveQuestionCount();
+            java.util.Map<String, Integer> categoryStats = questionDAO.getCategoryStatistics();
+            java.util.Map<Integer, Integer> difficultyStats = questionDAO.getDifficultyStatistics();
+            
+            // 랜덤 결과 설정
             request.setAttribute("questions", questions);
             request.setAttribute("categories", categories);
-            request.setAttribute("isRandomMode", true);
-            request.setAttribute("randomCount", count);
-            request.setAttribute("totalQuestions", questions.size());
+            request.setAttribute("randomQuestions", true);
+            request.setAttribute("randomLimit", count);
+            
+            // 전체 통계 정보 설정 (버튼 유지를 위해)
+            request.setAttribute("totalQuestions", totalQuestions);
+            request.setAttribute("categoryStatistics", categoryStats);
+            request.setAttribute("difficultyStatistics", difficultyStats);
             
             request.getRequestDispatcher("/interview_questions.jsp").forward(request, response);
         } catch (Exception e) {

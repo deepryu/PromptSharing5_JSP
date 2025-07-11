@@ -54,18 +54,26 @@ public class InterviewResultServlet extends HttpServlet {
         String requestURI = request.getRequestURI();
         String contextPath = request.getContextPath();
         String pathInfo = request.getPathInfo();
+        String action = request.getParameter("action");
         
         System.out.println("🔍 [InterviewResultServlet-GET] ================================");
         System.out.println("🔍 [InterviewResultServlet-GET] 요청 URI: " + requestURI);
         System.out.println("🔍 [InterviewResultServlet-GET] 컨텍스트 경로: " + contextPath);
         System.out.println("🔍 [InterviewResultServlet-GET] PathInfo: " + pathInfo);
+        System.out.println("🔍 [InterviewResultServlet-GET] Action 파라미터: " + action);
         
-        if (pathInfo == null || pathInfo.equals("/")) {
-            pathInfo = "/list";
+        // action 파라미터가 있으면 우선 사용, 없으면 pathInfo 사용
+        String targetAction = null;
+        if (action != null && !action.trim().isEmpty()) {
+            targetAction = "/" + action;
+        } else if (pathInfo != null && !pathInfo.equals("/")) {
+            targetAction = pathInfo;
+        } else {
+            targetAction = "/list";
         }
         
         try {
-            switch (pathInfo) {
+            switch (targetAction) {
                 case "/list":
                     System.out.println("📋 [InterviewResultServlet-GET] /list 경로 처리");
                     showResultList(request, response);
@@ -75,6 +83,7 @@ public class InterviewResultServlet extends HttpServlet {
                     showResultDetail(request, response);
                     break;
                 case "/add":
+                case "/new":
                     System.out.println("➕ [InterviewResultServlet-GET] /add 경로 처리 - 결과등록 폼");
                     showResultForm(request, response);
                     break;
@@ -95,7 +104,7 @@ public class InterviewResultServlet extends HttpServlet {
                     filterResults(request, response);
                     break;
                 default:
-                    System.out.println("❓ [InterviewResultServlet-GET] 기본 경로 처리: " + pathInfo);
+                    System.out.println("❓ [InterviewResultServlet-GET] 기본 경로 처리: " + targetAction);
                     showResultList(request, response);
                     break;
             }
@@ -119,10 +128,22 @@ public class InterviewResultServlet extends HttpServlet {
         }
         
         String pathInfo = request.getPathInfo();
+        String action = request.getParameter("action");
+        
+        // action 파라미터가 있으면 우선 사용, 없으면 pathInfo 사용
+        String targetAction = null;
+        if (action != null && !action.trim().isEmpty()) {
+            targetAction = "/" + action;
+        } else if (pathInfo != null && !pathInfo.equals("/")) {
+            targetAction = pathInfo;
+        } else {
+            targetAction = "/list";
+        }
         
         try {
-            switch (pathInfo) {
+            switch (targetAction) {
                 case "/add":
+                case "/new":
                     createResult(request, response);
                     break;
                 case "/edit":
