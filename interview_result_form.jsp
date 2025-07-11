@@ -61,7 +61,10 @@
         .nav-buttons {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
+        
+
         
         .btn {
             padding: 6px 12px;
@@ -439,7 +442,7 @@
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const isEditMode = <%= isEdit %>;
+            const isEditMode = <%= isEdit ? "true" : "false" %>;
             
             // 페이지 로드 시 점수 계산 (수정 모드인 경우)
             if (isEditMode) {
@@ -569,8 +572,7 @@
             updateCategorySelection();
         }
         
-        // JSP에서 JavaScript로 변수 전달
-        const isEditMode = <%= isEdit ? "true" : "false" %>;
+        // JSP에서 JavaScript로 변수 전달 (위에서 이미 선언됨)
         
         // 종합점수 자동 계산 함수
         function calculateOverallScore() {
@@ -609,6 +611,21 @@
                 overallScoreInput.style.borderColor = '';
             }
         }
+        
+        // 페이지 로드 시 초기 종합점수 계산
+        window.addEventListener('DOMContentLoaded', function() {
+            // 편집 모드이거나 기존 값이 있을 때 종합점수 자동 계산
+            calculateOverallScore();
+            
+            // 카테고리별 개수 업데이트
+            updateCategoryCounts();
+            
+            // 선택된 질문 요약 업데이트
+            updateSelectedQuestions();
+            
+            // 카테고리별 선택 상태 업데이트
+            updateCategorySelection();
+        });
         
         function toggleAllQuestions() {
             const allCheckboxes = document.querySelectorAll('input[name="selectedQuestions"]');
@@ -803,10 +820,8 @@
         <div class="top-bar">
             <h2>📊 <%= isEdit ? "인터뷰 결과 수정" : "인터뷰 결과 등록" %></h2>
             <div class="nav-buttons">
-                <a href="${pageContext.request.contextPath}/main.jsp" class="btn">🏠 홈</a>
-                <a href="${pageContext.request.contextPath}/results" class="btn">📊 결과관리</a>
-                <a href="${pageContext.request.contextPath}/candidates" class="btn">👥 지원자</a>
-                <a href="${pageContext.request.contextPath}/interview/list" class="btn">📅 일정관리</a>
+                <a href="${pageContext.request.contextPath}/main.jsp" class="btn">🏠 메인</a>
+                <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">🚪 로그아웃</a>
             </div>
         </div>
         
@@ -1009,7 +1024,8 @@
                                 <input type="number" name="technicalScore" id="technicalScore" 
                                        min="0" max="100" step="0.1"
                                        value="<%= isEdit && result.getTechnicalScore() != null ? result.getTechnicalScore() : "" %>" 
-                                       placeholder="0-100">
+                                       placeholder="0-100" 
+                                       oninput="calculateOverallScore()" onchange="calculateOverallScore()">
                                 <div class="help-text">기술적 능력</div>
                             </div>
                             
@@ -1018,7 +1034,8 @@
                                 <input type="number" name="communicationScore" id="communicationScore" 
                                        min="0" max="100" step="0.1"
                                        value="<%= isEdit && result.getCommunicationScore() != null ? result.getCommunicationScore() : "" %>" 
-                                       placeholder="0-100">
+                                       placeholder="0-100" 
+                                       oninput="calculateOverallScore()" onchange="calculateOverallScore()">
                                 <div class="help-text">소통 능력</div>
                             </div>
                             
@@ -1027,7 +1044,8 @@
                                 <input type="number" name="problemSolvingScore" id="problemSolvingScore" 
                                        min="0" max="100" step="0.1"
                                        value="<%= isEdit && result.getProblemSolvingScore() != null ? result.getProblemSolvingScore() : "" %>" 
-                                       placeholder="0-100">
+                                       placeholder="0-100" 
+                                       oninput="calculateOverallScore()" onchange="calculateOverallScore()">
                                 <div class="help-text">문제 해결력</div>
                             </div>
                             
@@ -1036,7 +1054,8 @@
                                 <input type="number" name="attitudeScore" id="attitudeScore" 
                                        min="0" max="100" step="0.1"
                                        value="<%= isEdit && result.getAttitudeScore() != null ? result.getAttitudeScore() : "" %>" 
-                                       placeholder="0-100">
+                                       placeholder="0-100" 
+                                       oninput="calculateOverallScore()" onchange="calculateOverallScore()">
                                 <div class="help-text">근무 태도</div>
                             </div>
                             

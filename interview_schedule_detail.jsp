@@ -8,75 +8,148 @@
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인터뷰 일정 상세</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>인터뷰 일정 상세 - 채용 관리 시스템</title>
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="css/common.css">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f0f0f0;
+            min-height: 100vh;
         }
         
-        .detail-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .detail-header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            font-weight: 300;
-        }
-        
-        .detail-header .subtitle {
-            margin-top: 10px;
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-        
-        .detail-content {
+        .top-bar {
             background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid #d0d7de;
+            padding: 10px 20px;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .top-bar h2 {
+            margin: 0;
+            color: #24292f;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 3px;
+            background: white;
+            color: #24292f;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #f6f8fa;
+            border-color: #8c959f;
+        }
+        
+        .btn-primary {
+            background: #2da44e;
+            color: white;
+            border-color: #2da44e;
+        }
+        
+        .btn-primary:hover {
+            background: #2c974b;
+            border-color: #2c974b;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5c636a;
+            border-color: #5c636a;
+        }
+        
+        .btn-danger {
+            background: #da3633;
+            color: white;
+            border-color: #da3633;
+        }
+        
+        .btn-danger:hover {
+            background: #b92b27;
+            border-color: #b92b27;
+        }
+        
+        .main-content {
+            background: white;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .content-header {
+            background: #0078d4;
+            color: white;
+            padding: 15px 25px;
+            border-bottom: 1px solid #106ebe;
+        }
+        
+        .content-header h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .content-body {
+            padding: 30px;
         }
         
         .detail-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
+            margin-bottom: 30px;
         }
         
         .detail-section {
-            border-left: 4px solid #667eea;
-            padding-left: 20px;
+            border: 1px solid #d0d7de;
+            border-radius: 3px;
+            padding: 20px;
+            background: #f6f8fa;
         }
         
         .section-title {
-            font-size: 1.3em;
+            font-size: 1.1rem;
             font-weight: 600;
-            color: #333;
+            color: #24292f;
             margin-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
             padding-bottom: 8px;
+            border-bottom: 1px solid #d0d7de;
         }
         
         .detail-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f5f5f5;
+            padding: 8px 0;
+            border-bottom: 1px solid #eaeef2;
         }
         
         .detail-item:last-child {
@@ -85,117 +158,82 @@
         
         .detail-label {
             font-weight: 600;
-            color: #555;
+            color: #656d76;
             min-width: 120px;
         }
         
         .detail-value {
-            color: #333;
+            color: #24292f;
             font-weight: 500;
             text-align: right;
         }
         
-        .schedule-status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
             text-align: center;
             display: inline-block;
         }
         
-        .status-scheduled { background: #e3f2fd; color: #1976d2; }
-        .status-in_progress { background: #fff3e0; color: #f57c00; }
-        .status-completed { background: #e8f5e8; color: #388e3c; }
-        .status-cancelled { background: #ffebee; color: #d32f2f; }
-        .status-postponed { background: #f3e5f5; color: #7b1fa2; }
+        .status-scheduled { background: #dcfce7; color: #16a34a; }
+        .status-completed { background: #dbeafe; color: #2563eb; }
+        .status-cancelled { background: #fecaca; color: #dc2626; }
+        .status-postponed { background: #f3e8ff; color: #7c3aed; }
         
         .interview-type {
-            background: #f8f9fa;
-            color: #495057;
+            background: #f6f8fa;
+            color: #656d76;
             padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            border: 1px solid #d0d7de;
         }
         
         .datetime-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0078d4;
             color: white;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 3px;
             text-align: center;
             margin: 20px 0;
+            border: 1px solid #106ebe;
         }
         
         .date-time {
-            font-size: 1.5em;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 600;
             margin-bottom: 5px;
         }
         
         .duration-info {
             opacity: 0.9;
-            font-size: 1.1em;
+            font-size: 1rem;
         }
         
         .notes-section {
-            background: #f8f9fa;
+            background: #f6f8fa;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 3px;
             margin-top: 20px;
+            border: 1px solid #d0d7de;
         }
         
         .notes-content {
             line-height: 1.6;
             white-space: pre-wrap;
-            color: #555;
+            color: #24292f;
         }
         
         .action-buttons {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             justify-content: center;
             margin-top: 30px;
             flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: #007bff;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #0056b3;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
+            padding-top: 20px;
+            border-top: 1px solid #d0d7de;
         }
         
         .candidate-link {
@@ -244,20 +282,22 @@
 </head>
 <body>
     <div class="container">
-
-
-        <c:choose>
-            <c:when test="${not empty schedule}">
-                <div class="detail-header">
-                    <h1>인터뷰 일정 상세</h1>
-                    <div class="subtitle">
-                        <a href="../candidates?action=detail&id=${schedule.candidateId}" class="candidate-link" style="color: white;">
-                            후보자: ${schedule.candidateName}
-                        </a>
-                    </div>
-                </div>
-
-                <div class="detail-content">
+        <div class="top-bar">
+            <h2>📊 채용 관리 시스템</h2>
+            <div class="nav-buttons">
+                <a href="${pageContext.request.contextPath}/main.jsp" class="btn">🏠 메인</a>
+                <a href="${pageContext.request.contextPath}/interview/list" class="btn">📅 일정관리</a>
+                <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">🚪 로그아웃</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <h1>📅 인터뷰 일정 상세</h1>
+            </div>
+            <div class="content-body">
+                <c:choose>
+                    <c:when test="${not empty schedule}">
                     <div class="datetime-display">
                         <div class="date-time">
                             ${schedule.interviewDateFormatted} ${schedule.interviewTimeFormatted}
@@ -274,7 +314,7 @@
                             <div class="detail-item">
                                 <span class="detail-label">후보자</span>
                                 <span class="detail-value">
-                                    <a href="../candidates?action=detail&id=${schedule.candidateId}" class="candidate-link">
+                                    <a href="${pageContext.request.contextPath}/candidates?action=detail&id=${schedule.candidateId}" class="candidate-link">
                                         ${schedule.candidateName}
                                     </a>
                                 </span>
@@ -304,9 +344,9 @@
                             <div class="detail-item">
                                 <span class="detail-label">면접 상태</span>
                                 <span class="detail-value">
-                                    <span class="schedule-status status-${schedule.status}">
-                                        ${schedule.statusDisplayName}
-                                    </span>
+                                                                    <span class="status-badge status-${schedule.status}">
+                                    ${schedule.statusDisplayName}
+                                </span>
                                 </span>
                             </div>
                             
@@ -336,21 +376,23 @@
                     </c:if>
                 </div>
 
-                <div class="action-buttons">
-                    <a href="edit?id=${schedule.id}" class="btn btn-primary">수정</a>
-                    <a href="list" class="btn btn-secondary">목록으로</a>
-                    <a href="delete?id=${schedule.id}" class="btn btn-danger" 
-                       onclick="return confirm('?뺣쭚 ???명꽣酉??쇱젙????젣?섏떆寃좎뒿?덇퉴?')">삭제</a>
-                </div>
+                    <div class="action-buttons">
+                        <a href="${pageContext.request.contextPath}/interview/edit?id=${schedule.id}" class="btn btn-primary">✏️ 수정</a>
+                        <a href="${pageContext.request.contextPath}/interview/list" class="btn btn-secondary">📋 목록으로</a>
+                        <a href="${pageContext.request.contextPath}/interview/delete?id=${schedule.id}" class="btn btn-danger" 
+                           onclick="return confirm('정말 삭제하시겠습니까?')">🗑️ 삭제</a>
+                    </div>
             </c:when>
             <c:otherwise>
-                <div class="detail-content" style="text-align: center; padding: 50px;">
-                    <h2>?명꽣酉??쇱젙??李얠쓣 ???놁뒿?덈떎</h2>
-                    <p>?붿껌?섏떊 ?명꽣酉??쇱젙??議댁옱?섏? ?딄굅????젣?섏뿀?듬땲??</p>
-                    <a href="list" class="btn btn-primary">紐⑸줉?쇰줈 ?뚯븘媛湲?/a>
+                <div style="text-align: center; padding: 50px;">
+                    <h2>📅 인터뷰 일정을 찾을 수 없습니다</h2>
+                    <p>요청하신 인터뷰 일정이 존재하지 않거나 삭제되었습니다</p>
+                    <a href="${pageContext.request.contextPath}/interview/list" class="btn btn-primary">📋 목록으로 돌아가기</a>
                 </div>
             </c:otherwise>
         </c:choose>
+            </div>
+        </div>
     </div>
 </body>
 </html> 

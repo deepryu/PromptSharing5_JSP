@@ -43,40 +43,254 @@
     <link rel="stylesheet" href="css/common.css">
     <style>
         /* 지원자 관리 페이지 전용 스타일 */
+        
+        /* 테이블 스타일 강화 */
+        .table-container {
+            background: white;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        #candidatesTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            background: white;
+        }
+        
+        #candidatesTable th {
+            text-align: center;
+            background: #f6f8fa;
+            border-bottom: 2px solid #d0d7de;
+            border-right: 1px solid #d0d7de;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: #24292f;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        #candidatesTable th:last-child {
+            border-right: none;
+        }
+        
+        #candidatesTable td {
+            vertical-align: middle;
+            border-bottom: 1px solid #eaeef2;
+            border-right: 1px solid #eaeef2;
+            padding: 10px 8px;
+            font-size: 0.9rem;
+        }
+        
+        #candidatesTable td:last-child {
+            border-right: none;
+        }
+        
+        /* 컬럼별 정렬 및 너비 설정 */
+        #candidatesTable th:nth-child(1), 
+        #candidatesTable td:nth-child(1) { /* ID */
+            width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #0969da;
+        }
+        
+        #candidatesTable th:nth-child(2), 
+        #candidatesTable td:nth-child(2) { /* 이름 */
+            width: 100px;
+            text-align: left;
+            font-weight: 600;
+            color: #24292f;
+        }
+        
+        #candidatesTable th:nth-child(3), 
+        #candidatesTable td:nth-child(3) { /* 이메일 */
+            width: 180px;
+            text-align: left;
+            color: #0969da;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+        
+        #candidatesTable th:nth-child(4), 
+        #candidatesTable td:nth-child(4) { /* 전화번호 */
+            width: 120px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #656d76;
+        }
+        
+        #candidatesTable th:nth-child(5), 
+        #candidatesTable td:nth-child(5) { /* 지원분야 */
+            width: 100px;
+            text-align: center;
+            color: #24292f;
+        }
+        
+        #candidatesTable th:nth-child(6), 
+        #candidatesTable td:nth-child(6) { /* 인터뷰날짜 */
+            width: 100px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #656d76;
+        }
+        
+        #candidatesTable th:nth-child(7), 
+        #candidatesTable td:nth-child(7) { /* 시간 */
+            width: 80px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #656d76;
+        }
+        
+        #candidatesTable th:nth-child(8), 
+        #candidatesTable td:nth-child(8) { /* 상태 */
+            width: 120px;
+            text-align: center;
+        }
+        
+        #candidatesTable th:nth-child(9), 
+        #candidatesTable td:nth-child(9) { /* 액션 */
+            width: 380px;
+            text-align: center;
+        }
+        
+        /* 테이블 행 스타일 */
+        #candidatesTable tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        #candidatesTable tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+        
+        #candidatesTable tbody tr:hover {
+            background-color: #e6f3ff !important;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        /* 상태 배지 스타일 */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+            display: inline-block;
+            min-width: 80px;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        
+        .status-scheduled {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+        
+        .status-completed {
+            background: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+        
+        .status-cancelled {
+            background: #fecaca;
+            color: #dc2626;
+            border: 1px solid #f87171;
+        }
+        
+        .status-postponed {
+            background: #f3e8ff;
+            color: #7c3aed;
+            border: 1px solid #c4b5fd;
+        }
+        
+        /* 액션 버튼 스타일 개선 */
         .action-buttons {
             display: flex;
-            flex-direction: row;
-            gap: var(--space-xs);
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
             max-width: 100%;
-            overflow-x: auto;
         }
         
         .action-buttons .btn {
-            font-size: var(--font-xs);
-            padding: var(--space-xs) var(--space-sm);
-            min-height: 28px;
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            min-height: 24px;
             white-space: nowrap;
             text-align: center;
             flex-shrink: 0;
+            border-radius: 3px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
         }
         
-        .action-buttons .btn-view { background-color: #6c757d; color: white; }
-        .action-buttons .btn-edit { background-color: #fd7e14; color: white; }
-        .action-buttons .btn-schedule-add { background-color: #20c997; color: white; }
-        .action-buttons .btn-schedule-edit { background-color: #17a2b8; color: white; }
-        .action-buttons .btn-result-add { background-color: #007bff; color: white; }
-        .action-buttons .btn-result-edit { background-color: #6f42c1; color: white; }
+        .action-buttons .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
         
-        @media (max-width: 767px) {
+        .action-buttons .btn-view { 
+            background-color: #6c757d; 
+            color: white; 
+        }
+        
+        .action-buttons .btn-edit { 
+            background-color: #fd7e14; 
+            color: white; 
+        }
+        
+        .action-buttons .btn-schedule-add { 
+            background-color: #20c997; 
+            color: white; 
+        }
+        
+        .action-buttons .btn-schedule-edit { 
+            background-color: #17a2b8; 
+            color: white; 
+        }
+        
+        .action-buttons .btn-result-add { 
+            background-color: #007bff; 
+            color: white; 
+        }
+        
+        .action-buttons .btn-result-edit { 
+            background-color: #6f42c1; 
+            color: white; 
+        }
+        
+        .action-buttons .btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* 반응형 테이블 */
+        @media (max-width: 768px) {
+            #candidatesTable {
+                font-size: 0.8rem;
+            }
+            
             .action-buttons {
                 gap: 2px;
             }
             
             .action-buttons .btn {
-                min-height: 32px;
-                font-size: 10px;
-                padding: 4px 6px;
+                font-size: 0.65rem;
+                padding: 2px 4px;
+                min-height: 20px;
+            }
+            
+            #candidatesTable th:nth-child(9), 
+            #candidatesTable td:nth-child(9) { /* 액션 */
+                width: 320px;
             }
         }
     </style>
@@ -246,33 +460,50 @@
                                             %>
                                         </td>
                                         <td data-label="상태">
-                                            <%
-                                                // 면접유형과 인터뷰결과를 합쳐서 표시
-                                                String interviewType = candidate.getInterviewType();
-                                                String resultStatus = candidate.getInterviewResultStatus();
-                                                
-                                                String combinedStatus = "";
-                                                if (interviewType != null && !"-".equals(interviewType) && !interviewType.trim().isEmpty()) {
-                                                    combinedStatus = interviewType;
-                                                }
-                                                
-                                                if (resultStatus != null && !resultStatus.trim().isEmpty() && !"미등록".equals(resultStatus)) {
-                                                    if (!combinedStatus.isEmpty()) {
-                                                        combinedStatus += " / " + resultStatus;
-                                                    } else {
-                                                        combinedStatus = resultStatus;
-                                                    }
-                                                }
-                                                
-                                                if (combinedStatus.isEmpty()) {
-                                                    combinedStatus = "미등록";
-                                                }
-                                            %>
-                                            <span class="status-badge 
-                                                <% if ("미등록".equals(combinedStatus)) { %>status-pending
-                                                <% } else if (combinedStatus.contains("합격") || combinedStatus.contains("채용") || combinedStatus.contains("통과")) { %>status-completed
-                                                <% } else if (combinedStatus.contains("불합격") || combinedStatus.contains("탈락")) { %>status-rejected
-                                                <% } else { %>status-in-progress<% } %>">
+                                                                        <%
+                                // 면접유형과 인터뷰결과를 합쳐서 표시
+                                String interviewType = candidate.getInterviewType();
+                                String rawResultStatus = candidate.getInterviewResultStatus();
+                                
+                                // 영어 상태를 한글로 변환
+                                String resultStatus = "";
+                                if (rawResultStatus != null && !rawResultStatus.trim().isEmpty() && !"미등록".equals(rawResultStatus)) {
+                                    if ("pass".equals(rawResultStatus)) {
+                                        resultStatus = "합격";
+                                    } else if ("fail".equals(rawResultStatus)) {
+                                        resultStatus = "불합격";
+                                    } else if ("hold".equals(rawResultStatus)) {
+                                        resultStatus = "보류";
+                                    } else if ("pending".equals(rawResultStatus)) {
+                                        resultStatus = "대기";
+                                    } else {
+                                        resultStatus = rawResultStatus; // 원본 값 사용 (이미 한글인 경우)
+                                    }
+                                }
+                                
+                                String combinedStatus = "";
+                                if (interviewType != null && !"-".equals(interviewType) && !interviewType.trim().isEmpty()) {
+                                    combinedStatus = interviewType;
+                                }
+                                
+                                if (!resultStatus.isEmpty()) {
+                                    if (!combinedStatus.isEmpty()) {
+                                        combinedStatus += " / " + resultStatus;
+                                    } else {
+                                        combinedStatus = resultStatus;
+                                    }
+                                }
+                                
+                                if (combinedStatus.isEmpty()) {
+                                    combinedStatus = "미등록";
+                                }
+                            %>
+                                                                        <span class="status-badge 
+                                <% if ("미등록".equals(combinedStatus)) { %>status-scheduled
+                                <% } else if (combinedStatus.contains("합격") || combinedStatus.contains("채용") || combinedStatus.contains("통과") || combinedStatus.contains("완료")) { %>status-completed
+                                <% } else if (combinedStatus.contains("불합격") || combinedStatus.contains("탈락") || combinedStatus.contains("취소")) { %>status-cancelled
+                                <% } else if (combinedStatus.contains("대기") || combinedStatus.contains("보류")) { %>status-postponed
+                                <% } else { %>status-scheduled<% } %>">
                                                 <%= combinedStatus %>
                                             </span>
                                         </td>
@@ -355,26 +586,34 @@
     </div>
 
 <script>
-// 검색 기능
-function searchCandidates() {
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toLowerCase();
+// 통합 검색 및 필터 기능
+function filterTable() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
     const table = document.getElementById('candidatesTable');
     const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
     
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const cells = row.getElementsByTagName('td');
-        let shouldShow = false;
+        let shouldShow = true;
         
-        // 이름, 이메일, 전화번호에서 검색
-        if (cells.length > 1) {
+        // 검색어 필터 (이름, 이메일, 전화번호)
+        if (searchInput && cells.length > 1) {
             const name = cells[1].textContent.toLowerCase();
             const email = cells[2].textContent.toLowerCase();
             const phone = cells[3].textContent.toLowerCase();
             
-            if (name.includes(filter) || email.includes(filter) || phone.includes(filter)) {
-                shouldShow = true;
+            if (!name.includes(searchInput) && !email.includes(searchInput) && !phone.includes(searchInput)) {
+                shouldShow = false;
+            }
+        }
+        
+        // 상태 필터
+        if (shouldShow && statusFilter) {
+            const status = row.getAttribute('data-status');
+            if (status !== statusFilter) {
+                shouldShow = false;
             }
         }
         
@@ -382,46 +621,23 @@ function searchCandidates() {
     }
 }
 
-// 필터 기능
+// 개별 함수들 (기존 호출 유지를 위해)
+function searchCandidates() {
+    filterTable();
+}
+
 function filterCandidates() {
-    const statusFilter = document.getElementById('statusFilter').value;
-    const table = document.getElementById('candidatesTable');
-    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const status = row.getAttribute('data-status');
-        
-        if (statusFilter === '' || status === statusFilter) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    }
+    filterTable();
 }
 
 // 검색 초기화
 function clearSearch() {
     document.getElementById('searchInput').value = '';
     document.getElementById('statusFilter').value = '';
-    searchCandidates();
-    filterCandidates();
+    filterTable();
 }
-
-// 모바일에서 테이블을 카드 형태로 변환
-function toggleMobileTable() {
-    const table = document.getElementById('candidatesTable');
-    if (window.innerWidth <= 767) {
-        table.classList.add('table-mobile-cards');
-    } else {
-        table.classList.remove('table-mobile-cards');
-    }
-}
-
-// 페이지 로드 시와 창 크기 변경 시 실행
-window.addEventListener('load', toggleMobileTable);
-window.addEventListener('resize', toggleMobileTable);
 </script>
 
 </body>
+</html> 
 </html> 
