@@ -457,6 +457,48 @@ public class InterviewQuestionDAO {
     }
     
     /**
+     * 카테고리별 질문 통계 조회
+     */
+    public java.util.Map<String, Integer> getCategoryStatistics() {
+        java.util.Map<String, Integer> statistics = new java.util.LinkedHashMap<>();
+        String sql = "SELECT category, COUNT(*) as count FROM interview_questions WHERE is_active = true GROUP BY category ORDER BY count DESC, category";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                statistics.put(rs.getString("category"), rs.getInt("count"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return statistics;
+    }
+    
+    /**
+     * 난이도별 질문 통계 조회
+     */
+    public java.util.Map<Integer, Integer> getDifficultyStatistics() {
+        java.util.Map<Integer, Integer> statistics = new java.util.LinkedHashMap<>();
+        String sql = "SELECT difficulty_level, COUNT(*) as count FROM interview_questions WHERE is_active = true GROUP BY difficulty_level ORDER BY difficulty_level";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                statistics.put(rs.getInt("difficulty_level"), rs.getInt("count"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return statistics;
+    }
+    
+    /**
      * ResultSet을 InterviewQuestion 객체로 매핑하는 헬퍼 메서드
      */
     private InterviewQuestion mapResultSetToQuestion(ResultSet rs) throws SQLException {

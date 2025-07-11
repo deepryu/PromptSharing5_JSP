@@ -7,163 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>인터뷰 질문 관리 - 채용 관리 시스템 V1.0</title>
-    <link rel="stylesheet" href="css/style.css">
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="css/common.css">
     <style>
-        body {
-            background: #f0f0f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+        /* 인터뷰 질문 페이지 전용 스타일 */
         
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .question-header {
-            background: #0078d4;
-            color: white;
-            padding: 15px 25px;
-            border: 1px solid #106ebe;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .question-header h1 {
-            margin: 0;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        .question-header p {
-            margin: 5px 0 0 0;
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        .nav-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .nav-buttons .btn {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            text-decoration: none;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .nav-buttons .btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .nav-buttons .btn-danger {
-            background: #d13438;
-            border-color: #b02a2f;
-        }
-        
-        .nav-buttons .btn-danger:hover {
-            background: #c23237;
-        }
-        
-        .question-stats {
-            display: flex;
-            background: white;
-            border: 1px solid #d0d7de;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card {
-            flex: 1;
-            padding: 15px 20px;
-            text-align: center;
-            border-right: 1px solid #d0d7de;
-            background: white;
-            transition: background-color 0.2s;
-        }
-        
-        .stat-card:last-child {
-            border-right: none;
-        }
-        
-        .stat-card:hover {
-            background: #f6f8fa;
-        }
-        
-        .stat-number {
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #0969da;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: #656d76;
-            font-size: 0.9rem;
-        }
-        
-        .filters-section {
-            background: white;
-            border: 1px solid #d0d7de;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .filter-row {
-            display: flex !important;
-            gap: 25px !important;
-            align-items: center !important;
-            flex-wrap: nowrap !important;
-            margin-bottom: 12px !important;
-            justify-content: flex-start !important;
-        }
-        
-        .filter-row:last-child {
-            margin-bottom: 0 !important;
-        }
-        
-        .filter-group {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            flex-shrink: 0 !important;
-        }
-        
-        .filter-group label {
-            font-weight: 500 !important;
-            font-size: 0.9rem !important;
-            white-space: nowrap !important;
-            color: #24292f !important;
-            margin-right: 5px !important;
-        }
-        
-        .filter-group select {
-            min-width: 120px !important;
-            padding: 5px 8px !important;
-            border: 1px solid #d0d7de !important;
-            border-radius: 3px !important;
-        }
-        
-        .search-group {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            flex-shrink: 0 !important;
-        }
-        
-
-        
+        /* 질문 목록 테이블 스타일 */
         .question-table {
             background: white;
             border: 1px solid #d0d7de;
@@ -420,159 +269,149 @@
             background: white;
         }
         
-        input[type="text"]:focus, select:focus {
-            outline: none;
-            border-color: #0969da;
-            box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.3);
+        /* 질문 카테고리 배지 및 난이도 스타일 */
+        .category-badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+            display: inline-block;
+            white-space: nowrap;
         }
+        
+        .difficulty-stars {
+            color: #f59e0b;
+            font-size: 0.9rem;
+        }
+        
+        /* 액션 버튼 스타일 */
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-icon {
+            padding: 4px 8px;
+            border: 1px solid #d0d7de;
+            border-radius: 3px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-icon:hover {
+            background: #f6f8fa;
+        }
+        
+        .btn-view { color: #0969da; }
+        .btn-edit { color: #7c3aed; }
+        .btn-toggle { color: #0d9488; }
+        .btn-delete { color: #dc2626; }
+        
+        /* 질문이 없을 때 표시 */
+        .no-questions {
+            text-align: center;
+            padding: 40px 20px;
+            color: #656d76;
+        }
+        
+        .no-questions h3 {
+            margin: 0 0 10px 0;
+            color: #24292f;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 헤더 -->
-        <div class="question-header">
-            <div>
-                <h1>📝 인터뷰 질문 관리</h1>
-                <p>면접에서 사용할 질문들을 관리하고 난이도별로 분류할 수 있습니다</p>
-            </div>
+        <!-- 헤더 바 -->
+        <div class="top-bar">
+            <h2>📊 채용 관리 시스템</h2>
             <div class="nav-buttons">
-                <button class="btn btn-light" onclick="location.href='main.jsp'">🏠 메인</button>
-                <button class="btn btn-light" onclick="location.href='candidates'">👥 인터뷰 대상자 관리</button>
-                <button class="btn btn-light" onclick="location.href='interview/list'">📅 인터뷰 일정 관리</button>
-                <button class="btn btn-light" onclick="location.href='results'">📝 인터뷰 결과 기록/관리</button>
-                <button class="btn btn-light" onclick="location.href='statistics'">📊 통계 및 리포트</button>
-                <button class="btn btn-danger" onclick="location.href='logout'">🚪 로그아웃</button>
+                <a href="main.jsp" class="btn">🏠 메인</a>
+                <a href="candidates" class="btn">👥 인터뷰 대상자 관리</a>
+                <a href="interview/list" class="btn">📅 인터뷰 일정 관리</a>
+                <a href="results" class="btn">📝 인터뷰 결과 기록/관리</a>
+                <a href="statistics" class="btn">📊 통계 및 리포트</a>
+                <a href="logout" class="btn btn-danger">🚪 로그아웃</a>
             </div>
         </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <h1>💡 인터뷰 질문 관리</h1>
+            </div>
+            <div class="content-body">
+                <!-- 통계 바 -->
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number">${totalQuestions}</div>
+                        <div class="stat-label">총 질문</div>
+                    </div>
+                    <c:forEach var="entry" items="${categoryStatistics}">
+                        <div class="stat-item">
+                            <div class="stat-number">${entry.value}</div>
+                            <div class="stat-label">
+                                <c:choose>
+                                    <c:when test="${entry.key == '기술'}">💻 기술</c:when>
+                                    <c:when test="${entry.key == '기술-Java-초급'}">☕ Java 초급</c:when>
+                                    <c:when test="${entry.key == '기술-Java-중급'}">☕ Java 중급</c:when>
+                                    <c:when test="${entry.key == '기술-Java-고급'}">☕ Java 고급</c:when>
+                                    <c:when test="${entry.key == '기술-Python-초급'}">🐍 Python 초급</c:when>
+                                    <c:when test="${entry.key == '기술-Python-중급'}">🐍 Python 중급</c:when>
+                                    <c:when test="${entry.key == '기술-Python-고급'}">🐍 Python 고급</c:when>
+                                    <c:when test="${entry.key == '인성'}">👤 인성</c:when>
+                                    <c:when test="${entry.key == '경험'}">📚 경험</c:when>
+                                    <c:when test="${entry.key == '상황'}">🎯 상황</c:when>
+                                    <c:otherwise>${entry.key}</c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
 
-        <!-- 통계 카드 -->
-        <div class="question-stats">
-            <div class="stat-card">
-                <div class="stat-number">${totalQuestions}</div>
-                <div class="stat-label">전체 활성 질문</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${techQuestions}</div>
-                <div class="stat-label">일반 기술</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${javaBeginnerQuestions}</div>
-                <div class="stat-label">Java 초급</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${javaIntermediateQuestions}</div>
-                <div class="stat-label">Java 중급</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${javaAdvancedQuestions}</div>
-                <div class="stat-label">Java 고급</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${pythonBeginnerQuestions}</div>
-                <div class="stat-label">Python 초급</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${pythonIntermediateQuestions}</div>
-                <div class="stat-label">Python 중급</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${pythonAdvancedQuestions}</div>
-                <div class="stat-label">Python 고급</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${personalityQuestions}</div>
-                <div class="stat-label">인성 질문</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${experienceQuestions}</div>
-                <div class="stat-label">경험 질문</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">${situationQuestions}</div>
-                <div class="stat-label">상황 질문</div>
-            </div>
-        </div>
-
-        <!-- 필터 및 검색 - 완전히 새로운 레이아웃 -->
-        <div style="background: white; border: 1px solid #d0d7de; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            
-            <!-- 1줄 고정 배치: 카테고리, 난이도, 검색창, 검색버튼, 새질문등록 -->
-            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: nowrap; overflow-x: auto;">
-                
-                <!-- 카테고리 필터 -->
-                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0;">
-                    <label style="font-weight: 500; color: #24292f; font-size: 14px;">카테고리:</label>
-                    <form action="questions" method="get" style="display: inline; margin: 0;">
-                        <input type="hidden" name="action" value="filter">
-                        <select name="category" onchange="this.form.submit()" 
-                                style="padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 3px; background: white; min-width: 120px; font-size: 14px; height: 32px;">
-                            <option value="all">전체</option>
-                            <option value="기술" ${filterCategory == '기술' ? 'selected' : ''}>💻 기술</option>
-                            <option value="기술-Java-초급" ${filterCategory == '기술-Java-초급' ? 'selected' : ''}>☕ Java 초급</option>
-                            <option value="기술-Java-중급" ${filterCategory == '기술-Java-중급' ? 'selected' : ''}>☕ Java 중급</option>
-                            <option value="기술-Java-고급" ${filterCategory == '기술-Java-고급' ? 'selected' : ''}>☕ Java 고급</option>
-                            <option value="기술-Python-초급" ${filterCategory == '기술-Python-초급' ? 'selected' : ''}>🐍 Python 초급</option>
-                            <option value="기술-Python-중급" ${filterCategory == '기술-Python-중급' ? 'selected' : ''}>🐍 Python 중급</option>
-                            <option value="기술-Python-고급" ${filterCategory == '기술-Python-고급' ? 'selected' : ''}>🐍 Python 고급</option>
-                            <option value="인성" ${filterCategory == '인성' ? 'selected' : ''}>👤 인성</option>
-                            <option value="경험" ${filterCategory == '경험' ? 'selected' : ''}>📚 경험</option>
-                            <option value="상황" ${filterCategory == '상황' ? 'selected' : ''}>🎯 상황</option>
-                        </select>
-                    </form>
+                <!-- 컨트롤 섹션 -->
+                <div class="controls-section">
+                    <div class="controls-grid">
+                        <div class="search-container">
+                            <form action="questions" method="get" style="display: inline; margin: 0;">
+                                <input type="hidden" name="action" value="search">
+                                <input type="text" name="keyword" id="searchInput" placeholder="질문 내용, 예상답변 검색..." value="${searchKeyword}">
+                                <button type="submit" class="btn">🔍 검색</button>
+                            </form>
+                            <button type="button" class="btn" onclick="clearSearch()">🔄 초기화</button>
+                        </div>
+                        <div class="filter-controls">
+                            <form action="questions" method="get" style="display: inline; margin: 0;">
+                                <input type="hidden" name="action" value="filter">
+                                <select name="category" onchange="this.form.submit()">
+                                    <option value="all">전체 카테고리</option>
+                                    <c:forEach var="cat" items="${categories}">
+                                        <option value="${cat}" ${filterCategory == cat ? 'selected' : ''}>${cat}</option>
+                                    </c:forEach>
+                                </select>
+                            </form>
+                            <form action="questions" method="get" style="display: inline; margin: 0;">
+                                <input type="hidden" name="action" value="filter">
+                                <select name="difficulty" onchange="this.form.submit()">
+                                    <option value="all">전체 난이도</option>
+                                    <option value="1" ${filterDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆ (1단계)</option>
+                                    <option value="2" ${filterDifficulty == 2 ? 'selected' : ''}>★★☆☆☆ (2단계)</option>
+                                    <option value="3" ${filterDifficulty == 3 ? 'selected' : ''}>★★★☆☆ (3단계)</option>
+                                    <option value="4" ${filterDifficulty == 4 ? 'selected' : ''}>★★★★☆ (4단계)</option>
+                                    <option value="5" ${filterDifficulty == 5 ? 'selected' : ''}>★★★★★ (5단계)</option>
+                                </select>
+                            </form>
+                        </div>
+                        <a href="questions?action=new" class="btn btn-primary">➕ 새 질문 등록</a>
+                        <a href="questions?action=random&limit=10" class="btn">🎲 랜덤 10개</a>
+                    </div>
                 </div>
-                
-                <!-- 난이도 필터 -->
-                <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0;">
-                    <label style="font-weight: 500; color: #24292f; font-size: 14px;">난이도:</label>
-                    <form action="questions" method="get" style="display: inline; margin: 0;">
-                        <input type="hidden" name="action" value="filter">
-                        <select name="difficulty" onchange="this.form.submit()" 
-                                style="padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 3px; background: white; min-width: 100px; font-size: 14px; height: 32px;">
-                            <option value="all">전체</option>
-                            <option value="1" ${filterDifficulty == 1 ? 'selected' : ''}>★☆☆☆☆</option>
-                            <option value="2" ${filterDifficulty == 2 ? 'selected' : ''}>★★☆☆☆</option>
-                            <option value="3" ${filterDifficulty == 3 ? 'selected' : ''}>★★★☆☆</option>
-                            <option value="4" ${filterDifficulty == 4 ? 'selected' : ''}>★★★★☆</option>
-                            <option value="5" ${filterDifficulty == 5 ? 'selected' : ''}>★★★★★</option>
-                        </select>
-                    </form>
-                </div>
-                
-                <!-- 필터 초기화 버튼 - 항상 표시 -->
-                <div style="flex-shrink: 0;">
-                    <button onclick="location.href='questions'" 
-                            style="background: #f6f8fa; color: #24292f; border: 1px solid #d0d7de; padding: 6px 12px; border-radius: 3px; cursor: pointer; white-space: nowrap; font-size: 14px; height: 32px;">
-                        🔄 필터 초기화
-                    </button>
-                </div>
-                
-                <!-- 검색창 -->
-                <div style="flex-shrink: 0;">
-                    <form action="questions" method="get" style="display: inline; margin: 0;">
-                        <input type="hidden" name="action" value="search">
-                        <input type="text" name="keyword" placeholder="질문 내용 검색..." 
-                               value="${searchKeyword}" 
-                               style="padding: 6px 12px; border: 1px solid #d0d7de; border-radius: 3px; width: 200px; font-size: 14px; height: 32px; box-sizing: border-box;">
-                    </form>
-                </div>
-                
-                <!-- 검색 버튼 -->
-                <div style="flex-shrink: 0;">
-                    <button onclick="document.querySelector('input[name=keyword]').form.submit()" 
-                            style="background: #0969da; color: white; border: 1px solid #0969da; padding: 6px 16px; border-radius: 3px; cursor: pointer; font-size: 14px; height: 32px; white-space: nowrap;">
-                        🔍 검색
-                    </button>
-                </div>
-                
-                <!-- 새 질문 등록 버튼 -->
-                <div style="margin-left: auto; flex-shrink: 0;">
-                    <button class="btn btn-primary" onclick="location.href='questions?action=new'" 
-                            style="background: #2da44e; color: white; border: 1px solid #2da44e; padding: 6px 16px; border-radius: 3px; cursor: pointer; font-weight: 500; font-size: 14px; height: 32px; white-space: nowrap;">
-                        ➕ 새 질문 등록
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <!-- 결과 정보 -->
         <c:if test="${searchKeyword != null}">
@@ -682,9 +521,15 @@
                 ${success}
             </div>
         </c:if>
+            </div>
+        </div>
     </div>
 
     <script>
+        function clearSearch() {
+            location.href = 'questions';
+        }
+        
         function deleteQuestion(id) {
             if (confirm('정말로 이 질문을 삭제하시겠습니까?\n(실제로는 비활성화됩니다)')) {
                 location.href = 'questions?action=delete&id=' + id;

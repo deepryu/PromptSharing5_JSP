@@ -152,14 +152,10 @@ public class InterviewQuestionServlet extends HttpServlet {
             
             // 통계 정보 계산
             int totalQuestions = questionDAO.getTotalActiveQuestionCount();
-            java.util.Map<String, Integer> categoryStats = questionDAO.getCategoryStatistics();
-            java.util.Map<Integer, Integer> difficultyStats = questionDAO.getDifficultyStatistics();
             
             request.setAttribute("questions", questions);
             request.setAttribute("categories", categories);
             request.setAttribute("totalQuestions", totalQuestions);
-            request.setAttribute("categoryStatistics", categoryStats);
-            request.setAttribute("difficultyStatistics", difficultyStats);
             
             request.getRequestDispatcher("/interview_questions.jsp").forward(request, response);
         } catch (Exception e) {
