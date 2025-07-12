@@ -16,17 +16,40 @@
         
         if (username != null) {
             System.out.println("⚠️ [login.jsp] 이미 로그인된 사용자가 login.jsp에 접근!");
-            System.out.println("🔄 [login.jsp] main.jsp로 리다이렉트 수행");
-            response.sendRedirect("main.jsp");
-            return;
+            
+            // 에러 메시지가 있는 경우 (권한 없는 접근 등) 리다이렉트하지 않음
+            String sessionError = (String) currentSession.getAttribute("errorMessage");
+            if (sessionError != null) {
+                System.out.println("❌ [login.jsp] 에러 메시지 있음 - 리다이렉트하지 않고 에러 표시");
+            } else {
+                System.out.println("🔄 [login.jsp] main.jsp로 리다이렉트 수행");
+                response.sendRedirect("main.jsp");
+                return;
+            }
         }
     }
     
     System.out.println("📄 [login.jsp] 로그인 폼 표시");
     
     String error = (String) request.getAttribute("error");
+    String sessionError = null;
+    
+    // 세션에서 에러 메시지 확인 (권한 없는 접근 시)
+    if (currentSession != null) {
+        sessionError = (String) currentSession.getAttribute("errorMessage");
+        if (sessionError != null) {
+            currentSession.removeAttribute("errorMessage"); // 한 번 표시 후 제거
+            System.out.println("❌ [login.jsp] 세션 에러 메시지: " + sessionError);
+        }
+    }
+    
+    // 최종 에러 메시지 결정
+    if (error == null && sessionError != null) {
+        error = sessionError;
+    }
+    
     if (error != null) {
-        System.out.println("❌ [login.jsp] 에러 메시지: " + error);
+        System.out.println("❌ [login.jsp] 표시할 에러 메시지: " + error);
     }
 %>
 <!DOCTYPE html>

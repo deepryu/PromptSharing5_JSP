@@ -113,6 +113,12 @@
             <div class="nav-buttons">
                 <% if (username != null) { %>
                     <span style="margin-right: 15px; color: var(--text-secondary); font-size: var(--font-sm);">안녕하세요, <%= username %>님</span>
+                    
+                    <%-- 모든 로그인 사용자에게 관리자 대시보드 버튼 표시 --%>
+                    <form action="admin/dashboard" method="get" style="display:inline; margin-right: 10px;">
+                        <button type="submit" class="btn btn-primary">🛠️ 관리자 대시보드</button>
+                    </form>
+                    
                     <form action="logout" method="get" style="display:inline;">
                         <button type="submit" class="btn">🚪 로그아웃</button>
                     </form>

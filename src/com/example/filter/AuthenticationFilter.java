@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 모든 요청에 대해 세션 인증을 검증하는 필터
- * 로그인하지 않은 사용자의 직접 URL 접근을 차단합니다.
+ * 기존 AuthenticationFilter - RoleBasedFilter로 통합됨
+ * 현재 비활성화 상태 (주석 처리)
  */
-@WebFilter("/*")
+// @WebFilter("/*")  // 비활성화: RoleBasedFilter로 통합
 public class AuthenticationFilter implements Filter {
     
     // 인증이 필요없는 페이지들
@@ -30,7 +30,7 @@ public class AuthenticationFilter implements Filter {
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("🔧 AuthenticationFilter 초기화됨");
+        System.out.println("🔧 AuthenticationFilter 초기화됨 (비활성화됨)");
     }
     
     @Override
