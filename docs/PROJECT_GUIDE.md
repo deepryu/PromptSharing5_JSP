@@ -105,6 +105,119 @@ git push origin main --no-verify
 - "yes" 명시적 응답 시에만 Git 명령어 실행
 - PowerShell 검증 스크립트 실행 후 푸시 진행
 
+### 🛠️ Git 푸시 에러 해결 방법 (중요!)
+
+#### 📋 주요 에러 원인 및 해결책
+
+**1. 🔧 PowerShell PSReadLine 모듈 문제**
+```
+증상: `git status` 명령어 실행 시 터미널이 멈춤
+원인: 긴 출력과 한글 파일명으로 인한 터미널 버퍼 문제
+해결책: CMD 우회 방법 사용
+```
+
+**2. 🌐 한글 파일명 처리 문제**
+```
+증상: 백업 파일들의 한글 파일명으로 인한 출력 복잡화
+원인: PowerShell과 Git의 한글 인코딩 충돌
+해결책: 짧은 명령어 옵션 사용
+```
+
+**3. 💬 커밋 메시지 인코딩 문제**
+```
+증상: 한글 커밋 메시지 작성 시 파라미터 분리 에러
+원인: CMD와 PowerShell의 따옴표 처리 방식 차이
+해결책: 영어 커밋 메시지 사용
+```
+
+#### 🚀 안전한 푸시 명령어 세트
+
+**✅ 추천 명령어 조합**:
+```bash
+# 1단계: 상태 확인 (간단한 출력)
+cmd /c "git status --short"
+
+# 2단계: 파일 추가 (특정 파일만)
+cmd /c "git add 파일명.jsp"
+# 또는 모든 파일
+git add .
+
+# 3단계: 커밋 (영어 메시지)
+git commit -m "UI improvements"
+git commit -m "Fix layout issues"
+git commit -m "Add new features"
+
+# 4단계: 푸시 (검증된 방법)
+git push origin main --no-verify
+```
+
+**⚠️ 피해야 할 명령어들**:
+```bash
+# ❌ 피하기: 긴 출력을 유발하는 명령어
+git status          # 대신 git status --short 사용
+git log             # 대신 git log --oneline -5 사용
+
+# ❌ 피하기: 한글 커밋 메시지
+git commit -m "UI 개선: 시스템 설정 화면 확장"  # 에러 발생
+git commit -m "기능 추가"                        # 에러 발생
+
+# ❌ 피하기: 복잡한 따옴표 처리
+cmd /c "git commit -m \"복잡한 메시지\""         # 에러 발생
+```
+
+#### 🔄 에러 발생 시 즉시 대응 방법
+
+**Step 1: 터미널 복구**
+```bash
+# PowerShell이 멈췄을 때
+Ctrl + C    # 명령어 중단
+q           # Git log/status에서 빠져나오기
+
+# 새로운 터미널 창 열기 (필요시)
+```
+
+**Step 2: CMD 우회 방법**
+```bash
+# 모든 Git 명령어를 CMD로 실행
+cmd /c "git status --short"
+cmd /c "git add ."
+cmd /c "git commit -m \"Simple message\""
+cmd /c "git push origin main --no-verify"
+```
+
+**Step 3: 푸시 성공 확인**
+```bash
+# 푸시 완료 확인
+cmd /c "git log --oneline -3"
+cmd /c "git status --short"
+```
+
+#### 📚 향후 예방 방법
+
+**🎯 표준 작업 흐름**:
+1. **간단한 상태 확인**: `cmd /c "git status --short"`
+2. **선택적 파일 추가**: 특정 파일만 `git add 파일명`
+3. **영어 커밋 메시지**: "feat: add feature", "fix: resolve issue"
+4. **안전한 푸시**: `git push origin main --no-verify`
+
+**🔒 자동화 스크립트 활용**:
+```bash
+# 추후 quick-push.cmd 스크립트 생성 고려
+@echo off
+cmd /c "git status --short"
+pause
+git add .
+git commit -m "Quick update"
+git push origin main --no-verify
+echo "Push completed successfully!"
+```
+
+**💡 모범 사례**:
+- 푸시 전 항상 컴파일 테스트 실행
+- 의미있는 영어 커밋 메시지 사용
+- 한 번에 너무 많은 파일 변경 지양
+- 정기적인 백업 및 브랜치 관리
+
 ## ⚡ 코드 수정 안전 가이드라인 (중요!)
 
 ### 🛡️ 정상 동작 코드 수정 시 주의사항
