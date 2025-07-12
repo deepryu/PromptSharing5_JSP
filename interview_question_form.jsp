@@ -280,7 +280,7 @@
             margin-top: 30px;
         }
         
-        .btn-form {
+        .btn {
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
@@ -537,15 +537,15 @@
                     
                     <!-- 액션 버튼 -->
                     <div class="form-actions">
-                        <button type="submit" class="btn-form btn-primary" id="submitBtn">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
                             <c:choose>
                                 <c:when test="${question != null}">✏️ 질문 수정 완료</c:when>
                                 <c:otherwise>➕ 새 질문 등록</c:otherwise>
                             </c:choose>
                         </button>
-                        <button type="button" class="btn-form btn-secondary" onclick="location.href='questions'">
+                        <a href="questions" class="btn btn-secondary">
                             ❌ 취소
-                        </button>
+                        </a>
                     </div>
                 </form>
             </div>

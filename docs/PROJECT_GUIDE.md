@@ -53,6 +53,67 @@ ADD COLUMN resume_file_type VARCHAR(50),
 ADD COLUMN resume_uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ```
 
+### 📝 SQL 스크립트 작성 가이드라인 (중요!)
+
+**⚠️ 절대 금지 사항**:
+- **psql 전용 메타 명령어 사용 금지**: `\d`, `\l`, `\dt`, `\c` 등
+- **클라이언트 특정 명령어 사용 금지**: PgAdmin, phpMyAdmin 등 도구 전용 명령어
+
+**✅ 표준 SQL만 사용**:
+- 모든 SQL 스크립트는 표준 SQL 문법만 사용
+- 데이터베이스 클라이언트에 관계없이 실행 가능해야 함
+- PostgreSQL, MySQL, Oracle 등 다양한 환경에서 호환 가능
+
+**🔄 일반적인 psql 명령어 → 표준 SQL 변환**:
+```sql
+-- ❌ 금지: psql 전용 명령어
+\d table_name;
+\l;
+\dt;
+\c database_name;
+
+-- ✅ 권장: 표준 SQL 대체
+-- 테이블 구조 확인
+SELECT column_name, data_type, character_maximum_length, is_nullable, column_default
+FROM information_schema.columns 
+WHERE table_name = 'table_name';
+
+-- 데이터베이스 목록 조회
+SELECT datname FROM pg_database;
+
+-- 테이블 목록 조회
+SELECT table_name FROM information_schema.tables 
+WHERE table_schema = 'public';
+```
+
+**📋 스크립트 구조 템플릿**:
+```sql
+-- 파일명: sql/스크립트_목적.sql
+-- 작성일: YYYY-MM-DD  
+-- 목적: 구체적인 변경사항 설명
+
+-- 1. 주요 작업 (예: 컬럼 추가)
+ALTER TABLE table_name ADD COLUMN new_column VARCHAR(50);
+
+-- 2. 데이터 업데이트 (필요시)
+UPDATE table_name SET new_column = 'default_value' WHERE condition;
+
+-- 3. 결과 확인
+SELECT COUNT(*) FROM table_name WHERE new_column IS NOT NULL;
+
+-- 4. 테이블 구조 확인 (표준 SQL)
+SELECT column_name, data_type, character_maximum_length, is_nullable 
+FROM information_schema.columns 
+WHERE table_name = 'table_name' AND column_name = 'new_column';
+```
+
+**🚨 에러 예방 체크리스트**:
+- [ ] psql 메타 명령어 (`\`로 시작하는 명령어) 사용하지 않음
+- [ ] 모든 명령어가 표준 SQL 문법임
+- [ ] 세미콜론(`;`)으로 각 명령문 종료
+- [ ] 주석(`--`)으로 목적과 설명 명시
+- [ ] 실행 전 문법 검증 가능
+
 ## 🏗️ 주요 기능
 | 기능 | 상태 | 설명 |
 |------|------|------|

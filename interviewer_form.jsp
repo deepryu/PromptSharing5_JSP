@@ -326,7 +326,7 @@
                             <button type="submit" class="btn-primary">
                                 <%= isEdit ? "💾 수정 완료" : "✅ 등록 완료" %>
                             </button>
-                            <a href="interviewers" class="btn-secondary">❌ 취소</a>
+                            <a href="interviewers" class="btn btn-secondary">❌ 취소</a>
                         </div>
                     </div>
                 </form>

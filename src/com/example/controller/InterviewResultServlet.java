@@ -348,13 +348,14 @@ public class InterviewResultServlet extends HttpServlet {
                     resultQuestionDAO.saveSelectedQuestions(result.getId(), selectedQuestionIds);
                 }
                 
-                // 2차면접 결과 저장 시 면접완료 처리 (기존 "2차 면접"과 새로운 "2차면접" 모두 지원)
-                if ("2차면접".equals(result.getInterviewType()) || "2차 면접".equals(result.getInterviewType())) {
+                // 2차면접 결과 저장 시 면접완료 처리 (면접유형=2차면접 + 결과상태=합격/불합격)
+                if (("2차면접".equals(result.getInterviewType()) || "2차 면접".equals(result.getInterviewType())) 
+                    && ("pass".equals(result.getResultStatus()) || "fail".equals(result.getResultStatus()))) {
                     try {
                         boolean statusUpdated = candidateDAO.updateCandidateStatus(result.getCandidateId(), "면접완료");
                         System.out.println("✅ [DEBUG] 2차면접 완료 - 지원자 상태 업데이트: " + 
                                           (statusUpdated ? "성공" : "실패") + 
-                                          " (지원자 ID: " + result.getCandidateId() + ")");
+                                          " (지원자 ID: " + result.getCandidateId() + ", 결과상태: " + result.getResultStatus() + ")");
                     } catch (Exception e) {
                         System.out.println("❌ [DEBUG] 2차면접 완료 처리 중 오류: " + e.getMessage());
                         e.printStackTrace();
@@ -405,13 +406,14 @@ public class InterviewResultServlet extends HttpServlet {
                 List<Integer> selectedQuestionIds = extractSelectedQuestionIds(request);
                 resultQuestionDAO.saveSelectedQuestions(result.getId(), selectedQuestionIds);
                 
-                // 2차면접 결과 수정 시 면접완료 처리 (기존 "2차 면접"과 새로운 "2차면접" 모두 지원)
-                if ("2차면접".equals(result.getInterviewType()) || "2차 면접".equals(result.getInterviewType())) {
+                // 2차면접 결과 수정 시 면접완료 처리 (면접유형=2차면접 + 결과상태=합격/불합격)
+                if (("2차면접".equals(result.getInterviewType()) || "2차 면접".equals(result.getInterviewType())) 
+                    && ("pass".equals(result.getResultStatus()) || "fail".equals(result.getResultStatus()))) {
                     try {
                         boolean statusUpdated = candidateDAO.updateCandidateStatus(result.getCandidateId(), "면접완료");
                         System.out.println("✅ [DEBUG] 2차면접 수정 완료 - 지원자 상태 업데이트: " + 
                                           (statusUpdated ? "성공" : "실패") + 
-                                          " (지원자 ID: " + result.getCandidateId() + ")");
+                                          " (지원자 ID: " + result.getCandidateId() + ", 결과상태: " + result.getResultStatus() + ")");
                     } catch (Exception e) {
                         System.out.println("❌ [DEBUG] 2차면접 수정 완료 처리 중 오류: " + e.getMessage());
                         e.printStackTrace();

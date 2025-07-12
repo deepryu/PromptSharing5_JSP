@@ -375,8 +375,9 @@ public class CandidateDAO {
         c.setResumeFileType(rs.getString("resume_file_type"));
         c.setResumeUploadedAt(rs.getTimestamp("resume_uploaded_at"));
         
-        // 기본 상태 설정
-        c.setStatus("활성");
+        // 데이터베이스에서 상태 값 읽기 (기본값: "활성")
+        String status = rs.getString("status");
+        c.setStatus(status != null ? status : "활성");
         
         return c;
     }
