@@ -311,6 +311,32 @@
             box-shadow: none !important;
         }
         
+        /* 통계 카드 크기 축소 */
+        .stats-bar {
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            padding: 10px 15px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .stat-number {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0969da;
+            margin-bottom: 3px;
+        }
+        
+        .stat-label {
+            color: #656d76;
+            font-size: 0.8rem;
+            margin: 0;
+        }
+        
         /* 반응형 테이블 */
         @media (max-width: 768px) {
             #candidatesTable {
@@ -330,6 +356,19 @@
             #candidatesTable th:nth-child(9), 
             #candidatesTable td:nth-child(9) { /* 액션 */
                 width: 320px;
+            }
+            
+            .stat-item {
+                padding: 8px 12px;
+                min-height: 50px;
+            }
+            
+            .stat-number {
+                font-size: 1.1rem;
+            }
+            
+            .stat-label {
+                font-size: 0.75rem;
             }
         }
     </style>
