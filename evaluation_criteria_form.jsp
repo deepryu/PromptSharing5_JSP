@@ -2,7 +2,7 @@
 <%@ page import="com.example.model.EvaluationCriteria" %>
 <%@ page import="java.math.BigDecimal" %>
 <%
-    // ?¸ì…˜ ê²€ì¦?- username ?ì„± ?¬ìš©
+    // ?ï¿½ì…˜ ê²€ï¿½?- username ?ï¿½ì„± ?ï¿½ìš©
     if (session.getAttribute("username") == null) {
         response.sendRedirect("login.jsp");
         return;
@@ -12,9 +12,9 @@
     String errorMessage = (String) request.getAttribute("errorMessage");
     String successMessage = (String) request.getAttribute("successMessage");
     boolean isEdit = criteria != null && criteria.getId() != null;
-    String pageTitle = isEdit ? "?‰ê?ê¸°ì? ?˜ì •" : "?‰ê?ê¸°ì? ?±ë¡";
+    String pageTitle = isEdit ? "?ï¿½ï¿½?ê¸°ï¿½? ?ï¿½ì •" : "?ï¿½ï¿½?ê¸°ï¿½? ?ï¿½ë¡";
     
-    // ê¸°ë³¸ê°??¤ì •
+    // ê¸°ë³¸ï¿½??ï¿½ì •
     if (criteria == null) {
         criteria = new EvaluationCriteria();
         criteria.setMaxScore(10);
@@ -277,8 +277,20 @@
         }
         
         .btn-secondary {
-            background: linear-gradient(45deg, #6c757d, #5a6268);
-            color: white;
+            background: white;
+            color: #24292f;
+            border: 1px solid #d0d7de;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            min-width: 80px;
         }
         
         .btn:hover {
@@ -347,13 +359,13 @@
 <body>
     <div class="form-container">
         <div class="form-header">
-            <h1>?–ï¸ <%= pageTitle %></h1>
-            <p>ì²´ê³„?ì¸ ë©´ì ‘ ?‰ê?ë¥??„í•œ ?‰ê? ê¸°ì????¤ì •?˜ì„¸??/p>
+            <h1>?ï¿½ï¸ <%= pageTitle %></h1>
+            <p>ì²´ê³„?ï¿½ì¸ ë©´ì ‘ ?ï¿½ï¿½?ï¿½??ï¿½í•œ ?ï¿½ï¿½? ê¸°ï¿½????ï¿½ì •?ï¿½ì„¸??/p>
         </div>
 
         <% if (errorMessage != null) { %>
             <div class="alert alert-danger">
-                ? ï¸ <%= errorMessage %>
+                ?ï¿½ï¸ <%= errorMessage %>
             </div>
         <% } %>
 
@@ -373,62 +385,62 @@
                 <% } %>
 
                 <div class="form-layout">
-                    <!-- ê¸°ë³¸ ?•ë³´ ?¹ì…˜ -->
+                    <!-- ê¸°ë³¸ ?ï¿½ë³´ ?ï¿½ì…˜ -->
                     <div class="form-section">
-                        <h3>?“‹ ê¸°ë³¸ ?•ë³´</h3>
+                        <h3>?ï¿½ï¿½ ê¸°ë³¸ ?ï¿½ë³´</h3>
                         
                         <div class="form-group">
-                            <label for="criteriaName">?‰ê?ê¸°ì?ëª?*</label>
+                            <label for="criteriaName">?ï¿½ï¿½?ê¸°ï¿½?ï¿½?*</label>
                             <input type="text" id="criteriaName" name="criteriaName" 
                                    class="form-control" required maxlength="100"
                                    value="<%= criteria.getCriteriaName() != null ? criteria.getCriteriaName() : "" %>"
-                                   placeholder="?? ê¸°ìˆ  ??Ÿ‰, ì»¤ë??ˆì??´ì…˜ ?¥ë ¥"
+                                   placeholder="?? ê¸°ìˆ  ??ï¿½ï¿½, ì»¤ï¿½??ï¿½ï¿½??ï¿½ì…˜ ?ï¿½ë ¥"
                                    oninput="updatePreview(); validateForm();">
                             <div class="char-counter">
                                 <span id="nameCounter">0</span>/100
                             </div>
                             <div class="validation-message" id="nameError">
-                                ?‰ê?ê¸°ì?ëª…ì„ ?…ë ¥?´ì£¼?¸ìš”.
+                                ?ï¿½ï¿½?ê¸°ï¿½?ëª…ì„ ?ï¿½ë ¥?ï¿½ì£¼?ï¿½ìš”.
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="description">?¤ëª…</label>
+                            <label for="description">?ï¿½ëª…</label>
                             <textarea id="description" name="description" 
                                       class="form-control" maxlength="500"
-                                      placeholder="?‰ê?ê¸°ì????€???ì„¸ ?¤ëª…???…ë ¥?˜ì„¸??.."
+                                      placeholder="?ï¿½ï¿½?ê¸°ï¿½????ï¿½???ï¿½ì„¸ ?ï¿½ëª…???ï¿½ë ¥?ï¿½ì„¸??.."
                                       oninput="updatePreview(); validateForm();"><%= criteria.getDescription() != null ? criteria.getDescription() : "" %></textarea>
                             <div class="char-counter">
                                 <span id="descCounter">0</span>/500
                             </div>
                             <div class="help-text">
-                                ?’¡ ?‰ê??ê? ?´í•´?˜ê¸° ?½ë„ë¡?êµ¬ì²´?ìœ¼ë¡??‘ì„±?´ì£¼?¸ìš”
+                                ?ï¿½ï¿½ ?ï¿½ï¿½??ï¿½ï¿½? ?ï¿½í•´?ï¿½ê¸° ?ï¿½ë„ï¿½?êµ¬ì²´?ï¿½ìœ¼ï¿½??ï¿½ì„±?ï¿½ì£¼?ï¿½ìš”
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label>?œì„± ?íƒœ</label>
+                            <label>?ï¿½ì„± ?ï¿½íƒœ</label>
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <div class="toggle-switch <%= criteria.isActive() ? "active" : "" %>" 
                                      onclick="toggleActive()" id="statusToggle">
                                     <div class="toggle-slider"></div>
                                 </div>
-                                <span id="statusText"><%= criteria.isActive() ? "?œì„±" : "ë¹„í™œ?? %></span>
+                                <span id="statusText"><%= criteria.isActive() ? "?ï¿½ì„±" : "ë¹„í™œ?? %></span>
                                 <input type="hidden" name="active" id="activeInput" 
                                        value="<%= criteria.isActive() %>">
                             </div>
                             <div class="help-text">
-                                ?”„ ?œì„± ?íƒœ???‰ê?ê¸°ì?ë§??¤ì œ ?‰ê????¬ìš©?©ë‹ˆ??
+                                ?ï¿½ï¿½ ?ï¿½ì„± ?ï¿½íƒœ???ï¿½ï¿½?ê¸°ï¿½?ï¿½??ï¿½ì œ ?ï¿½ï¿½????ï¿½ìš©?ï¿½ë‹ˆ??
                             </div>
                         </div>
                     </div>
 
-                    <!-- ?ìˆ˜ ë°?ê°€ì¤‘ì¹˜ ?¹ì…˜ -->
+                    <!-- ?ï¿½ìˆ˜ ï¿½?ê°€ì¤‘ì¹˜ ?ï¿½ì…˜ -->
                     <div class="form-section">
-                        <h3>?¯ ?ìˆ˜ ë°?ê°€ì¤‘ì¹˜</h3>
+                        <h3>?ï¿½ï¿½ ?ï¿½ìˆ˜ ï¿½?ê°€ì¤‘ì¹˜</h3>
                         
                         <div class="form-group">
-                            <label for="maxScore">ìµœë? ?ìˆ˜ *</label>
+                            <label for="maxScore">ìµœï¿½? ?ï¿½ìˆ˜ *</label>
                             <div class="range-group">
                                 <input type="range" id="maxScore" name="maxScore" 
                                        class="range-input" min="1" max="100" step="1"
@@ -439,7 +451,7 @@
                                 </div>
                             </div>
                             <div class="help-text">
-                                ?“Š ???‰ê?ê¸°ì???ìµœë? ?ë“ ê°€???ìˆ˜
+                                ?ï¿½ï¿½ ???ï¿½ï¿½?ê¸°ï¿½???ìµœï¿½? ?ï¿½ë“ ê°€???ï¿½ìˆ˜
                             </div>
                         </div>
                         
@@ -461,21 +473,21 @@
                                 </div>
                             </div>
                             <div class="help-text">
-                                ?–ï¸ ?„ì²´ ?‰ê??ì„œ ??ê¸°ì???ì°¨ì??˜ëŠ” ë¹„ì¤‘
+                                ?ï¿½ï¸ ?ï¿½ì²´ ?ï¿½ï¿½??ï¿½ì„œ ??ê¸°ï¿½???ì°¨ï¿½??ï¿½ëŠ” ë¹„ì¤‘
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ë¯¸ë¦¬ë³´ê¸° ?¹ì…˜ -->
+                <!-- ë¯¸ë¦¬ë³´ê¸° ?ï¿½ì…˜ -->
                 <div class="preview-section">
-                    <h3>?‘ï¸?ë¯¸ë¦¬ë³´ê¸°</h3>
+                    <h3>?ï¿½ï¿½ï¿½?ë¯¸ë¦¬ë³´ê¸°</h3>
                     <div class="preview-item">
-                        <span class="preview-label">?‰ê?ê¸°ì?ëª?</span>
-                        <span class="preview-value" id="previewName">?…ë ¥?´ì£¼?¸ìš”</span>
+                        <span class="preview-label">?ï¿½ï¿½?ê¸°ï¿½?ï¿½?</span>
+                        <span class="preview-value" id="previewName">?ï¿½ë ¥?ï¿½ì£¼?ï¿½ìš”</span>
                     </div>
                     <div class="preview-item">
-                        <span class="preview-label">ìµœë??ìˆ˜:</span>
+                        <span class="preview-label">ìµœï¿½??ï¿½ìˆ˜:</span>
                         <span class="preview-value" id="previewMaxScore"><%= criteria.getMaxScore() %>??/span>
                     </div>
                     <div class="preview-item">
@@ -485,7 +497,7 @@
                         </span>
                     </div>
                     <div class="preview-item">
-                        <span class="preview-label">ê°€ì¤??ìˆ˜:</span>
+                        <span class="preview-label">ê°€ï¿½??ï¿½ìˆ˜:</span>
                         <span class="preview-value" id="previewWeightedScore">
                             <%= String.format("%.1f??, criteria.getMaxScore() * criteria.getWeight().doubleValue()) %>
                         </span>
@@ -500,10 +512,10 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="submitBtn">
-                        ?’¾ <%= isEdit ? "?˜ì •?˜ê¸°" : "?±ë¡?˜ê¸°" %>
+                        ?ï¿½ï¿½ <%= isEdit ? "?ï¿½ì •?ï¿½ê¸°" : "?ï¿½ë¡?ï¿½ê¸°" %>
                     </button>
                     <a href="criteria" class="btn btn-secondary">
-                        ?©ï¸ ì·¨ì†Œ
+                        ?ï¿½ï¸ ì·¨ì†Œ
                     </a>
                 </div>
             </form>
@@ -518,7 +530,7 @@
             updateCharCounters();
         });
 
-        // ë¬¸ì ??ì¹´ìš´???…ë°?´íŠ¸
+        // ë¬¸ì ??ì¹´ìš´???ï¿½ë°?ï¿½íŠ¸
         function updateCharCounters() {
             const nameInput = document.getElementById('criteriaName');
             const descInput = document.getElementById('description');
@@ -529,7 +541,7 @@
             nameCounter.textContent = nameInput.value.length;
             descCounter.textContent = descInput.value.length;
             
-            // ë¬¸ì ?˜ì— ?°ë¥¸ ?‰ìƒ ë³€ê²?
+            // ë¬¸ì ?ï¿½ì— ?ï¿½ë¥¸ ?ï¿½ìƒ ë³€ï¿½?
             if (nameInput.value.length > 80) {
                 nameCounter.parentElement.className = 'char-counter warning';
             } else if (nameInput.value.length > 95) {
@@ -547,7 +559,7 @@
             }
         }
 
-        // ?œì„± ?íƒœ ? ê?
+        // ?ï¿½ì„± ?ï¿½íƒœ ?ï¿½ï¿½?
         function toggleActive() {
             const toggle = document.getElementById('statusToggle');
             const input = document.getElementById('activeInput');
@@ -557,7 +569,7 @@
             
             if (isActive) {
                 toggle.classList.add('active');
-                text.textContent = '?œì„±';
+                text.textContent = '?ï¿½ì„±';
                 input.value = 'true';
             } else {
                 toggle.classList.remove('active');
@@ -568,13 +580,13 @@
             updatePreview();
         }
 
-        // ìµœë? ?ìˆ˜ ?…ë°?´íŠ¸
+        // ìµœï¿½? ?ï¿½ìˆ˜ ?ï¿½ë°?ï¿½íŠ¸
         function updateMaxScore() {
             const maxScore = document.getElementById('maxScore').value;
             document.getElementById('maxScoreValue').textContent = maxScore + '??;
         }
 
-        // ê°€ì¤‘ì¹˜ ?…ë°?´íŠ¸
+        // ê°€ì¤‘ì¹˜ ?ï¿½ë°?ï¿½íŠ¸
         function updateWeight() {
             const weight = parseFloat(document.getElementById('weight').value);
             const percentage = weight * 100;
@@ -586,9 +598,9 @@
             weightBar.textContent = percentage.toFixed(1) + '%';
         }
 
-        // ë¯¸ë¦¬ë³´ê¸° ?…ë°?´íŠ¸
+        // ë¯¸ë¦¬ë³´ê¸° ?ï¿½ë°?ï¿½íŠ¸
         function updatePreview() {
-            const name = document.getElementById('criteriaName').value || '?…ë ¥?´ì£¼?¸ìš”';
+            const name = document.getElementById('criteriaName').value || '?ï¿½ë ¥?ï¿½ì£¼?ï¿½ìš”';
             const maxScore = parseInt(document.getElementById('maxScore').value);
             const weight = parseFloat(document.getElementById('weight').value);
             
@@ -599,16 +611,16 @@
             
             // ì¤‘ìš”??ê³„ì‚°
             let importance = '';
-            if (weight >= 0.2) importance = '?’ìŒ';
+            if (weight >= 0.2) importance = '?ï¿½ìŒ';
             else if (weight >= 0.1) importance = 'ë³´í†µ';
-            else importance = '??Œ';
+            else importance = '??ï¿½ï¿½';
             
             document.getElementById('previewImportance').textContent = importance;
             
             updateCharCounters();
         }
 
-        // ??ê²€ì¦?
+        // ??ê²€ï¿½?
         function validateForm() {
             const name = document.getElementById('criteriaName').value.trim();
             const submitBtn = document.getElementById('submitBtn');
@@ -616,13 +628,13 @@
             
             let isValid = true;
             
-            // ?‰ê?ê¸°ì?ëª?ê²€ì¦?
+            // ?ï¿½ï¿½?ê¸°ï¿½?ï¿½?ê²€ï¿½?
             if (name.length === 0) {
                 nameError.style.display = 'block';
                 document.getElementById('criteriaName').classList.add('error');
                 isValid = false;
             } else if (name.length < 2) {
-                nameError.textContent = '?‰ê?ê¸°ì?ëª…ì? ìµœì†Œ 2???´ìƒ ?…ë ¥?´ì£¼?¸ìš”.';
+                nameError.textContent = '?ï¿½ï¿½?ê¸°ï¿½?ëª…ï¿½? ìµœì†Œ 2???ï¿½ìƒ ?ï¿½ë ¥?ï¿½ì£¼?ï¿½ìš”.';
                 nameError.style.display = 'block';
                 document.getElementById('criteriaName').classList.add('error');
                 isValid = false;
@@ -635,15 +647,15 @@
             submitBtn.disabled = !isValid;
         }
 
-        // ???œì¶œ ?´ë²¤??
+        // ???ï¿½ì¶œ ?ï¿½ë²¤??
         document.getElementById('criteriaForm').addEventListener('submit', function(e) {
             if (!validateForm()) {
                 e.preventDefault();
-                alert('?…ë ¥ ?•ë³´ë¥??•ì¸?´ì£¼?¸ìš”.');
+                alert('?ï¿½ë ¥ ?ï¿½ë³´ï¿½??ï¿½ì¸?ï¿½ì£¼?ï¿½ìš”.');
             }
         });
 
-        // ë©”ì‹œì§€ ?ë™ ?¨ê?
+        // ë©”ì‹œì§€ ?ï¿½ë™ ?ï¿½ï¿½?
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
@@ -652,7 +664,7 @@
             });
         }, 3000);
 
-        // ?¤ë³´???¨ì¶•??
+        // ?ï¿½ë³´???ï¿½ì¶•??
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey || e.metaKey) {
                 switch(e.key) {
@@ -662,7 +674,7 @@
                         break;
                     case 'Escape':
                         e.preventDefault();
-                        if (confirm('?‘ì„±ì¤‘ì¸ ?´ìš©???ˆìŠµ?ˆë‹¤. ?•ë§ ?˜ê??œê² ?µë‹ˆê¹?')) {
+                        if (confirm('?ï¿½ì„±ì¤‘ì¸ ?ï¿½ìš©???ï¿½ìŠµ?ï¿½ë‹¤. ?ï¿½ë§ ?ï¿½ï¿½??ï¿½ê² ?ï¿½ë‹ˆï¿½?')) {
                             window.location.href = 'criteria';
                         }
                         break;

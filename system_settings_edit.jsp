@@ -229,6 +229,18 @@
         .btn-secondary {
             background: white;
             color: #24292f;
+            border: 1px solid #d0d7de;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            min-width: 80px;
         }
         
         .btn-secondary:hover {

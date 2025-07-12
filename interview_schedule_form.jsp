@@ -89,6 +89,48 @@
             margin-top: 30px;
         }
         
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #24292f;
+            line-height: 1.2;
+            min-width: 80px;
+        }
+        
+        .btn-primary {
+            background: #1f883d;
+            border-color: #1f883d;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1a7f37;
+            border-color: #1a7f37;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            border-color: #d0d7de;
+            color: #24292f;
+        }
+        
+        .btn-secondary:hover {
+            background: #f6f8fa;
+            border-color: #8c959f;
+            color: #24292f;
+        }
+        
         .candidate-info {
             background: #f8f9fa;
             padding: 15px;
@@ -263,12 +305,12 @@
                     <label for="duration">면접 시간 (분 <span class="required">*</span></label>
                     <input type="number" name="duration" id="duration" 
                            value="${empty schedule ? '60' : schedule.duration}" 
-                           min="15" max="480" required onchange="checkTimeConflict()">
+                           min="15" max="480" required onchange="checkTimeConflict(); initializeDurationPresets()">
                     <div class="duration-presets">
-                        <span class="duration-preset" onclick="setDuration(30)">30분</span>
-                        <span class="duration-preset active" onclick="setDuration(60)">1시간</span>
-                        <span class="duration-preset" onclick="setDuration(90)">1시간 30분</span>
-                        <span class="duration-preset" onclick="setDuration(120)">2시간</span>
+                        <span class="duration-preset" onclick="setDuration(30)" data-duration="30">30분</span>
+                        <span class="duration-preset" onclick="setDuration(60)" data-duration="60">1시간</span>
+                        <span class="duration-preset" onclick="setDuration(90)" data-duration="90">1시간 30분</span>
+                        <span class="duration-preset" onclick="setDuration(120)" data-duration="120">2시간</span>
                     </div>
                 </div>
 
@@ -344,13 +386,31 @@
         function setDuration(minutes) {
             document.getElementById('duration').value = minutes;
             
-            // 자동 완성 기능을 위한 코드
+            // 모든 프리셋 버튼에서 active 클래스 제거
             document.querySelectorAll('.duration-preset').forEach(preset => {
                 preset.classList.remove('active');
             });
+            
+            // 클릭된 버튼에 active 클래스 추가
             event.target.classList.add('active');
             
             checkTimeConflict();
+        }
+        
+        function initializeDurationPresets() {
+            const duration = document.getElementById('duration').value;
+            
+            // 모든 프리셋 버튼에서 active 클래스 제거
+            document.querySelectorAll('.duration-preset').forEach(preset => {
+                preset.classList.remove('active');
+            });
+            
+            // 현재 duration 값과 일치하는 버튼에만 active 클래스 추가
+            document.querySelectorAll('.duration-preset').forEach(preset => {
+                if (preset.getAttribute('data-duration') === duration) {
+                    preset.classList.add('active');
+                }
+            });
         }
         
         function updateTimeAndCheck() {
@@ -434,17 +494,8 @@
                 }
             }
             
-            // 자동 완성을 위한 코드
-            const duration = document.getElementById('duration').value;
-            document.querySelectorAll('.duration-preset').forEach(preset => {
-                preset.classList.remove('active');
-                if (preset.textContent.includes(duration + '분') || 
-                    (duration == '60' && preset.textContent.includes('1시간')) ||
-                    (duration == '90' && preset.textContent.includes('1시간 30분')) ||
-                    (duration == '120' && preset.textContent.includes('2시간'))) {
-                    preset.classList.add('active');
-                }
-            });
+            // 면접 시간 프리셋 버튼 초기화
+            initializeDurationPresets();
         });
     </script>
 </body>

@@ -159,13 +159,19 @@
             background: white;
             color: #24292f;
             border: 1px solid #d0d7de;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 3px;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.2s;
             margin-left: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            min-width: 80px;
         }
         
         .btn-secondary:hover {
