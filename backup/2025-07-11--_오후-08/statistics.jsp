@@ -32,7 +32,7 @@
             background: #f0f0f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 20px;
         }
         
         .container {
@@ -43,8 +43,8 @@
         .top-bar {
             background: white;
             border: 1px solid #d0d7de;
-            padding: 8px 15px;
-            margin-bottom: 15px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -54,18 +54,18 @@
         .top-bar h2 {
             margin: 0;
             color: #24292f;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
         }
         
         .top-bar .nav-buttons {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
         
         .top-bar .btn {
-            padding: 5px 10px;
-            font-size: 0.8rem;
+            padding: 6px 12px;
+            font-size: 0.85rem;
             border: 1px solid #d0d7de;
             background: white;
             color: #24292f;
@@ -98,35 +98,34 @@
         .dashboard-header {
             background: #0078d4;
             color: white;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border-bottom: 1px solid #106ebe;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
         }
         
         .dashboard-header h1 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            text-align: center;
         }
         
         .dashboard-content {
-            padding: 15px;
+            padding: 20px;
         }
         
         .stats-overview {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
         }
         
         .stat-card {
             background: #f6f8fa;
             border: 1px solid #d0d7de;
-            padding: 12px;
+            padding: 20px;
             border-radius: 6px;
             text-align: center;
             transition: background-color 0.2s;
@@ -157,9 +156,9 @@
         }
         
         .stat-number {
-            font-size: 1.6rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .stat-card.primary .stat-number {
@@ -180,7 +179,7 @@
         
         .stat-label {
             color: #656d76;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 500;
         }
         
@@ -188,7 +187,7 @@
             background: white;
             border: 1px solid #d0d7de;
             border-radius: 6px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
@@ -196,24 +195,24 @@
         .section-header {
             background: #f6f8fa;
             border-bottom: 1px solid #d0d7de;
-            padding: 10px 15px;
+            padding: 15px 20px;
         }
         
         .section-header h3 {
             margin: 0;
             color: #24292f;
-            font-size: 1.0rem;
+            font-size: 1.1rem;
             font-weight: 600;
         }
         
         .section-content {
-            padding: 15px;
+            padding: 20px;
         }
         
         .two-column {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
         
         .stats-table {
@@ -223,10 +222,9 @@
         
         .stats-table th,
         .stats-table td {
-            padding: 8px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #d0d7de;
-            font-size: 0.9rem;
         }
         
         .stats-table th {
@@ -236,9 +234,9 @@
         }
         
         .badge {
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 500;
             background: #f6f8fa;
             color: #656d76;
@@ -260,9 +258,9 @@
         .monthly-chart {
             display: flex;
             align-items: end;
-            gap: 10px;
-            height: 120px;
-            padding: 15px 0;
+            gap: 15px;
+            height: 200px;
+            padding: 20px 0;
         }
         
         .chart-bar {
@@ -278,25 +276,24 @@
             background: #0969da;
             border-radius: 3px 3px 0 0;
             position: relative;
-            min-height: 8px;
+            min-height: 10px;
         }
         
         .bar-label {
-            margin-top: 8px;
-            font-size: 0.7rem;
+            margin-top: 10px;
+            font-size: 0.8rem;
             color: #656d76;
         }
         
         .no-data {
             text-align: center;
             color: #656d76;
-            padding: 20px;
-            font-size: 0.9rem;
+            padding: 40px 20px;
         }
         
         .alert {
-            padding: 10px 12px;
-            margin-bottom: 15px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
             border: 1px solid transparent;
             border-radius: 3px;
         }
@@ -326,7 +323,7 @@
         <!-- 메인 대시보드 -->
         <div class="main-dashboard">
             <div class="dashboard-header">
-                <h1>📊 채용 관리 시스템 통계</h1>
+                <h1 style="text-align: center;">📊 채용 관리 시스템 통계</h1>
             </div>
             <div class="dashboard-content">
                 <% if (errorMessage != null) { %>
@@ -439,8 +436,8 @@
                             <div class="monthly-chart">
                                 <% for (Map<String, Object> month : monthlyData) { %>
                                     <div class="chart-bar">
-                                        <div class="bar" style="height: <%= Math.max(((Integer)month.get("totalInterviews")) * 2, 8) %>px;">
-                                            <span style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: #24292f;">
+                                        <div class="bar" style="height: <%= Math.max(((Integer)month.get("totalInterviews")) * 3, 10) %>px;">
+                                            <span style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #24292f;">
                                                 <%= month.get("totalInterviews") %>
                                             </span>
                                         </div>
@@ -551,8 +548,8 @@
                             <div class="monthly-chart">
                                 <% for (Map<String, Object> month : candidateMonthlyData) { %>
                                     <div class="chart-bar">
-                                        <div class="bar" style="height: <%= Math.max(((Integer)month.get("totalCandidates")) * 3, 8) %>px; background: #16a34a;">
-                                            <span style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: #24292f;">
+                                        <div class="bar" style="height: <%= Math.max(((Integer)month.get("totalCandidates")) * 5, 10) %>px; background: #16a34a;">
+                                            <span style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #24292f;">
                                                 <%= month.get("totalCandidates") %>
                                             </span>
                                         </div>

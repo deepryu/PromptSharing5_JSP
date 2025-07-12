@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>샘플 파비콘 생성기</title>
+</head>
+<body>
+    <h1>샘플 파비콘 생성기</h1>
+    <p>이 파일을 브라우저에서 열고 개발자 도구의 콘솔에서 아래 함수를 실행하세요:</p>
+    
+    <button onclick="generateSampleFavicons()">샘플 파비콘 생성</button>
+    <div id="output"></div>
+    
+    <script>
+        function generateSampleFavicons() {
+            // 16x16 파비콘 생성
+            createFavicon(16, '🏢', 'favicon-16x16.png');
+            
+            // 32x32 파비콘 생성
+            createFavicon(32, '🏢', 'favicon-32x32.png');
+            
+            // 180x180 Apple 터치 아이콘 생성
+            createFavicon(180, '🏢', 'apple-touch-icon.png');
+            
+            document.getElementById('output').innerHTML = 
+                '<p>✅ 샘플 파비콘이 생성되었습니다. 다운로드 링크를 클릭하여 저장하세요.</p>';
+        }
+        
+        function createFavicon(size, emoji, filename) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // 배경 색상 (회사 색상으로 변경 가능)
+            ctx.fillStyle = '#0078d4'; // Microsoft 블루
+            ctx.fillRect(0, 0, size, size);
+            
+            // 이모지 또는 텍스트 그리기
+            ctx.fillStyle = 'white';
+            ctx.font = `${size * 0.6}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, size / 2, size / 2);
+            
+            // 다운로드 링크 생성
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.textContent = `${filename} 다운로드`;
+                a.style.display = 'block';
+                a.style.margin = '5px 0';
+                document.getElementById('output').appendChild(a);
+            });
+        }
+    </script>
+    
+    <hr>
+    
+    <h2>📋 설치 방법</h2>
+    <ol>
+        <li><strong>위의 버튼 클릭</strong>하여 샘플 파비콘 생성</li>
+        <li><strong>다운로드 링크 클릭</strong>하여 각 파일 저장</li>
+        <li><strong>파일 경로에 복사</strong>:
+            <ul>
+                <li><code>favicon-16x16.png</code> → <code>C:\tomcat9\webapps\PromptSharing5_JSP\images\</code></li>
+                <li><code>favicon-32x32.png</code> → <code>C:\tomcat9\webapps\PromptSharing5_JSP\images\</code></li>
+                <li><code>apple-touch-icon.png</code> → <code>C:\tomcat9\webapps\PromptSharing5_JSP\images\</code></li>
+            </ul>
+        </li>
+        <li><strong>ICO 파일 생성</strong>: 온라인 변환기로 PNG를 ICO로 변환하여 <code>favicon.ico</code> 생성</li>
+        <li><strong>브라우저 캐시 삭제</strong> 후 확인</li>
+    </ol>
+    
+    <h2>🎨 실제 회사 로고 사용</h2>
+    <p>테스트 완료 후, 실제 회사 로고를 사용하려면:</p>
+    <ul>
+        <li><strong>favicon.io</strong> 또는 <strong>realfavicongenerator.net</strong> 사용</li>
+        <li>회사 로고 이미지 업로드</li>
+        <li>자동 생성된 파일들로 교체</li>
+    </ul>
+</body>
+</html> 

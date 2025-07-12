@@ -40,13 +40,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>인터뷰 대상자 관리 - 채용 관리 시스템</title>
     <base href="${pageContext.request.contextPath}/">
-    
-    <!-- 파비콘 설정 -->
-    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/images/apple-touch-icon.png">
-    
     <link rel="stylesheet" href="css/common.css">
     <style>
         /* 지원자 관리 페이지 전용 스타일 */
@@ -96,15 +89,23 @@
         
         /* 컬럼별 정렬 및 너비 설정 */
         #candidatesTable th:nth-child(1), 
-        #candidatesTable td:nth-child(1) { /* 이름 */
+        #candidatesTable td:nth-child(1) { /* ID */
+            width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #0969da;
+        }
+        
+        #candidatesTable th:nth-child(2), 
+        #candidatesTable td:nth-child(2) { /* 이름 */
             width: 100px;
             text-align: left;
             font-weight: 600;
             color: #24292f;
         }
         
-        #candidatesTable th:nth-child(2), 
-        #candidatesTable td:nth-child(2) { /* 이메일 */
+        #candidatesTable th:nth-child(3), 
+        #candidatesTable td:nth-child(3) { /* 이메일 */
             width: 180px;
             text-align: left;
             color: #0969da;
@@ -112,46 +113,40 @@
             font-size: 0.85rem;
         }
         
-        #candidatesTable th:nth-child(3), 
-        #candidatesTable td:nth-child(3) { /* 전화번호 */
+        #candidatesTable th:nth-child(4), 
+        #candidatesTable td:nth-child(4) { /* 전화번호 */
             width: 120px;
             text-align: center;
             font-family: 'Courier New', monospace;
             color: #656d76;
         }
         
-        #candidatesTable th:nth-child(4), 
-        #candidatesTable td:nth-child(4) { /* 지원팀 */
+        #candidatesTable th:nth-child(5), 
+        #candidatesTable td:nth-child(5) { /* 지원분야 */
             width: 100px;
             text-align: center;
             color: #24292f;
         }
         
-        #candidatesTable th:nth-child(5), 
-        #candidatesTable td:nth-child(5) { /* 인터뷰날짜 */
-            width: 100px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            color: #656d76;
-        }
-        
         #candidatesTable th:nth-child(6), 
-        #candidatesTable td:nth-child(6) { /* 시간 */
-            width: 80px;
+        #candidatesTable td:nth-child(6) { /* 인터뷰날짜 */
+            width: 100px;
             text-align: center;
             font-family: 'Courier New', monospace;
             color: #656d76;
         }
         
         #candidatesTable th:nth-child(7), 
-        #candidatesTable td:nth-child(7) { /* 상태 */
-            width: 120px;
+        #candidatesTable td:nth-child(7) { /* 시간 */
+            width: 80px;
             text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #656d76;
         }
         
         #candidatesTable th:nth-child(8), 
-        #candidatesTable td:nth-child(8) { /* 이력서 */
-            width: 100px;
+        #candidatesTable td:nth-child(8) { /* 상태 */
+            width: 120px;
             text-align: center;
         }
         
@@ -204,41 +199,7 @@
         .status-cancelled {
             background: #fecaca;
             color: #dc2626;
-            border: 1px solid #fca5a5;
-        }
-        
-        .status-postponed {
-            background: #fef3c7;
-            color: #d97706;
-            border: 1px solid #fcd34d;
-        }
-        
-        /* 이력서 컬럼 스타일 */
-        .btn-download {
-            background: #1f883d;
-            color: white;
-            padding: 3px 6px;
-            border-radius: 3px;
-            text-decoration: none;
-            font-size: 0.7rem;
-            font-weight: 500;
-            border: 1px solid #1a7f37;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            line-height: 1;
-        }
-        
-        .btn-download:hover {
-            background: #1a7f37;
-            text-decoration: none;
-            color: white;
-            transform: translateY(-1px);
-        }
-        
-        .no-resume {
-            color: #898989;
-            font-size: 0.8rem;
-            font-style: italic;
+            border: 1px solid #f87171;
         }
         
         .status-postponed {
@@ -439,14 +400,14 @@
                     <table id="candidatesTable">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>이름</th>
                                 <th>이메일</th>
                                 <th>전화번호</th>
-                                <th>지원팀</th>
+                                <th>지원분야</th>
                                 <th>인터뷰날짜</th>
                                 <th>시간</th>
                                 <th>상태</th>
-                                <th>이력서</th>
                                 <th>액션</th>
                             </tr>
                         </thead>
@@ -454,10 +415,11 @@
                             <% if (candidates != null && !candidates.isEmpty()) { %>
                                 <% for (Candidate candidate : candidates) { %>
                                     <tr data-status="<%= candidate.getStatus() %>">
+                                        <td data-label="ID"><%= candidate.getId() %></td>
                                         <td data-label="이름"><%= candidate.getName() %></td>
                                         <td data-label="이메일"><%= candidate.getEmail() %></td>
                                         <td data-label="전화번호"><%= candidate.getPhone() %></td>
-                                        <td data-label="지원팀"><%= candidate.getTeam() != null ? candidate.getTeam() : "미정" %></td>
+                                        <td data-label="지원분야"><%= candidate.getTeam() != null ? candidate.getTeam() : "미정" %></td>
                                         <td data-label="인터뷰날짜">
                                             <% 
                                                 String interviewDateTime = candidate.getInterviewDateTime();
@@ -544,17 +506,6 @@
                                 <% } else { %>status-scheduled<% } %>">
                                                 <%= combinedStatus %>
                                             </span>
-                                        </td>
-                                        <td data-label="이력서">
-                                            <% if (candidate.hasResumeFile()) { %>
-                                            <a href="${pageContext.request.contextPath}/candidates/download-resume?candidateId=<%= candidate.getId() %>" 
-                                               class="btn btn-download" 
-                                               title="<%= candidate.getResumeFileName() %> (<%= candidate.getResumeFileSizeFormatted() %>)">
-                                                📥 다운로드
-                                            </a>
-                                            <% } else { %>
-                                            <span class="no-resume">미등록</span>
-                                            <% } %>
                                         </td>
                                         <td data-label="액션">
                                             <!-- 디버깅: 상태 값 출력 -->

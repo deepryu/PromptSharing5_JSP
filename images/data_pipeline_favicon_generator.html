@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터 파이프라인 Favicon 생성기</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .favicon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .favicon-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+        .favicon-card:hover {
+            border-color: #3498db;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .favicon-preview {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .favicon-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .favicon-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        .download-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .code-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+        .code-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 데이터 파이프라인 Favicon 생성기</h1>
+        <p style="text-align: center; color: #666; font-size: 1.1em; margin-bottom: 30px;">
+            데이터 파이프라인 플랫폼에 최적화된 전문적인 favicon 디자인을 선택하세요
+        </p>
+
+        <div class="favicon-grid">
+            <!-- Design 1: Pipeline Flow -->
+            <div class="favicon-card">
+                <div class="favicon-preview">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                        <circle cx="8" cy="24" r="4" fill="#3498db"/>
+                        <circle cx="24" cy="24" r="4" fill="#2ecc71"/>
+                        <circle cx="40" cy="24" r="4" fill="#e74c3c"/>
+                        <path d="M12 24 L20 24" stroke="#34495e" stroke-width="2"/>
+                        <path d="M28 24 L36 24" stroke="#34495e" stroke-width="2"/>
+                        <polygon points="19,22 19,26 22,24" fill="#34495e"/>
+                        <polygon points="35,22 35,26 38,24" fill="#34495e"/>
+                    </svg>
+                </div>
+                <div class="favicon-title">파이프라인 플로우</div>
+                <div class="favicon-description">데이터가 흐르는 파이프라인을 표현한 클래식한 디자인</div>
+                <div class="color-palette">
+                    <div class="color-box" style="background: #3498db;"></div>
+                    <div class="color-box" style="background: #2ecc71;"></div>
+                    <div class="color-box" style="background: #e74c3c;"></div>
+                </div>
+                <button class="download-btn" onclick="downloadFavicon('pipeline_flow')">16x16 다운로드</button>
+                <button class="download-btn" onclick="downloadFavicon('pipeline_flow', 32)">32x32 다운로드</button>
+            </div>
+
+            <!-- Design 2: Data Network -->
+            <div class="favicon-card">
+                <div class="favicon-preview">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                        <circle cx="12" cy="12" r="3" fill="#9b59b6"/>
+                        <circle cx="36" cy="12" r="3" fill="#9b59b6"/>
+                        <circle cx="12" cy="36" r="3" fill="#9b59b6"/>
+                        <circle cx="36" cy="36" r="3" fill="#9b59b6"/>
+                        <circle cx="24" cy="24" r="4" fill="#e67e22"/>
+                        <line x1="12" y1="12" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                        <line x1="36" y1="12" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                        <line x1="12" y1="36" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                        <line x1="36" y1="36" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="favicon-title">데이터 네트워크</div>
+                <div class="favicon-description">중앙 허브로 연결되는 데이터 네트워크 구조</div>
+                <div class="color-palette">
+                    <div class="color-box" style="background: #9b59b6;"></div>
+                    <div class="color-box" style="background: #e67e22;"></div>
+                    <div class="color-box" style="background: #34495e;"></div>
+                </div>
+                <button class="download-btn" onclick="downloadFavicon('data_network')">16x16 다운로드</button>
+                <button class="download-btn" onclick="downloadFavicon('data_network', 32)">32x32 다운로드</button>
+            </div>
+
+            <!-- Design 3: ETL Process -->
+            <div class="favicon-card">
+                <div class="favicon-preview">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                        <rect x="4" y="8" width="8" height="32" rx="2" fill="#1abc9c"/>
+                        <rect x="20" y="12" width="8" height="24" rx="2" fill="#f39c12"/>
+                        <rect x="36" y="8" width="8" height="32" rx="2" fill="#e74c3c"/>
+                        <path d="M12 24 L20 24" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <path d="M28 24 L36 24" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+                            </marker>
+                        </defs>
+                        <text x="8" y="46" font-size="6" fill="#34495e" text-anchor="middle">E</text>
+                        <text x="24" y="46" font-size="6" fill="#34495e" text-anchor="middle">T</text>
+                        <text x="40" y="46" font-size="6" fill="#34495e" text-anchor="middle">L</text>
+                    </svg>
+                </div>
+                <div class="favicon-title">ETL 프로세스</div>
+                <div class="favicon-description">Extract-Transform-Load의 데이터 처리 과정을 시각화</div>
+                <div class="color-palette">
+                    <div class="color-box" style="background: #1abc9c;"></div>
+                    <div class="color-box" style="background: #f39c12;"></div>
+                    <div class="color-box" style="background: #e74c3c;"></div>
+                </div>
+                <button class="download-btn" onclick="downloadFavicon('etl_process')">16x16 다운로드</button>
+                <button class="download-btn" onclick="downloadFavicon('etl_process', 32)">32x32 다운로드</button>
+            </div>
+
+            <!-- Design 4: Data Flow Minimal -->
+            <div class="favicon-card">
+                <div class="favicon-preview">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                        <path d="M6 24 Q24 8 42 24 Q24 40 6 24" stroke="#3498db" stroke-width="3" fill="none"/>
+                        <circle cx="6" cy="24" r="3" fill="#2980b9"/>
+                        <circle cx="24" cy="16" r="2" fill="#3498db"/>
+                        <circle cx="24" cy="32" r="2" fill="#3498db"/>
+                        <circle cx="42" cy="24" r="3" fill="#2980b9"/>
+                        <path d="M38 22 L42 24 L38 26" stroke="#2c3e50" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <div class="favicon-title">데이터 플로우 미니멀</div>
+                <div class="favicon-description">심플하고 세련된 데이터 흐름 표현</div>
+                <div class="color-palette">
+                    <div class="color-box" style="background: #3498db;"></div>
+                    <div class="color-box" style="background: #2980b9;"></div>
+                    <div class="color-box" style="background: #2c3e50;"></div>
+                </div>
+                <button class="download-btn" onclick="downloadFavicon('data_flow_minimal')">16x16 다운로드</button>
+                <button class="download-btn" onclick="downloadFavicon('data_flow_minimal', 32)">32x32 다운로드</button>
+            </div>
+
+            <!-- Design 5: Database Pipeline -->
+            <div class="favicon-card">
+                <div class="favicon-preview">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                        <ellipse cx="12" cy="16" rx="6" ry="3" fill="#34495e"/>
+                        <rect x="6" y="16" width="12" height="8" fill="#34495e"/>
+                        <ellipse cx="12" cy="24" rx="6" ry="3" fill="#34495e"/>
+                        
+                        <ellipse cx="36" cy="16" rx="6" ry="3" fill="#27ae60"/>
+                        <rect x="30" y="16" width="12" height="8" fill="#27ae60"/>
+                        <ellipse cx="36" cy="24" rx="6" ry="3" fill="#27ae60"/>
+                        
+                        <path d="M18 20 L30 20" stroke="#e74c3c" stroke-width="3"/>
+                        <polygon points="28,18 32,20 28,22" fill="#e74c3c"/>
+                        
+                        <circle cx="24" cy="35" r="4" fill="#f39c12"/>
+                        <path d="M24 28 L24 31" stroke="#95a5a6" stroke-width="2"/>
+                        <polygon points="22,30 24,32 26,30" fill="#95a5a6"/>
+                    </svg>
+                </div>
+                <div class="favicon-title">데이터베이스 파이프라인</div>
+                <div class="favicon-description">데이터베이스 간 파이프라인과 처리 엔진을 표현</div>
+                <div class="color-palette">
+                    <div class="color-box" style="background: #34495e;"></div>
+                    <div class="color-box" style="background: #27ae60;"></div>
+                    <div class="color-box" style="background: #e74c3c;"></div>
+                </div>
+                <button class="download-btn" onclick="downloadFavicon('database_pipeline')">16x16 다운로드</button>
+                <button class="download-btn" onclick="downloadFavicon('database_pipeline', 32)">32x32 다운로드</button>
+            </div>
+
+            <!-- Design 6: Modern Hexagon -->
+            <div class="favicon-card">
+                <div class="favicon-preview">
+                    <svg width="48" height="48" viewBox="0 0 48 48">
+                        <polygon points="24,4 36,12 36,28 24,36 12,28 12,12" fill="#667eea" opacity="0.8"/>
+                        <polygon points="24,8 32,14 32,26 24,32 16,26 16,14" fill="#764ba2" opacity="0.9"/>
+                        <circle cx="24" cy="20" r="2" fill="white"/>
+                        <circle cx="20" cy="24" r="1.5" fill="white" opacity="0.8"/>
+                        <circle cx="28" cy="24" r="1.5" fill="white" opacity="0.8"/>
+                        <path d="M24 20 L20 24 M24 20 L28 24" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="favicon-title">모던 헥사곤</div>
+                <div class="favicon-description">현대적인 기하학적 디자인으로 데이터 허브를 표현</div>
+                <div class="color-palette">
+                    <div class="color-box" style="background: #667eea;"></div>
+                    <div class="color-box" style="background: #764ba2;"></div>
+                    <div class="color-box" style="background: white;"></div>
+                </div>
+                <button class="download-btn" onclick="downloadFavicon('modern_hexagon')">16x16 다운로드</button>
+                <button class="download-btn" onclick="downloadFavicon('modern_hexagon', 32)">32x32 다운로드</button>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">🔧 사용 방법</div>
+            <p>1. 원하는 디자인의 다운로드 버튼을 클릭하여 favicon 파일을 저장하세요.</p>
+            <p>2. 다운로드된 파일을 프로젝트의 images 폴더에 복사하세요.</p>
+            <p>3. HTML 파일의 &lt;head&gt; 태그에 다음 코드를 추가하세요:</p>
+            <pre>&lt;link rel="icon" type="image/x-icon" href="images/favicon.ico"&gt;
+&lt;link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png"&gt;</pre>
+        </div>
+    </div>
+
+    <script>
+        function downloadFavicon(design, size = 16) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = size;
+            canvas.height = size;
+
+            // SVG designs
+            const designs = {
+                pipeline_flow: `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+                    <circle cx="8" cy="24" r="4" fill="#3498db"/>
+                    <circle cx="24" cy="24" r="4" fill="#2ecc71"/>
+                    <circle cx="40" cy="24" r="4" fill="#e74c3c"/>
+                    <path d="M12 24 L20 24" stroke="#34495e" stroke-width="2"/>
+                    <path d="M28 24 L36 24" stroke="#34495e" stroke-width="2"/>
+                    <polygon points="19,22 19,26 22,24" fill="#34495e"/>
+                    <polygon points="35,22 35,26 38,24" fill="#34495e"/>
+                </svg>`,
+                
+                data_network: `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+                    <circle cx="12" cy="12" r="3" fill="#9b59b6"/>
+                    <circle cx="36" cy="12" r="3" fill="#9b59b6"/>
+                    <circle cx="12" cy="36" r="3" fill="#9b59b6"/>
+                    <circle cx="36" cy="36" r="3" fill="#9b59b6"/>
+                    <circle cx="24" cy="24" r="4" fill="#e67e22"/>
+                    <line x1="12" y1="12" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                    <line x1="36" y1="12" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                    <line x1="12" y1="36" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                    <line x1="36" y1="36" x2="24" y2="24" stroke="#34495e" stroke-width="2"/>
+                </svg>`,
+                
+                etl_process: `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+                    <rect x="4" y="8" width="8" height="32" rx="2" fill="#1abc9c"/>
+                    <rect x="20" y="12" width="8" height="24" rx="2" fill="#f39c12"/>
+                    <rect x="36" y="8" width="8" height="32" rx="2" fill="#e74c3c"/>
+                    <path d="M12 24 L20 24" stroke="#2c3e50" stroke-width="2"/>
+                    <path d="M28 24 L36 24" stroke="#2c3e50" stroke-width="2"/>
+                    <polygon points="18,22 22,24 18,26" fill="#2c3e50"/>
+                    <polygon points="34,22 38,24 34,26" fill="#2c3e50"/>
+                </svg>`,
+                
+                data_flow_minimal: `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+                    <path d="M6 24 Q24 8 42 24 Q24 40 6 24" stroke="#3498db" stroke-width="3" fill="none"/>
+                    <circle cx="6" cy="24" r="3" fill="#2980b9"/>
+                    <circle cx="24" cy="16" r="2" fill="#3498db"/>
+                    <circle cx="24" cy="32" r="2" fill="#3498db"/>
+                    <circle cx="42" cy="24" r="3" fill="#2980b9"/>
+                    <path d="M38 22 L42 24 L38 26" stroke="#2c3e50" stroke-width="2" fill="none"/>
+                </svg>`,
+                
+                database_pipeline: `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+                    <ellipse cx="12" cy="16" rx="6" ry="3" fill="#34495e"/>
+                    <rect x="6" y="16" width="12" height="8" fill="#34495e"/>
+                    <ellipse cx="12" cy="24" rx="6" ry="3" fill="#34495e"/>
+                    <ellipse cx="36" cy="16" rx="6" ry="3" fill="#27ae60"/>
+                    <rect x="30" y="16" width="12" height="8" fill="#27ae60"/>
+                    <ellipse cx="36" cy="24" rx="6" ry="3" fill="#27ae60"/>
+                    <path d="M18 20 L30 20" stroke="#e74c3c" stroke-width="3"/>
+                    <polygon points="28,18 32,20 28,22" fill="#e74c3c"/>
+                    <circle cx="24" cy="35" r="4" fill="#f39c12"/>
+                    <path d="M24 28 L24 31" stroke="#95a5a6" stroke-width="2"/>
+                    <polygon points="22,30 24,32 26,30" fill="#95a5a6"/>
+                </svg>`,
+                
+                modern_hexagon: `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+                    <polygon points="24,4 36,12 36,28 24,36 12,28 12,12" fill="#667eea" opacity="0.8"/>
+                    <polygon points="24,8 32,14 32,26 24,32 16,26 16,14" fill="#764ba2" opacity="0.9"/>
+                    <circle cx="24" cy="20" r="2" fill="white"/>
+                    <circle cx="20" cy="24" r="1.5" fill="white" opacity="0.8"/>
+                    <circle cx="28" cy="24" r="1.5" fill="white" opacity="0.8"/>
+                    <path d="M24 20 L20 24 M24 20 L28 24" stroke="white" stroke-width="1.5"/>
+                </svg>`
+            };
+
+            const svgData = designs[design];
+            const img = new Image();
+            const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+                
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = `${design}_favicon_${size}x${size}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                });
+            };
+            
+            img.src = url;
+        }
+    </script>
+</body>
+</html> 

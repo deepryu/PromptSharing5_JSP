@@ -35,13 +35,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인 - 채용 관리 시스템</title>
-    
-    <!-- 파비콘 설정 -->
-    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/images/apple-touch-icon.png">
-    
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
