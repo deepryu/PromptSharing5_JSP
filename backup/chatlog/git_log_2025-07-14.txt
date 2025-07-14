@@ -1,0 +1,20 @@
+5a42c26 Add comprehensive chatlog backup system with automated scripts
+30c80a5 Remove Maven wrapper files and switch to system Maven 3.9.10
+2acfa28 Admin dashboard implementation with role-based access control
+807c4bb Add comprehensive admin features specification document
+f7c0088 안전백업 - 2025-07-12--_오후-05 - 기능추가전 안정상태
+241ae1b UI improvements: Unify cancel button styles across all forms
+88ae98e UI improvements: reduce stat card sizes in interview schedules and candidates management
+6ff5aae docs: add Git push error troubleshooting guide
+db451da UI improvements
+4f42ea9 안전백업 - 2025-07-11--_오후-08 - 기능추가전 안정상태
+5b5f209 UI 개선: 메인 대시보드 테이블 스타일 통일 및 네비게이션바 일관성 개선
+bae1d9d 안전백업 - 2025-07-11--_오후-06 - 기능추가전 안정상태
+a867e6b 인터뷰 질문 관리 화면 UI 통일 및 카테고리별 통계 기능 추가 - CSS common.css 적용하여 다른 관리 화면과 동일한 스타일 - 카테고리별 질문 수 통계 실시간 표시 - 중복 질문 제거용 SQL 스크립트 3종 추가
+931cb47 안전백업 - 2025-07-11--_오후-03 - 기능추가전 안정상태
+8b2b00b feat: 면접유형을 1차/2차면접으로 제한하고 2차면접 완료시 자동 상태 업데이트, Maven 컴파일 후 GitHub 푸시 확인 정책 추가
+2b5e237 안전백업 - 2025-07-09--_오후-08 - 기능추가전 안정상태
+f504bf9 안전백업 - 2025-07-09--_오후-08 - 기능추가전 안정상태
+4c922c9 안전백업 - 2025-07-09--_오후-07 - 기능추가전 안정상태
+f8a31ff 안전백업 - 2025-07-08--_오후-08 - 기능추가전 안정상태
+6a8d331 ?덉쟾諛깆뾽 - 2025-07-08--_오후-08 - 湲곕뒫異붽????덉젙?곹깭

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "PostgreSQL-PromptSharing": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@henkey/postgres-mcp-server",
+        "--connection-string",
+        "postgresql://postgres:1234@localhost:5432/promptsharing"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  }
+} 

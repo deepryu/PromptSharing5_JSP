@@ -1,0 +1,72 @@
+{
+  "// 🎯 채팅 기록 전용 백업 Extension 설정": "채팅 기록만 백업하는 확장프로그램들의 최적 설정",
+  
+  "// ===== Cursor Chat Keeper 설정 =====": "",
+  "cursorChatKeeper.autoSave": true,
+  "cursorChatKeeper.outputFormat": "markdown",
+  "cursorChatKeeper.includeTimestamps": true,
+  "cursorChatKeeper.saveLocation": "workspace-root",
+  "cursorChatKeeper.filename": "cursor-chat-history.md",
+  
+  "// ===== SpecStory 설정 =====": "",
+  "specstory.autoSaveHistory": true,
+  "specstory.saveLocation": "./specstory/history",
+  "specstory.includeCodeBlocks": true,
+  "specstory.showDeveloperTools": false,
+  "specstory.helpUsImprove": false,
+  "specstory.autoGenerateRules": false,
+  
+  "// ===== CursorChat Downloader 설정 =====": "",
+  "cursorChatDownloader.includeCodeSnippets": true,
+  "cursorChatDownloader.includeFileSelections": true,
+  "cursorChatDownloader.markdownFormatting": true,
+  "cursorChatDownloader.syntaxHighlighting": true,
+  
+  "// ===== 키보드 단축키 설정 =====": "",
+  "keyboard.shortcuts": [
+    {
+      "key": "ctrl+alt+c",
+      "command": "cursorChatKeeper.saveHistory",
+      "when": "editorTextFocus"
+    },
+    {
+      "key": "ctrl+alt+s",
+      "command": "specstory.saveHistory", 
+      "when": "editorTextFocus"
+    },
+    {
+      "key": "ctrl+alt+v",
+      "command": "cursorChatDownloader.viewHistory",
+      "when": "editorTextFocus"
+    }
+  ],
+  
+  "// ===== 파일 제외 설정 (채팅 기록만 포함) =====": "",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/WEB-INF/classes": true,
+    "**/.git": false,
+    "**/specstory/history": false,
+    "**/cursor-chat*.md": false
+  },
+  
+  "// ===== 검색 설정 =====": "",
+  "search.include": {
+    "**/cursor-chat*.md": true,
+    "**/specstory/history/**": true,
+    "**/.cursor/**": true
+  },
+  
+  "// ===== 추천 워크플로우 =====": "",
+  "// 1. 일상 백업: Cursor Chat Keeper (Ctrl+Alt+C)": "",
+  "// 2. 중요 대화: SpecStory Save (Ctrl+Alt+S)": "", 
+  "// 3. 전체 히스토리: CursorChat Downloader (Ctrl+Alt+V)": "",
+  "// 4. 공유용: SpecStory Share 기능 활용": "",
+  
+  "// ===== 백업 파일 경로 =====": "",
+  "// cursor-chat-history.md: 워크스페이스 루트": "",
+  "// ./specstory/history/: 상세 세션별 저장": "", 
+  "// Cursor DB: ~/Library/Application Support/Cursor (macOS)": "",
+  "// Cursor DB: %APPDATA%/Cursor (Windows)": ""
+} 
