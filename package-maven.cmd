@@ -25,14 +25,14 @@ if exist "target\*.war" (
     echo [INFO] 기존 WAR 파일 삭제 완료
 )
 
-REM 3. 컴파일 및 테스트 (선택 사항)
+REM 3. 컴파일 및 테스트 (선택 사항, 시스템 Maven 사용)
 set /p skip_tests="테스트를 건너뛰시겠습니까? (y/N): "
 if /i "%skip_tests%"=="y" (
     echo [STEP 2/4] 테스트 건너뛰고 패키징 중...
-    call mvnw.cmd package -DskipTests
+    call mvn package -DskipTests
 ) else (
     echo [STEP 2/4] 테스트 포함하여 패키징 중...
-    call mvnw.cmd package
+    call mvn package
 )
 
 if %ERRORLEVEL% neq 0 (

@@ -26,9 +26,9 @@ echo   - 데이터베이스: promptsharing
 echo   - 사용자: postgres
 echo.
 
-REM 3. 테스트 컴파일
+REM 3. 테스트 컴파일 (시스템 Maven 사용)
 echo [STEP 2/5] 테스트 소스 컴파일 중...
-call mvnw.cmd test-compile
+call mvn test-compile
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] 테스트 컴파일 실패
     pause
@@ -37,9 +37,9 @@ if %ERRORLEVEL% neq 0 (
 echo [SUCCESS] 테스트 컴파일 완료
 echo.
 
-REM 4. 개별 테스트 클래스 실행
+REM 4. 개별 테스트 클래스 실행 (시스템 Maven 사용)
 echo [STEP 3/5] UserDAO 테스트 실행 중 (4개 테스트)...
-call mvnw.cmd test -Dtest=UserDAOTest
+call mvn test -Dtest=UserDAOTest
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] UserDAOTest 실패
     echo [TIP] 데이터베이스 연결과 users 테이블을 확인하세요.
@@ -50,7 +50,7 @@ echo [SUCCESS] UserDAOTest 완료 (4/20)
 echo.
 
 echo [STEP 4/5] CandidateDAO 테스트 실행 중 (5개 테스트)...
-call mvnw.cmd test -Dtest=CandidateDAOTest
+call mvn test -Dtest=CandidateDAOTest
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] CandidateDAOTest 실패
     echo [TIP] candidates 테이블을 확인하세요.
@@ -61,7 +61,7 @@ echo [SUCCESS] CandidateDAOTest 완료 (9/20)
 echo.
 
 echo [STEP 5/5] InterviewScheduleDAO 테스트 실행 중 (11개 테스트)...
-call mvnw.cmd test -Dtest=InterviewScheduleDAOTest
+call mvn test -Dtest=InterviewScheduleDAOTest
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] InterviewScheduleDAOTest 실패
     echo [TIP] interview_schedules 테이블을 확인하세요.
@@ -71,9 +71,9 @@ if %ERRORLEVEL% neq 0 (
 echo [SUCCESS] InterviewScheduleDAOTest 완료 (20/20)
 echo.
 
-REM 5. 전체 테스트 재실행 (최종 검증)
+REM 5. 전체 테스트 재실행 (최종 검증, 시스템 Maven 사용)
 echo [STEP 6/6] 전체 테스트 최종 검증 중...
-call mvnw.cmd test
+call mvn test
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] 전체 테스트 실패
     echo [TIP] 개별 테스트는 성공했지만 전체 실행에서 실패했습니다.

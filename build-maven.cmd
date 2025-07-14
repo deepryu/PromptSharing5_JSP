@@ -19,9 +19,9 @@ echo [INFO] JAVA_HOME: %JAVA_HOME%
 echo [INFO] 현재 경로: %CD%
 echo.
 
-REM 2. 이전 빌드 결과물 정리
+REM 2. 이전 빌드 결과물 정리 (시스템 Maven 사용)
 echo [STEP 1/4] 이전 빌드 결과물 정리 중...
-call mvnw.cmd clean
+call mvn clean
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Maven clean 실패
     pause
@@ -30,10 +30,10 @@ if %ERRORLEVEL% neq 0 (
 echo [SUCCESS] 정리 완료
 echo.
 
-REM 3. 의존성 다운로드 및 컴파일
+REM 3. 의존성 다운로드 및 컴파일 (시스템 Maven 사용)
 echo [STEP 2/4] Java 소스 컴파일 중...
 echo [INFO] 컴파일 순서: util → model → controller
-call mvnw.cmd compile
+call mvn compile
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Maven compile 실패
     echo [TIP] 소스 코드 오류를 확인해주세요.
@@ -43,9 +43,9 @@ if %ERRORLEVEL% neq 0 (
 echo [SUCCESS] 컴파일 완료
 echo.
 
-REM 4. 테스트 컴파일
+REM 4. 테스트 컴파일 (시스템 Maven 사용)
 echo [STEP 3/4] 테스트 소스 컴파일 중...
-call mvnw.cmd test-compile
+call mvn test-compile
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Maven test-compile 실패
     echo [TIP] 테스트 코드 오류를 확인해주세요.

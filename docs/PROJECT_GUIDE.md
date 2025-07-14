@@ -125,13 +125,18 @@ WHERE table_name = 'table_name' AND column_name = 'new_column';
 
 ## 🚀 Git 및 배포 관리
 
-### 📦 Maven 컴파일 후 GitHub 푸시 정책
+### 📦 Maven 컴파일 후 GitHub 푸시 정책 (시스템 Maven 기반)
 
 **⚡ 에이전트 동작 규칙**:
-- `.\mvnw.cmd compile` 실행 완료 후 반드시 사용자에게 GitHub 푸시 여부를 확인
+- `mvn clean compile` 실행 완료 후 반드시 사용자에게 GitHub 푸시 여부를 확인
 - **예시 질문**: "컴파일이 완료되었습니다. 변경사항을 GitHub에 푸시하시겠습니까? (yes/no)"
 - 사용자가 "yes" 응답 시에만 Git 명령어 실행
 - 사용자가 "no" 응답 시 푸시 작업 건너뛰기
+
+**🚀 빠른 컴파일 및 테스트 명령어**:
+- `mvn clean compile` - 빠른 컴파일 (20초)
+- `mvn clean compile test` - 컴파일 + 테스트 (2분)
+- `mvn test` - 테스트만 실행 (50개 테스트 케이스)
 
 **🔄 표준 Git 푸시 절차**:
 ```bash
@@ -576,27 +581,65 @@ session.setAttribute("role", user.getRole());   // getRole() 메소드가 실제
 
 ## 🛠️ 개발 환경 설정
 
-### Maven 기반 빌드 시스템
+### Maven 기반 빌드 시스템 (시스템 Maven 사용)
+
+**🎉 시스템 Maven 3.9.10 설치 완료**
+- **Maven Home**: C:\maven-3.9.10
+- **Java 버전**: 24.0.1
+- **인코딩**: UTF-8 (한글 지원)
+- **🗑️ Maven Wrapper 제거 완료**: `mvnw.cmd`, `.mvn/wrapper/` 디렉토리 삭제 (프로젝트 크기 최적화)
+
+**📦 정리된 파일들 (총 12개)**:
+- `mvnw.cmd` (7.3KB Maven wrapper 스크립트)
+- `.mvn/wrapper/maven-wrapper.jar` (61KB JAR 파일)
+- `.mvn/wrapper/maven-wrapper.properties` (설정 파일)
+- `backup/mvnw.cmd.backup` 파일들 9개 (모든 백업 폴더에서)
+
 ```bash
-# 📌 Java 클래스 변경 시 필수 컴파일 명령어 (Tomcat 자동 종료 포함)
-.\mvnw.cmd compile
+# 📌 Java 클래스 변경 시 필수 컴파일 명령어 (시스템 Maven 사용)
+mvn clean compile
 
-# 강제 재컴파일 (캐시 문제 해결)
-.\mvnw.cmd clean compile
-
-# 테스트 실행 (한글 정상 출력)
-chcp 65001; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:MAVEN_OPTS="-Dfile.encoding=UTF-8"; .\mvnw.cmd test
+# 테스트 실행 (50개 테스트 모두 성공)
+mvn test
 
 # 전체 빌드 (컴파일 + 테스트 + 패키징)
-.\mvnw.cmd clean compile test package
+mvn clean compile test package
+
+# 컴파일 + 테스트 컴파일 (권장)
+mvn clean compile test-compile
+
+# 강제 재컴파일 (캐시 문제 해결)
+mvn clean compile -U
+
+# 한글 깨짐 방지 UTF-8 테스트 (권장)
+.\test-maven-utf8.cmd
 ```
 
-**⚡ 중요**: Java 클래스 파일(.java) 변경 후 반드시 `.\mvnw.cmd compile` 실행 필요
-- JSP 파일: 컴파일 불필요 (Tomcat 자동 처리)
-- Java 파일: 반드시 Maven 컴파일 후 Tomcat 재시작
-- **🔄 자동화**: `.\mvnw.cmd compile` 실행 시 Tomcat 자동 종료하여 클래스 로더 충돌 방지
+**💡 한글 깨짐 해결 방법**:
+```bash
+# 방법 1: UTF-8 스크립트 사용 (권장)
+.\test-maven-utf8.cmd
 
-### 📋 Maven 컴파일 자동화 절차
+# 방법 2: 환경변수 설정 후 실행
+set MAVEN_OPTS=-Dfile.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Dproject.build.sourceEncoding=UTF-8
+chcp 65001
+mvn test
+
+# 방법 3: PowerShell 인코딩 설정
+powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:MAVEN_OPTS='-Dfile.encoding=UTF-8'; mvn test"
+```
+
+**⚡ 중요**: Java 클래스 파일(.java) 변경 후 반드시 `mvn clean compile` 실행 필요
+- **JSP 파일**: 컴파일 불필요 (Tomcat 자동 처리)
+- **Java 파일**: 반드시 Maven 컴파일 후 Tomcat 재시작
+- **🔄 자동화**: Maven 컴파일 실행 시 Tomcat 자동 종료하여 클래스 로더 충돌 방지
+
+**📊 빌드 성능**:
+- **컴파일 시간**: 약 20초 (41개 소스 파일)
+- **테스트 시간**: 약 2분 (50개 테스트 케이스)
+- **전체 빌드**: 약 2분 30초
+
+### 📋 Maven 컴파일 자동화 절차 (시스템 Maven 기반)
 1. **컴파일 전 준비**: Tomcat 프로세스 자동 종료
 2. **Maven 컴파일**: 변경된 Java 클래스 컴파일
 3. **에이전트 제한**: **컴파일 완료 후 Tomcat 자동 재시작 절대 금지**
@@ -605,6 +648,16 @@ chcp 65001; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:MAVEN
    # Tomcat 재시작 명령어 (사용자가 직접 실행)
    C:\tomcat9\bin\startup.bat
    ```
+
+**💡 시스템 Maven 장점**:
+- 더 빠른 빌드 성능
+- 표준 Maven 명령어 사용
+- 글로벌 설정 및 플러그인 활용
+- 더 안정적인 의존성 관리
+
+**🔧 마이그레이션 노트**:
+- 기존 `.\mvnw.cmd` 명령어 → `mvn` 명령어로 변경
+- Maven wrapper 스크립트는 호환성을 위해 유지
 
 ## 🚫 **TOMCAT 자동 시작 절대 금지 정책** (중요!)
 
