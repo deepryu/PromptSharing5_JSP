@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class TestDatabaseUtil {
 
     // 테스트 전용 데이터베이스 설정
-    private static final String TEST_DB_URL = "jdbc:postgresql://localhost:5432/promptsharing_test";
+    private static final String TEST_DB_URL = System.getProperty("test.database.url", "jdbc:postgresql://localhost:5432/promptsharing_test");
     private static final String DB_USER = "postgres";
     private static final String DB_PASS = "1234";
     private static final String JDBC_DRIVER = "org.postgresql.Driver";

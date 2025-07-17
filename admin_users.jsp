@@ -10,8 +10,8 @@
     }
     
     // 관리자 권한 확인
-    Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-    if (isAdmin == null || !isAdmin) {
+    String role = (String) session.getAttribute("role");
+    if (!"ADMIN".equals(role)) {
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 필요합니다.");
         return;
     }
@@ -106,9 +106,31 @@
             margin-bottom: 10px;
         }
         
-        .dashboard-nav {
-            display: flex;
-            gap: 20px;
+
+        
+        .nav-buttons {
+            background-color: #f6f8fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #d0d7de;
+        }
+        
+        .nav-buttons .btn {
+            background-color: white;
+            color: #24292f;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #d0d7de;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .nav-buttons .btn:hover {
+            background-color: #f3f4f6;
+            border-color: #0078d4;
+            color: #0078d4;
         }
         
         .nav-link {
@@ -406,13 +428,15 @@
         <div class="main-dashboard">
             <div class="dashboard-header">
                 <h2>사용자 목록 및 관리</h2>
-                <div class="dashboard-nav">
-                    <a href="admin/dashboard" class="nav-link">📊 대시보드</a>
-                    <a href="admin/users" class="nav-link">👥 사용자 관리</a>
-                    <a href="admin/settings" class="nav-link">⚙️ 시스템 설정</a>
-                    <a href="admin/logs" class="nav-link">📋 로그 관리</a>
-                    <a href="main.jsp" class="nav-link">🏠 메인으로</a>
-                </div>
+            </div>
+            
+            <!-- 관리자 네비게이션 메뉴 -->
+            <div class="nav-buttons">
+                <a href="admin/dashboard" class="btn">📊 대시보드</a>
+                <a href="admin/users" class="btn">👥 사용자 관리</a>
+                <a href="admin/settings" class="btn">⚙️ 시스템 설정</a>
+                <a href="admin/logs" class="btn">📋 로그 관리</a>
+                <a href="main.jsp" class="btn">🏠 메인</a>
             </div>
             
             <div class="dashboard-content">
@@ -465,10 +489,8 @@
                         <form method="GET" action="admin/users" style="display: flex; gap: 10px;">
                             <select name="role" class="select-input" onchange="this.form.submit()">
                                 <option value="">모든 역할</option>
-                                <option value="USER" <%= "USER".equals(roleFilter) ? "selected" : "" %>>일반 사용자</option>
-                                <option value="INTERVIEWER" <%= "INTERVIEWER".equals(roleFilter) ? "selected" : "" %>>면접관</option>
+                                <option value="INTERVIEWER" <%= "INTERVIEWER".equals(roleFilter) ? "selected" : "" %>>인터뷰어</option>
                                 <option value="ADMIN" <%= "ADMIN".equals(roleFilter) ? "selected" : "" %>>관리자</option>
-                                <option value="SUPER_ADMIN" <%= "SUPER_ADMIN".equals(roleFilter) ? "selected" : "" %>>최고 관리자</option>
                             </select>
                             <input type="text" name="search" class="search-input" placeholder="사용자명, 이메일, 이름 검색..." 
                                    value="<%= search != null ? search : "" %>">

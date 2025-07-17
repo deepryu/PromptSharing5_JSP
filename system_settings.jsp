@@ -284,11 +284,7 @@
             <h2>⚙️ 시스템 설정</h2>
             <div>
                 <a href="main.jsp">🏠 메인</a>
-                <a href="candidates">👥 인터뷰 대상자 관리</a>
-                <a href="interview/list">📅 인터뷰 일정 관리</a>
-                <a href="questions">💡 질문/평가 항목 관리</a>
-                <a href="results">📝 인터뷰 결과 기록/관리</a>
-                <a href="statistics">📊 통계 및 리포트</a>
+                <a href="${pageContext.request.contextPath}/admin/dashboard">🛠️ 대시보드</a>
                 <a href="logout" class="btn-danger">🚪 로그아웃</a>
             </div>
         </div>

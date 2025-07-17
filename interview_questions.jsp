@@ -1,6 +1,24 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+    // 세션 검증 및 권한 확인
+    String username = (String)session.getAttribute("username");
+    String userRole = (String)session.getAttribute("userRole");
+    Boolean isInterviewer = (Boolean)session.getAttribute("isInterviewer");
+    Boolean isAdmin = (Boolean)session.getAttribute("isAdmin");
+    
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    
+    // 질문 관리 권한 확인 (INTERVIEWER와 ADMIN 모두 가능)
+    boolean canManageQuestions = (isInterviewer != null && isInterviewer) || 
+                                (isAdmin != null && isAdmin) || 
+                                ("INTERVIEWER".equals(userRole)) || 
+                                ("ADMIN".equals(userRole));
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -489,7 +507,7 @@
                                 <button type="button" class="btn" onclick="clearAllFilters()">🔄 필터 초기화</button>
                             </form>
                         </div>
-                        <a href="questions?action=new" class="btn btn-primary">➕ 새 질문 등록</a>
+                        <a href="questions?action=new" class="btn btn-primary" onclick="return checkQuestionPermission()">➕ 새 질문 등록</a>
                     </div>
                 </div>
 
@@ -763,6 +781,16 @@
                 setTimeout(() => alert.style.display = 'none', 300);
             });
         }, 5000);
+
+    // 질문 관리 권한 체크
+    function checkQuestionPermission() {
+        <% if (!canManageQuestions) { %>
+            alert('❌ 실행 권한이 없습니다\n\n질문 등록은 면접관(INTERVIEWER) 이상의 권한이 필요합니다.');
+            return false; // 페이지 이동 막기
+        <% } %>
+        
+        return true; // 페이지 이동 허용
+    }
 
     </script>
 </body>

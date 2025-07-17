@@ -5,6 +5,8 @@ import com.example.model.UserDAO;
 import com.example.model.CandidateDAO;
 import com.example.model.InterviewScheduleDAO;
 import com.example.model.InterviewResultDAO;
+import com.example.model.ActivityHistory;
+import com.example.model.ActivityHistoryDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 @WebServlet("/admin/*")
 public class AdminServlet extends HttpServlet {
@@ -25,6 +28,7 @@ public class AdminServlet extends HttpServlet {
     private CandidateDAO candidateDAO;
     private InterviewScheduleDAO scheduleDAO;
     private InterviewResultDAO resultDAO;
+    private ActivityHistoryDAO activityDAO;
 
     @Override
     public void init() throws ServletException {
@@ -32,6 +36,7 @@ public class AdminServlet extends HttpServlet {
         candidateDAO = new CandidateDAO();
         scheduleDAO = new InterviewScheduleDAO();
         resultDAO = new InterviewResultDAO();
+        activityDAO = new ActivityHistoryDAO();
     }
 
     @Override
@@ -39,15 +44,20 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String action = getAction(request);
-        System.out.println("🔍 [AdminServlet-GET] 액션: " + action);
+        
+        // 세션 정보 확인
+        HttpSession session = request.getSession(false);
         
         // 관리자 권한 확인
-        if (!isAdmin(request)) {
+        boolean adminCheck = isAdmin(request);
+        
+        if (!adminCheck) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 필요합니다.");
             return;
         }
         
         try {
+            
             switch (action) {
                 case "dashboard":
                     showDashboard(request, response);
@@ -74,9 +84,8 @@ public class AdminServlet extends HttpServlet {
                     showDashboard(request, response);
                     break;
             }
+            
         } catch (Exception e) {
-            System.out.println("💥 [AdminServlet-GET] 오류 발생: " + e.getMessage());
-            e.printStackTrace();
             request.setAttribute("error", "관리자 기능 처리 중 오류가 발생했습니다: " + e.getMessage());
             request.getRequestDispatcher("/admin_error.jsp").forward(request, response);
         }
@@ -87,10 +96,14 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String action = getAction(request);
-        System.out.println("🔍 [AdminServlet-POST] 액션: " + action);
         
         // 관리자 권한 확인
-        if (!isAdmin(request)) {
+        boolean adminCheck = isAdmin(request);
+        
+        // 세션 정보 확인
+        HttpSession session = request.getSession(false);
+        
+        if (!adminCheck) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 필요합니다.");
             return;
         }
@@ -125,8 +138,6 @@ public class AdminServlet extends HttpServlet {
                     break;
             }
         } catch (Exception e) {
-            System.out.println("💥 [AdminServlet-POST] 오류 발생: " + e.getMessage());
-            e.printStackTrace();
             request.setAttribute("error", "관리자 기능 처리 중 오류가 발생했습니다: " + e.getMessage());
             request.getRequestDispatcher("/admin_error.jsp").forward(request, response);
         }
@@ -138,29 +149,52 @@ public class AdminServlet extends HttpServlet {
     private void showDashboard(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 시스템 통계 수집
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalUsers", userDAO.getTotalUsersCount());
-        stats.put("activeUsers", userDAO.getActiveUsersCount());
-        stats.put("totalCandidates", candidateDAO.getAllCandidates().size());
-        stats.put("totalSchedules", scheduleDAO.getAllSchedules().size());
-        stats.put("totalResults", resultDAO.getAllResults().size());
-        
-        // 역할별 사용자 수
-        stats.put("userCount", userDAO.getUsersCountByRole("USER"));
-        stats.put("interviewerCount", userDAO.getUsersCountByRole("INTERVIEWER"));
-        stats.put("adminCount", userDAO.getUsersCountByRole("ADMIN"));
-        stats.put("superAdminCount", userDAO.getUsersCountByRole("SUPER_ADMIN"));
-        
-        // 최근 사용자 목록 (최대 5명)
-        List<User> recentUsers = userDAO.getAllUsers();
-        if (recentUsers.size() > 5) {
-            recentUsers = recentUsers.subList(0, 5);
+        try {
+            // 시스템 통계 수집
+            Map<String, Object> stats = new HashMap<>();
+            
+            int totalUsers = userDAO.getTotalUsersCount();
+            stats.put("totalUsers", totalUsers);
+            
+            int activeUsers = userDAO.getActiveUsersCount();
+            stats.put("activeUsers", activeUsers);
+            
+            int totalCandidates = candidateDAO.getAllCandidates().size();
+            stats.put("totalCandidates", totalCandidates);
+            
+            int totalSchedules = scheduleDAO.getAllSchedules().size();
+            stats.put("totalSchedules", totalSchedules);
+            
+            int totalResults = resultDAO.getAllResults().size();
+            stats.put("totalResults", totalResults);
+            
+            // 역할별 사용자 수 (2단계 시스템: USER, ADMIN)
+            int userCount = userDAO.getUsersCountByRole("USER");
+            stats.put("userCount", userCount);
+            
+            int adminCount = userDAO.getUsersCountByRole("ADMIN");
+            stats.put("adminCount", adminCount);
+            
+            // 2단계 권한 시스템에서 더 이상 사용하지 않는 역할들은 0으로 설정
+            int interviewerCount = 0;
+            stats.put("interviewerCount", interviewerCount);
+            
+            int superAdminCount = 0;
+            stats.put("superAdminCount", superAdminCount);
+            
+            // 최근 사용자 목록 (최대 5명)
+            List<User> recentUsers = userDAO.getAllUsers();
+            if (recentUsers.size() > 5) {
+                recentUsers = recentUsers.subList(0, 5);
+            }
+            stats.put("recentUsers", recentUsers);
+            
+            request.setAttribute("stats", stats);
+            request.getRequestDispatcher("/admin_dashboard.jsp").forward(request, response);
+            
+        } catch (Exception e) {
+            throw e;
         }
-        stats.put("recentUsers", recentUsers);
-        
-        request.setAttribute("stats", stats);
-        request.getRequestDispatcher("/admin_dashboard.jsp").forward(request, response);
     }
 
     /**
@@ -193,6 +227,15 @@ public class AdminServlet extends HttpServlet {
      */
     private void showUserForm(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        
+        // 기존 사용자 정보가 있다면 제거 (브라우저 캐시 방지)
+        request.removeAttribute("user");
+        request.removeAttribute("error");
+        request.removeAttribute("success");
+        
+        // 새 사용자 폼임을 명시적으로 표시
+        request.setAttribute("isNewUser", true);
+        request.setAttribute("formTitle", "새 사용자 추가");
         
         request.getRequestDispatcher("/admin_user_form.jsp").forward(request, response);
     }
@@ -261,7 +304,7 @@ public class AdminServlet extends HttpServlet {
     private void showSettings(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        request.getRequestDispatcher("/admin_settings.jsp").forward(request, response);
+        request.getRequestDispatcher("/system_settings.jsp").forward(request, response);
     }
 
     /**
@@ -269,6 +312,69 @@ public class AdminServlet extends HttpServlet {
      */
     private void showLogs(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        
+        try {
+            // 파라미터 처리
+            String searchType = request.getParameter("searchType");
+            String searchValue = request.getParameter("searchValue");
+            String limitParam = request.getParameter("limit");
+            
+            int limit = 50; // 기본값
+            if (limitParam != null && !limitParam.isEmpty()) {
+                try {
+                    limit = Integer.parseInt(limitParam);
+                    if (limit > 1000) limit = 1000; // 최대 1000개
+                    if (limit < 10) limit = 10;     // 최소 10개
+                } catch (NumberFormatException e) {
+                    limit = 50;
+                }
+            }
+            
+            List<ActivityHistory> activities = new ArrayList<>();
+            
+            // 검색 조건에 따른 로그 조회
+            if (searchType != null && searchValue != null && !searchValue.trim().isEmpty()) {
+                switch (searchType) {
+                    case "username":
+                        activities = activityDAO.getActivitiesByUser(searchValue.trim(), limit);
+                        break;
+                    case "today":
+                        activities = activityDAO.getTodayActivities();
+                        break;
+                    case "login":
+                        activities = activityDAO.getRecentLogins(limit);
+                        break;
+                    default:
+                        activities = activityDAO.getAllActivities(limit);
+                        break;
+                }
+            } else {
+                activities = activityDAO.getAllActivities(limit);
+            }
+            
+            // 로그 통계 정보
+            Map<String, Object> logStats = new HashMap<>();
+            logStats.put("totalLogs", activities.size());
+            logStats.put("todayLogs", activityDAO.getTodayActivities().size());
+            logStats.put("recentLogins", activityDAO.getRecentLogins(10).size());
+            
+            // 액션별 통계 (최근 로그에서)
+            Map<String, Integer> actionCounts = new HashMap<>();
+            for (ActivityHistory activity : activities) {
+                String action = activity.getAction();
+                actionCounts.put(action, actionCounts.getOrDefault(action, 0) + 1);
+            }
+            
+            request.setAttribute("activities", activities);
+            request.setAttribute("logStats", logStats);
+            request.setAttribute("actionCounts", actionCounts);
+            request.setAttribute("searchType", searchType);
+            request.setAttribute("searchValue", searchValue);
+            request.setAttribute("limit", limit);
+            
+        } catch (Exception e) {
+            request.setAttribute("error", "로그 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
         
         request.getRequestDispatcher("/admin_logs.jsp").forward(request, response);
     }
@@ -294,13 +400,17 @@ public class AdminServlet extends HttpServlet {
         }
         
         // 사용자 객체 생성
-        User user = new User(username, password, role != null ? role : "USER");
+        User user = new User(username, password, role != null ? role : "INTERVIEWER");
         user.setEmail(email);
         user.setFullName(fullName);
         user.setActive(true);
         
         // 사용자 추가
         if (userDAO.addUser(user)) {
+            // 활동 로그 기록
+            String adminUsername = (String) request.getSession().getAttribute("username");
+            activityDAO.logCreate(adminUsername, "user", null, username, "새 사용자 생성 (역할: " + user.getRole() + ")");
+            
             HttpSession session = request.getSession();
             session.setAttribute("successMessage", "사용자가 성공적으로 추가되었습니다.");
             response.sendRedirect(request.getContextPath() + "/admin/users");
@@ -318,6 +428,7 @@ public class AdminServlet extends HttpServlet {
         
         String userIdStr = request.getParameter("id");
         String username = request.getParameter("username");
+        String password = request.getParameter("password");
         String email = request.getParameter("email");
         String fullName = request.getParameter("fullName");
         String role = request.getParameter("role");
@@ -342,7 +453,16 @@ public class AdminServlet extends HttpServlet {
             user.setFullName(fullName);
             user.setRole(role);
             
+            // 비밀번호가 입력된 경우에만 업데이트
+            if (password != null && !password.trim().isEmpty()) {
+                user.setPassword(password);
+            }
+            
             if (userDAO.updateUser(user)) {
+                // 활동 로그 기록
+                String adminUsername = (String) request.getSession().getAttribute("username");
+                activityDAO.logUpdate(adminUsername, "user", userId, username, "사용자 정보 수정");
+                
                 HttpSession session = request.getSession();
                 session.setAttribute("successMessage", "사용자가 성공적으로 수정되었습니다.");
                 response.sendRedirect(request.getContextPath() + "/admin/users");
@@ -373,6 +493,10 @@ public class AdminServlet extends HttpServlet {
             int userId = Integer.parseInt(userIdStr);
             
             if (userDAO.deleteUser(userId)) {
+                // 활동 로그 기록
+                String adminUsername = (String) request.getSession().getAttribute("username");
+                activityDAO.logCreate(adminUsername, "user", userId, "사용자 #" + userId, "사용자 삭제");
+                
                 HttpSession session = request.getSession();
                 session.setAttribute("successMessage", "사용자가 성공적으로 삭제되었습니다.");
                 response.sendRedirect(request.getContextPath() + "/admin/users");
@@ -499,6 +623,10 @@ public class AdminServlet extends HttpServlet {
             user.setActive(isActive);
             
             if (userDAO.updateUser(user)) {
+                // 활동 로그 기록
+                String adminUsername = (String) request.getSession().getAttribute("username");
+                activityDAO.logUpdate(adminUsername, "user", userId, user.getUsername(), "사용자 " + action);
+                
                 HttpSession session = request.getSession();
                 session.setAttribute("successMessage", "사용자가 성공적으로 " + action + "되었습니다.");
                 response.sendRedirect(request.getContextPath() + "/admin/users");
@@ -522,9 +650,11 @@ public class AdminServlet extends HttpServlet {
         String path = requestURI.substring(contextPath.length());
         
         if (path.startsWith("/admin/")) {
-            return path.substring(7); // "/admin/" 제거
+            String action = path.substring(7); // "/admin/" 제거
+            return action;
+        } else {
+            return "";
         }
-        return "";
     }
 
     /**
@@ -533,8 +663,8 @@ public class AdminServlet extends HttpServlet {
     private boolean isAdmin(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-            return isAdmin != null && isAdmin;
+            String role = (String) session.getAttribute("role");
+            return "ADMIN".equals(role);
         }
         return false;
     }

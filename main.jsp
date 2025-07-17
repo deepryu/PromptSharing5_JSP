@@ -1,10 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     String username = (String)session.getAttribute("username");
+    String userRole = (String)session.getAttribute("userRole");
+    String role = (String)session.getAttribute("role");
+    Boolean isAdmin = (Boolean)session.getAttribute("isAdmin");
+    
     if (username == null) {
         response.sendRedirect("login.jsp");
         return;
     }
+    
+    // 관리자 대시보드 접근 권한 확인 (ADMIN 권한만 허용)
+    boolean hasAdminAccess = (isAdmin != null && isAdmin) || 
+                            ("ADMIN".equals(userRole)) ||
+                            ("ADMIN".equals(role));
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -112,12 +121,19 @@
             <h2>📊 채용 관리 시스템</h2>
             <div class="nav-buttons">
                 <% if (username != null) { %>
-                    <span style="margin-right: 15px; color: var(--text-secondary); font-size: var(--font-sm);">안녕하세요, <%= username %>님</span>
+                    <span style="margin-right: 15px; color: var(--text-secondary); font-size: var(--font-sm);">안녕하세요, <%= username %>님 
+                        <% if (userRole != null) { %>
+                            (<%= userRole %>)
+                        <% } %>
+                    </span>
                     
-                    <%-- 모든 로그인 사용자에게 관리자 대시보드 버튼 표시 --%>
-                    <form action="admin/dashboard" method="get" style="display:inline; margin-right: 10px;">
-                        <button type="submit" class="btn btn-primary">🛠️ 관리자 대시보드</button>
-                    </form>
+                    <%-- 관리자 권한이 있는 사용자에게만 관리자 대시보드 버튼 표시 --%>
+                    <% if (hasAdminAccess) { %>
+                        <form action="admin/dashboard" method="get" style="display:inline; margin-right: 10px;" 
+                              onsubmit="return debugAdminDashboard();">
+                            <button type="submit" class="btn btn-primary" id="adminDashboardBtn">🛠️ 관리자 대시보드</button>
+                        </form>
+                    <% } %>
                     
                     <form action="logout" method="get" style="display:inline;">
                         <button type="submit" class="btn">🚪 로그아웃</button>
@@ -179,24 +195,18 @@
                                     </a>
                                 </td>
                                 <td style="text-align: center; padding: 20px;">
-                                    <a href="interviewers" class="dashboard-menu-link">
+                                    <a href="notifications" class="dashboard-menu-link">
                                         <span class="menu-number">6.</span>
-                                        면접관(관리자) 관리
+                                        알림 및 히스토리
                                     </a>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align: center; padding: 20px;">
-                                    <a href="notifications" class="dashboard-menu-link">
-                                        <span class="menu-number">7.</span>
-                                        알림 및 히스토리
-                                    </a>
-                                </td>
-                                <td style="text-align: center; padding: 20px;">
-                                    <a href="settings" class="dashboard-menu-link">
-                                        <span class="menu-number">8.</span>
-                                        시스템 설정
-                                    </a>
+                                <td style="text-align: center; padding: 20px;" colspan="2">
+                                    <!-- 향후 확장 기능 자리 -->
+                                    <div style="color: #8c959f; font-style: italic; padding: 10px;">
+                                        더 많은 기능이 곧 추가될 예정입니다
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -205,5 +215,20 @@
             </div>
         </div>
     </div>
+    <script>
+        function debugAdminDashboard() {
+            console.log("=== 관리자 대시보드 디버깅 ===");
+            console.log("🖱️ 관리자 대시보드 버튼 클릭됨");
+            console.log("📍 현재 URL:", window.location.href);
+            console.log("📍 Form action:", document.querySelector('form[action="admin/dashboard"]').action);
+            console.log("🔗 이동할 URL:", window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + "admin/dashboard");
+            
+            // 세션 정보 (서버에서 출력된 정보 참고)
+            console.log("👤 세션 정보는 서버 콘솔을 확인하세요");
+            console.log("=== 디버깅 완료 ===");
+            
+            return true; // 폼 제출 허용
+        }
+    </script>
 </body>
 </html> 

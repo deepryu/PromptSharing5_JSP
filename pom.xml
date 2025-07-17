@@ -129,6 +129,7 @@
                         <console.encoding>UTF-8</console.encoding>
                         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+
                     </systemPropertyVariables>
                     <!-- Windows 환경에서 한글 출력 최적화 -->
                     <trimStackTrace>false</trimStackTrace>

@@ -6,12 +6,22 @@
 <%@ page import="com.example.model.InterviewSchedule" %>
 <%@ page import="com.example.model.InterviewResult" %>
 <%
-    // 세션 검증
+    // 세션 검증 및 권한 확인
     String username = (String)session.getAttribute("username");
+    String userRole = (String)session.getAttribute("userRole");
+    Boolean isInterviewer = (Boolean)session.getAttribute("isInterviewer");
+    Boolean isAdmin = (Boolean)session.getAttribute("isAdmin");
+    
     if (username == null) {
         response.sendRedirect("login.jsp");
         return;
     }
+    
+    // 지원자 관리 권한 확인 (INTERVIEWER와 ADMIN 모두 가능)
+    boolean canManageCandidates = (isInterviewer != null && isInterviewer) || 
+                                 (isAdmin != null && isAdmin) || 
+                                 ("INTERVIEWER".equals(userRole)) || 
+                                 ("ADMIN".equals(userRole));
     
     List<Candidate> candidates = (List<Candidate>) request.getAttribute("candidates");
     String error = request.getParameter("error");
@@ -468,7 +478,7 @@
                                 <option value="REJECTED">탈락(EN)</option>
                             </select>
                         </div>
-                        <a href="${pageContext.request.contextPath}/candidates/add" class="btn btn-primary">➕ 새 지원자 추가</a>
+                        <a href="${pageContext.request.contextPath}/candidates/add" class="btn btn-primary" onclick="return checkCandidatePermission()">➕ 새 지원자 추가</a>
                         <a href="${pageContext.request.contextPath}/candidates/export" class="btn">📊 Excel 내보내기</a>
                     </div>
                 </div>
@@ -724,8 +734,17 @@ function clearSearch() {
     document.getElementById('statusFilter').value = '';
     filterTable();
 }
+
+// 지원자 관리 권한 체크
+function checkCandidatePermission() {
+    <% if (!canManageCandidates) { %>
+        alert('❌ 실행 권한이 없습니다\n\n지원자 추가는 면접관(INTERVIEWER) 이상의 권한이 필요합니다.');
+        return false; // 페이지 이동 막기
+    <% } %>
+    
+    return true; // 페이지 이동 허용
+}
 </script>
 
 </body>
-</html> 
 </html> 

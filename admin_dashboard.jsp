@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
 <%@ page import="com.example.model.User" %>
+<%@ include file="/WEB-INF/admin_features_config.jsp" %>
 <%
     // 세션 검증
     if (session.getAttribute("username") == null) {
@@ -9,8 +10,8 @@
     }
     
     // 관리자 권한 확인
-    Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-    if (isAdmin == null || !isAdmin) {
+    String role = (String) session.getAttribute("role");
+    if (!"ADMIN".equals(role)) {
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 필요합니다.");
         return;
     }
@@ -59,15 +60,43 @@
             align-items: center;
         }
         
-        .top-bar h1 {
-            font-size: 24px;
+        .top-bar h2 {
+            font-size: 20px;
             font-weight: 600;
+            margin: 0;
         }
         
-        .user-info {
+        .nav-buttons {
             display: flex;
+            gap: 10px;
             align-items: center;
-            gap: 15px;
+        }
+        
+        .nav-buttons .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s;
+        }
+        
+        .nav-buttons .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .nav-buttons .btn-danger {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: rgba(220, 38, 38, 0.5);
+        }
+        
+        .nav-buttons .btn-danger:hover {
+            background: rgba(220, 38, 38, 0.4);
+            border-color: rgba(220, 38, 38, 0.7);
         }
         
         .main-dashboard {
@@ -81,18 +110,47 @@
             background-color: #f6f8fa;
             padding: 20px;
             border-bottom: 1px solid #d0d7de;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .dashboard-header h2 {
             font-size: 20px;
             font-weight: 600;
             color: #24292f;
-            margin-bottom: 10px;
+            margin: 0;
         }
         
-        .dashboard-nav {
+        .main-dashboard .nav-buttons {
+            background-color: #f6f8fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #d0d7de;
+        }
+        
+        .main-dashboard .nav-buttons .btn {
+            background-color: white;
+            color: #24292f;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #d0d7de;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .main-dashboard .nav-buttons .btn:hover {
+            background-color: #f3f4f6;
+            border-color: #0078d4;
+            color: #0078d4;
+        }
+        
+        .user-info {
             display: flex;
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
         }
         
         .nav-link {
@@ -194,6 +252,63 @@
         .user-role {
             font-size: 12px;
             color: #656d76;
+        }
+        
+        /* 기능 상태별 스타일 */
+        .feature-ready {
+            opacity: 1;
+            cursor: pointer;
+        }
+        
+        .feature-development {
+            opacity: 0.8;
+            position: relative;
+        }
+        
+        .feature-development::after {
+            content: " 🚧";
+            font-size: 12px;
+        }
+        
+        .feature-planned {
+            opacity: 0.6;
+            position: relative;
+        }
+        
+        .feature-planned::after {
+            content: " 📋";
+            font-size: 12px;
+        }
+        
+        .feature-disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .feature-disabled::after {
+            content: " ❌";
+            font-size: 12px;
+        }
+        
+        /* 툴팁 스타일 */
+        .feature-tooltip {
+            position: relative;
+        }
+        
+        .feature-tooltip:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #24292f;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
         }
         
         .role-badge {
@@ -318,7 +433,7 @@
 <body>
     <div class="container">
         <div class="top-bar">
-            <h1>🛠️ 관리자 대시보드</h1>
+            <h2>🛠️ 관리자 대시보드</h2>
             <div class="user-info">
                 <span>환영합니다, <%= session.getAttribute("userFullName") != null ? session.getAttribute("userFullName") : session.getAttribute("username") %>님</span>
                 <span class="role-badge role-<%= session.getAttribute("userRole").toString().toLowerCase().replace("_", "-") %>">
@@ -331,24 +446,27 @@
         <div class="main-dashboard">
             <div class="dashboard-header">
                 <h2>시스템 관리</h2>
-                <div class="dashboard-nav">
-                    <a href="admin/dashboard" class="nav-link">📊 대시보드</a>
-                    <a href="admin/users" class="nav-link">👥 사용자 관리</a>
-                    <a href="admin/settings" class="nav-link">⚙️ 시스템 설정</a>
-                    <a href="admin/logs" class="nav-link">📋 로그 관리</a>
-                    <a href="main.jsp" class="nav-link">🏠 메인으로</a>
-                </div>
+            </div>
+            
+            <!-- 관리자 네비게이션 메뉴 -->
+            <div class="nav-buttons">
+                <a href="main.jsp" class="btn">🏠 메인</a>
+                <a href="admin/users" class="btn">👥 사용자 관리</a>
+                <a href="settings" class="btn">⚙️ 시스템 설정</a>
+                <a href="admin/logs" class="btn">📋 로그 관리</a>
             </div>
             
             <div class="dashboard-content">
                 <!-- 빠른 작업 버튼 -->
                 <div class="quick-actions">
-                    <a href="admin/user/add" class="btn btn-primary">➕ 새 사용자 추가</a>
-                    <a href="admin/users" class="btn btn-secondary">👥 사용자 관리</a>
-                    <a href="admin/settings" class="btn btn-secondary">⚙️ 시스템 설정</a>
+                    <a href="admin/user/add" 
+                       class="btn btn-primary feature-tooltip <%= AdminFeatureConfig.getStatusClass("users") %>"
+                       data-tooltip="새로운 사용자 계정을 생성합니다">
+                       <%= AdminFeatureConfig.getStatusIcon("users") %> 새 사용자 추가
+                    </a>
                 </div>
                 
-                <!-- 통계 카드 -->
+                <!-- 전체 통계 카드 -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number"><%= stats.get("totalUsers") %></div>
@@ -359,12 +477,17 @@
                         <div class="stat-label">활성 사용자</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number"><%= stats.get("totalCandidates") %></div>
-                        <div class="stat-label">전체 지원자</div>
+                        <div class="stat-number"><%= stats.get("totalResults") %></div>
+                        <div class="stat-label">인터뷰 결과</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number"><%= stats.get("totalSchedules") %></div>
-                        <div class="stat-label">인터뷰 일정</div>
+                        <div class="stat-number">
+                            <% 
+                                int today = 0; // TODO: 오늘 일정 수 계산 로직 추가
+                                out.print(today);
+                            %>
+                        </div>
+                        <div class="stat-label">오늘 일정</div>
                     </div>
                 </div>
                 
@@ -433,27 +556,28 @@
                     </div>
                 </div>
                 
-                <!-- 역할별 사용자 통계 -->
+                <!-- 역할별 사용자 통계 (2단계 권한 시스템) -->
                 <div class="stats-grid" style="margin-top: 30px;">
-                    <div class="stat-card">
-                        <div class="stat-number"><%= stats.get("superAdminCount") %></div>
-                        <div class="stat-label">최고 관리자</div>
-                    </div>
                     <div class="stat-card">
                         <div class="stat-number"><%= stats.get("adminCount") %></div>
                         <div class="stat-label">관리자</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number"><%= stats.get("interviewerCount") %></div>
-                        <div class="stat-label">면접관</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-number"><%= stats.get("userCount") %></div>
                         <div class="stat-label">일반 사용자</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= stats.get("totalCandidates") %></div>
+                        <div class="stat-label">전체 지원자</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= stats.get("totalSchedules") %></div>
+                        <div class="stat-label">인터뷰 일정</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+</html> 
 </html> 

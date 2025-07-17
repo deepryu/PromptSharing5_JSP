@@ -3,6 +3,23 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="java.text.SimpleDateFormat, java.util.Date, com.example.model.InterviewResultDAO, com.example.model.InterviewResult" %>
 <%
+    // 세션에서 사용자 권한 정보 가져오기
+    String username = (String)session.getAttribute("username");
+    String userRole = (String)session.getAttribute("userRole");
+    Boolean isInterviewer = (Boolean)session.getAttribute("isInterviewer");
+    Boolean isAdmin = (Boolean)session.getAttribute("isAdmin");
+    
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    
+    // 인터뷰 일정 관리 권한 확인 (INTERVIEWER와 ADMIN 모두 가능)
+    boolean canManageSchedules = (isInterviewer != null && isInterviewer) || 
+                                (isAdmin != null && isAdmin) || 
+                                ("INTERVIEWER".equals(userRole)) || 
+                                ("ADMIN".equals(userRole));
+
     // 오늘 날짜 설정
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String today = sdf.format(new Date());
@@ -313,7 +330,7 @@
                         <button type="button" class="btn" onclick="clearFilters()">🔄 초기화</button>
                     </div>
                     <div class="view-controls">
-                        <a href="interview/add" class="btn btn-primary">➕ 새 일정 추가</a>
+                        <a href="interview/add" class="btn btn-primary" onclick="return checkSchedulePermission()">➕ 새 일정 추가</a>
                         <a href="interview/calendar" class="btn">📅 캘린더 보기</a>
                     </div>
                 </div>
@@ -505,6 +522,18 @@ function clearFilters() {
     rows.forEach(row => {
         row.style.display = '';
     });
+}
+
+// 인터뷰 일정 관리 권한 체크
+function checkSchedulePermission() {
+    const canManageSchedules = <%= canManageSchedules %>;
+    
+    if (!canManageSchedules) {
+        alert('❌ 실행 권한이 없습니다\n\n인터뷰 일정 추가는 면접관(INTERVIEWER) 이상의 권한이 필요합니다.');
+        return false; // 페이지 이동 막기
+    }
+    
+    return true; // 페이지 이동 허용
 }
 </script>
 

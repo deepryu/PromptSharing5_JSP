@@ -8,7 +8,29 @@
     <display-name>JSP User Management MVC</display-name>
 
     <welcome-file-list>
-        <welcome-file>login</welcome-file>
+        <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
+
+    <!-- 에러 페이지 설정 -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error_404.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>403</error-code>
+        <location>/error_404.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error_404.jsp</location>
+    </error-page>
+    
+    <!-- 일반적인 예외에 대한 에러 페이지 -->
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error_404.jsp</location>
+    </error-page>
 
 </web-app> 

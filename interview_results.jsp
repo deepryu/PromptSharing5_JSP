@@ -2,11 +2,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
-    // 세션 검증
-    if (session.getAttribute("username") == null) {
+    // 세션 검증 및 권한 확인
+    String username = (String)session.getAttribute("username");
+    String userRole = (String)session.getAttribute("userRole");
+    Boolean isInterviewer = (Boolean)session.getAttribute("isInterviewer");
+    Boolean isAdmin = (Boolean)session.getAttribute("isAdmin");
+    
+    if (username == null) {
         response.sendRedirect("login.jsp");
         return;
     }
+    
+    // 결과 관리 권한 확인 (INTERVIEWER와 ADMIN 모두 가능)
+    boolean canManageResults = (isInterviewer != null && isInterviewer) || 
+                              (isAdmin != null && isAdmin) || 
+                              ("INTERVIEWER".equals(userRole)) || 
+                              ("ADMIN".equals(userRole));
 %>
 
 <!DOCTYPE html>
@@ -637,7 +648,7 @@
                             <a href="results" class="btn btn-secondary">🔄 초기화</a>
                         </div>
                         <div class="controls-right">
-                            <a href="results?action=new" class="btn btn-primary">➕ 새 결과 등록</a>
+                            <a href="results?action=new" class="btn btn-primary" onclick="return checkResultPermission()">➕ 새 결과 등록</a>
                         </div>
                     </div>
                 </div>
@@ -663,7 +674,7 @@
                             <div class="empty-state">
                                 <h3>📋 등록된 인터뷰 결과가 없습니다</h3>
                                 <p>새로운 인터뷰 결과를 등록해보세요!</p>
-                                <a href="results?action=new" class="btn btn-primary">➕ 첫 번째 결과 등록하기</a>
+                                <a href="results?action=new" class="btn btn-primary" onclick="return checkResultPermission()">➕ 첫 번째 결과 등록하기</a>
                             </div>
                         </c:when>
                         <c:otherwise>
@@ -765,6 +776,16 @@
             searchResults();
         }
     });
+    
+    // 결과 관리 권한 체크
+    function checkResultPermission() {
+        <% if (!canManageResults) { %>
+            alert('❌ 실행 권한이 없습니다\n\n결과 등록은 면접관(INTERVIEWER) 이상의 권한이 필요합니다.');
+            return false; // 페이지 이동 막기
+        <% } %>
+        
+        return true; // 페이지 이동 허용
+    }
     </script>
 </body>
 </html>

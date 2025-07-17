@@ -39,29 +39,33 @@ public class RoleBasedFilter implements Filter {
             "/css/", "/js/", "/images/", "/favicon.ico"
         ));
         
-        // 일반 사용자 접근 가능
-        ROLE_PERMISSIONS.put("USER", Arrays.asList(
-            "/main.jsp", "/candidate/list", "/candidate/detail", 
-            "/interview/list", "/interview/detail", "/statistics/view"
-        ));
-        
-        // 면접관 접근 가능
+        // 면접관 권한 (기본 권한 - 모든 일반 기능 + 인터뷰 관련 쓰기 권한)
         ROLE_PERMISSIONS.put("INTERVIEWER", Arrays.asList(
-            "/interview/add", "/interview/edit", "/interview/delete",
-            "/result/add", "/result/edit", "/result/list",
-            "/candidate/add", "/candidate/edit"
+            "/main.jsp", "/logout",
+            // 지원자 관리 (읽기 + 쓰기)
+            "/candidates", "/candidates/detail", "/candidates/view", "/candidates/add", "/candidates/edit",
+            // 인터뷰 일정 관리 (읽기 + 쓰기)
+            "/interview/list", "/interview/detail", "/interview/view", "/interview/add", "/interview/edit", "/interview/delete",
+            // 질문 관리 (읽기 + 쓰기)
+            "/questions", "/questions/detail", "/questions/view", "/questions/add", "/questions/edit",
+            // 결과 관리 (읽기 + 쓰기)
+            "/results", "/results/detail", "/results/view", "/results/add", "/results/edit", "/results/delete",
+            // 통계 조회
+            "/statistics", "/statistics/view"
         ));
         
-        // 관리자 접근 가능
+        // 관리자 권한 (모든 기능 + 관리 기능 + 삭제 권한)
         ROLE_PERMISSIONS.put("ADMIN", Arrays.asList(
-            "/admin/users", "/admin/dashboard", "/admin/settings",
-            "/admin/logs", "/admin/reports", "/admin/notifications"
-        ));
-        
-        // 최고 관리자 접근 가능
-        ROLE_PERMISSIONS.put("SUPER_ADMIN", Arrays.asList(
-            "/admin/system", "/admin/backup", "/admin/security",
-            "/admin/roles", "/admin/maintenance"
+            // 관리자 전용 기능
+            "/admin/users", "/admin/dashboard", "/admin/settings", "/admin/logs", "/admin/reports", 
+            "/admin/notifications", "/admin/system", "/admin/backup", "/admin/security",
+            "/admin/roles", "/admin/maintenance",
+            // 사용자 관리 세부 기능
+            "/admin/user/add", "/admin/user/edit", "/admin/user/detail", "/admin/user/delete", "/admin/user/activate", "/admin/user/deactivate",
+            // 관리자 전용 메인 메뉴 기능
+            "/notifications", "/settings",
+            // 삭제 권한
+            "/candidates/delete", "/questions/delete", "/results/delete"
         ));
     }
     
@@ -129,21 +133,10 @@ public class RoleBasedFilter implements Filter {
             userRole = "SUPER_ADMIN";  // admin 계정은 최고 관리자 권한 부여
         }
         
-        // 디버깅 로그
-        System.out.println("🔍 [RoleBasedFilter] ================================");
-        System.out.println("🔍 [RoleBasedFilter] 요청 URI: " + requestURI);
-        System.out.println("🔍 [RoleBasedFilter] 사용자: " + user.getUsername());
-        System.out.println("🔍 [RoleBasedFilter] 원래 역할: " + originalRole);
-        System.out.println("🔍 [RoleBasedFilter] 적용 역할: " + userRole);
-        System.out.println("🔍 [RoleBasedFilter] 권한 검사 시작...");
-        
         if (!hasPermission(requestURI, userRole)) {
-            System.out.println("❌ [RoleBasedFilter] 권한 없음 - 로그인 페이지로 리다이렉트");
             handleUnauthorizedAccess(httpRequest, httpResponse, "접근 권한이 없습니다.");
             return;
         }
-        
-        System.out.println("✅ [RoleBasedFilter] 권한 확인 완료 - 접근 허용");
         
         // 사용자 정보를 request에 저장 (서블릿에서 사용)
         httpRequest.setAttribute("currentUser", user);
@@ -178,33 +171,24 @@ public class RoleBasedFilter implements Filter {
      * 권한 확인
      */
     private boolean hasPermission(String requestURI, String userRole) {
-        // role이 null인 경우 기본적으로 USER 권한으로 처리
+        // role이 null인 경우 기본적으로 INTERVIEWER 권한으로 처리
         if (userRole == null) {
-            userRole = "USER";
+            userRole = "INTERVIEWER";
         }
         
-        // 권한 계층 구조 확인
+        // 2단계 권한 계층 구조 확인
         switch (userRole) {
-            case "SUPER_ADMIN":
-                // 최고 관리자는 모든 권한 보유
-                return true;
-                
             case "ADMIN":
-                // 관리자는 ADMIN + INTERVIEWER + USER 권한 보유
+                // 관리자는 ADMIN + INTERVIEWER 권한 보유 (모든 권한)
                 return hasRolePermission(requestURI, "ADMIN") ||
-                       hasRolePermission(requestURI, "INTERVIEWER") ||
-                       hasRolePermission(requestURI, "USER");
+                       hasRolePermission(requestURI, "INTERVIEWER");
                 
             case "INTERVIEWER":
-                // 면접관은 INTERVIEWER + USER 권한 보유
-                return hasRolePermission(requestURI, "INTERVIEWER") ||
-                       hasRolePermission(requestURI, "USER");
-                
-            case "USER":
-                // 일반 사용자는 USER 권한만 보유
-                return hasRolePermission(requestURI, "USER");
+                // 면접관은 INTERVIEWER 권한만 보유 (기본 권한)
+                return hasRolePermission(requestURI, "INTERVIEWER");
                 
             default:
+                // 알 수 없는 권한은 접근 거부
                 return false;
         }
     }
@@ -235,18 +219,55 @@ public class RoleBasedFilter implements Filter {
         
         // AJAX 요청인 경우 JSON 응답
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"error\": \"" + message + "\"}");
+            response.getWriter().write("{\"error\": \"실행 권한이 없습니다\", \"message\": \"" + message + "\"}");
             return;
         }
         
-        // 일반 요청인 경우 로그인 페이지로 리다이렉트
-        HttpSession session = request.getSession();
-        session.setAttribute("errorMessage", message);
-        session.setAttribute("redirectUrl", request.getRequestURI());
+        // 로그인이 필요한 경우 로그인 페이지로 리다이렉트
+        if ("로그인이 필요합니다.".equals(message)) {
+            response.setContentType("text/html; charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            
+            String html = "<!DOCTYPE html>\n" +
+                         "<html>\n" +
+                         "<head>\n" +
+                         "    <meta charset='UTF-8'>\n" +
+                         "    <title>로그인 필요</title>\n" +
+                         "</head>\n" +
+                         "<body>\n" +
+                         "    <script>\n" +
+                         "        alert('🔐 " + message + "\\n\\n로그인 페이지로 이동합니다.');\n" +
+                         "        window.location.href = '" + request.getContextPath() + "/login.jsp';\n" +
+                         "    </script>\n" +
+                         "</body>\n" +
+                         "</html>";
+            
+            response.getWriter().write(html);
+            return;
+        }
         
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        // 일반 권한 에러인 경우 경고창을 띄우고 이전 페이지로 돌아가는 HTML 반환
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        
+        String html = "<!DOCTYPE html>\n" +
+                     "<html>\n" +
+                     "<head>\n" +
+                     "    <meta charset='UTF-8'>\n" +
+                     "    <title>접근 권한 없음</title>\n" +
+                     "</head>\n" +
+                     "<body>\n" +
+                     "    <script>\n" +
+                     "        alert('❌ 실행 권한이 없습니다\\n\\n" + message + "');\n" +
+                     "        history.back();\n" +
+                     "    </script>\n" +
+                     "</body>\n" +
+                     "</html>";
+        
+        response.getWriter().write(html);
     }
 } 

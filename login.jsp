@@ -1,35 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-    // 디버깅 로그 추가
-    System.out.println("🔍 [login.jsp] ================================");
-    System.out.println("🔍 [login.jsp] 페이지 로드 시작");
-    System.out.println("🔍 [login.jsp] 요청 URI: " + request.getRequestURI());
-    System.out.println("🔍 [login.jsp] Context Path: " + request.getContextPath());
-    
     // 현재 세션 상태 확인
     HttpSession currentSession = request.getSession(false);
-    System.out.println("🔍 [login.jsp] 현재 세션: " + (currentSession != null ? "존재" : "null"));
     
     if (currentSession != null) {
         String username = (String) currentSession.getAttribute("username");
-        System.out.println("🔍 [login.jsp] 세션의 username: " + username);
         
         if (username != null) {
-            System.out.println("⚠️ [login.jsp] 이미 로그인된 사용자가 login.jsp에 접근!");
-            
             // 에러 메시지가 있는 경우 (권한 없는 접근 등) 리다이렉트하지 않음
             String sessionError = (String) currentSession.getAttribute("errorMessage");
-            if (sessionError != null) {
-                System.out.println("❌ [login.jsp] 에러 메시지 있음 - 리다이렉트하지 않고 에러 표시");
-            } else {
-                System.out.println("🔄 [login.jsp] main.jsp로 리다이렉트 수행");
+            if (sessionError == null) {
                 response.sendRedirect("main.jsp");
                 return;
             }
         }
     }
-    
-    System.out.println("📄 [login.jsp] 로그인 폼 표시");
     
     String error = (String) request.getAttribute("error");
     String sessionError = null;
@@ -39,17 +24,12 @@
         sessionError = (String) currentSession.getAttribute("errorMessage");
         if (sessionError != null) {
             currentSession.removeAttribute("errorMessage"); // 한 번 표시 후 제거
-            System.out.println("❌ [login.jsp] 세션 에러 메시지: " + sessionError);
         }
     }
     
     // 최종 에러 메시지 결정
     if (error == null && sessionError != null) {
         error = sessionError;
-    }
-    
-    if (error != null) {
-        System.out.println("❌ [login.jsp] 표시할 에러 메시지: " + error);
     }
 %>
 <!DOCTYPE html>
