@@ -24,7 +24,7 @@ C:\tomcat9\bin\startup.bat
 echo.
 echo ================================================
 echo      ✅ Tomcat restart completed successfully!
-echo         http://localhost:8080/PromptSharing5_JSP
+echo         http://localhost:8080/ATS
 echo ================================================
 echo.
 pause 

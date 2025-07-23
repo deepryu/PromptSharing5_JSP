@@ -11,5 +11,5 @@ C:\tomcat9\bin\startup.bat
 echo.
 echo ================================================
 echo       ✅ Tomcat started successfully!
-echo         http://localhost:8080/PromptSharing5_JSP
+echo         http://localhost:8080/ATS
 echo ================================================ 

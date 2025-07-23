@@ -98,7 +98,7 @@ if %recovery_score% GEQ 90 (
     echo    복구 점수: %recovery_score%/100
     echo.
     echo ✅ 다음 단계:
-    echo    1. 브라우저에서 http://localhost:8080/PromptSharing5_JSP/main.jsp 접속
+    echo    1. 브라우저에서 http://localhost:8080/ATS/main.jsp 접속
     echo    2. 1-8번 메뉴 정상 동작 확인
     echo    3. 문제없으면 safety-backup.cmd로 현재 상태 백업
 ) else if %recovery_score% GEQ 70 (

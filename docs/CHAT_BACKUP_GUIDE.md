@@ -127,7 +127,7 @@ code --install-extension abdelhakakermi.cursorchat-downloader
 ## 📁 백업 파일 구조
 
 ```
-PromptSharing5_JSP/
+ATS/
 ├── cursor-chat-history.md          # Cursor Chat Keeper 저장
 ├── specstory/
 │   └── history/                    # SpecStory 세션별 저장

@@ -825,7 +825,7 @@ if (session.getAttribute("userEmail") == null) { // 이렇게 하지 마세요!
 - ✅ **비밀번호 암호화**: BCrypt 해싱 적용
 
 ### 🚨 차단되는 공격 유형
-1. **직접 URL 접근**: `http://localhost:8080/PromptSharing5_JSP/main.jsp` → 자동 로그인 페이지 리다이렉트
+1. **직접 URL 접근**: `http://localhost:8080/ATS/main.jsp` → 자동 로그인 페이지 리다이렉트
 2. **세션 하이재킹**: 세션 ID 탈취해도 username 속성 검증으로 차단
 3. **AJAX 무단 접근**: 401 Unauthorized 응답으로 차단
 4. **SQL Injection**: PreparedStatement로 완전 차단
@@ -834,15 +834,15 @@ if (session.getAttribute("userEmail") == null) { // 이렇게 하지 마세요!
 ### 🛡️ 보안 테스트 방법
 ```bash
 # 1. 로그아웃 상태에서 직접 URL 접근 테스트
-curl -i http://localhost:8080/PromptSharing5_JSP/main.jsp
+curl -i http://localhost:8080/ATS/main.jsp
 # 결과: 302 Found → login.jsp 리다이렉트
 
 # 2. 잘못된 세션으로 접근 테스트  
-curl -i -H "Cookie: JSESSIONID=invalid" http://localhost:8080/PromptSharing5_JSP/candidates
+curl -i -H "Cookie: JSESSIONID=invalid" http://localhost:8080/ATS/candidates
 # 결과: 302 Found → login.jsp 리다이렉트
 
 # 3. AJAX 무단 접근 테스트
-curl -i -H "X-Requested-With: XMLHttpRequest" http://localhost:8080/PromptSharing5_JSP/statistics
+curl -i -H "X-Requested-With: XMLHttpRequest" http://localhost:8080/ATS/statistics
 # 결과: 401 Unauthorized + JSON 에러 메시지
 ```
 

@@ -3,7 +3,7 @@
 ## 1. 프로젝트 구조
 
 ```
-PromptSharing5_JSP/
+ATS/
 ├── pom.xml                    # Maven 설정 파일
 ├── mvnw.cmd                   # Windows용 Maven Wrapper
 ├── .mvn/
@@ -229,7 +229,7 @@ mvnw.cmd package
 # Tomcat 내장 서버로 실행
 mvnw.cmd tomcat7:run
 
-# 브라우저에서 접속: http://localhost:8080/PromptSharing5_JSP
+# 브라우저에서 접속: http://localhost:8080/ATS
 ```
 
 ## 6. 기존 javac와 Maven 비교

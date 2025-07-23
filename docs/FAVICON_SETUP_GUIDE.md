@@ -14,7 +14,7 @@
 
 ### 1. 루트 디렉토리
 ```
-/PromptSharing5_JSP/favicon.ico
+/ATS/favicon.ico
 ```
 - 크기: 16x16, 32x32, 48x48 픽셀 (멀티사이즈)
 - 형식: ICO 파일
@@ -22,7 +22,7 @@
 
 ### 2. images 디렉토리
 ```
-/PromptSharing5_JSP/images/
+/ATS/images/
 ├── favicon-16x16.png    (16x16 픽셀 PNG)
 ├── favicon-32x32.png    (32x32 픽셀 PNG)
 └── apple-touch-icon.png (180x180 픽셀 PNG)
@@ -59,12 +59,12 @@
 ### 2단계: 파일 배치
 ```bash
 # 프로젝트 루트에 favicon.ico 복사
-copy favicon.ico C:\tomcat9\webapps\PromptSharing5_JSP\
+copy favicon.ico C:\tomcat9\webapps\ATS\
 
 # images 디렉토리에 PNG 파일들 복사
-copy favicon-16x16.png C:\tomcat9\webapps\PromptSharing5_JSP\images\
-copy favicon-32x32.png C:\tomcat9\webapps\PromptSharing5_JSP\images\
-copy apple-touch-icon.png C:\tomcat9\webapps\PromptSharing5_JSP\images\
+copy favicon-16x16.png C:\tomcat9\webapps\ATS\images\
+copy favicon-32x32.png C:\tomcat9\webapps\ATS\images\
+copy apple-touch-icon.png C:\tomcat9\webapps\ATS\images\
 ```
 
 ### 3단계: 브라우저 캐시 삭제

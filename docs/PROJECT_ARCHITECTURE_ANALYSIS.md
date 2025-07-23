@@ -372,7 +372,7 @@ AuthenticationFilter.java              # 모든 요청 가로채기
 
 ### 5.1 Maven 기반 프로젝트 구조
 ```
-PromptSharing5_JSP/
+ATS/
 ├── pom.xml                             # Maven 설정
 ├── mvnw.cmd                           # Maven Wrapper (Windows)
 ├── src/                               # Java 소스코드

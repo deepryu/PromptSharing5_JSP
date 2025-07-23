@@ -22,7 +22,7 @@ JSP 기반 인터뷰 관리 시스템의 파일간 의존성을 상세 분석한
 
 ### 1.2 Maven 기반 프로젝트 구조
 ```
-PromptSharing5_JSP/
+ATS/
 ├── pom.xml                    # 👑 최상위 의존성 정의
 ├── src/                       # 📁 Java 소스코드
 │   └── com/example/
@@ -512,7 +512,7 @@ maven-resources-plugin:3.3.1
 ```
 🚀 Tomcat 배포 시 의존성 구조:
 
-C:\tomcat9\webapps\PromptSharing5_JSP\
+C:\tomcat9\webapps\ATS\
 ├── WEB-INF\
 │   ├── web.xml                               # 서블릿 매핑 설정
 │   ├── classes\                              # 컴파일된 Java 클래스

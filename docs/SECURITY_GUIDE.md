@@ -61,7 +61,7 @@
 ## 🚫 차단되는 공격 유형
 
 ### 1. 직접 URL 접근 차단
-- **시나리오**: `http://localhost:8080/PromptSharing5_JSP/main.jsp` 직접 접근
+- **시나리오**: `http://localhost:8080/ATS/main.jsp` 직접 접근
 - **차단 방식**: AuthenticationFilter가 자동으로 `login.jsp`로 리다이렉트
 - **적용 범위**: 모든 보호된 페이지
 
@@ -90,15 +90,15 @@
 ### 로그아웃 상태 테스트
 1. 브라우저에서 로그아웃 실행
 2. 다음 URL들에 직접 접근 시도:
-   - `http://localhost:8080/PromptSharing5_JSP/main.jsp`
-   - `http://localhost:8080/PromptSharing5_JSP/candidates.jsp`
-   - `http://localhost:8080/PromptSharing5_JSP/interview_schedules.jsp`
+   - `http://localhost:8080/ATS/main.jsp`
+- `http://localhost:8080/ATS/candidates.jsp`
+- `http://localhost:8080/ATS/interview_schedules.jsp`
 3. **예상 결과**: 모든 접근이 `login.jsp`로 자동 리다이렉트
 
 ### AJAX 요청 테스트
 1. 개발자 도구 Console에서 실행:
 ```javascript
-fetch('/PromptSharing5_JSP/candidates')
+fetch('/ATS/candidates')
 .then(response => console.log(response.status));
 ```
 2. **예상 결과**: `401` 상태 코드 반환

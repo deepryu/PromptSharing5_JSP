@@ -1,6 +1,6 @@
 # 📁 Scripts 폴더 - 프로젝트 스크립트 모음
 
-이 폴더에는 PromptSharing5_JSP 프로젝트의 모든 유틸리티 스크립트가 정리되어 있습니다.
+이 폴더에는 ATS 프로젝트의 모든 유틸리티 스크립트가 정리되어 있습니다.
 
 ---
 
@@ -47,7 +47,7 @@
 ### 📦 **package-maven.cmd**
 - **목적**: WAR 파일 패키징
 - **사용법**: `.\scripts\package-maven.cmd`
-- **출력**: `target/PromptSharing5_JSP.war`
+- **출력**: `target/ats-1.3.0.war`
 
 ### 🔄 **maven-all.cmd**
 - **목적**: 전체 Maven 라이프사이클 실행

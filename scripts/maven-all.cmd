@@ -83,23 +83,23 @@ if /i "%deploy%"=="y" (
     timeout /t 3 >nul
     
     REM WAR 파일을 webapps에 복사
-    set WAR_FILE=target\promptsharing-jsp-1.3.0.war
+    set WAR_FILE=target\ats-1.3.0.war
     set TOMCAT_WEBAPPS=C:\tomcat9\webapps
     
     if exist "%TOMCAT_WEBAPPS%" (
         REM 기존 애플리케이션 디렉터리 삭제
-        if exist "%TOMCAT_WEBAPPS%\PromptSharing5_JSP" (
+        if exist "%TOMCAT_WEBAPPS%\ATS" (
             echo [INFO] 기존 애플리케이션 디렉터리를 삭제합니다...
-            rd /s /q "%TOMCAT_WEBAPPS%\PromptSharing5_JSP"
+            rd /s /q "%TOMCAT_WEBAPPS%\ATS"
         )
         
         REM 기존 WAR 파일 삭제
-        if exist "%TOMCAT_WEBAPPS%\PromptSharing5_JSP.war" (
-            del /q "%TOMCAT_WEBAPPS%\PromptSharing5_JSP.war"
+        if exist "%TOMCAT_WEBAPPS%\ATS.war" (
+            del /q "%TOMCAT_WEBAPPS%\ATS.war"
         )
         
         REM 새 WAR 파일 복사
-        copy "%WAR_FILE%" "%TOMCAT_WEBAPPS%\PromptSharing5_JSP.war"
+        copy "%WAR_FILE%" "%TOMCAT_WEBAPPS%\ATS.war"
         if %ERRORLEVEL%==0 (
             echo [SUCCESS] WAR 파일이 Tomcat webapps에 복사되었습니다.
             
@@ -112,13 +112,13 @@ if /i "%deploy%"=="y" (
             
             echo.
             echo [SUCCESS] 배포가 완료되었습니다!
-            echo [URL] http://localhost:8080/PromptSharing5_JSP
+            echo [URL] http://localhost:8080/ATS
             echo.
             
             REM 브라우저 자동 열기 (선택)
             set /p open_browser="브라우저를 자동으로 열까요? (Y/n): "
             if /i not "%open_browser%"=="n" (
-                start "" "http://localhost:8080/PromptSharing5_JSP"
+                start "" "http://localhost:8080/ATS"
             )
         ) else (
             echo [ERROR] WAR 파일 복사에 실패했습니다.
@@ -146,11 +146,11 @@ echo.
 echo [생성된 파일]
 echo   - 컴파일된 클래스: target/classes/
 echo   - 배포용 클래스: WEB-INF/classes/
-echo   - WAR 파일: target/promptsharing-jsp-1.3.0.war
+echo   - WAR 파일: target/ats-1.3.0.war
 echo   - 테스트 보고서: target/surefire-reports/
 echo.
 echo [다음 단계]
-echo   - 애플리케이션 테스트: http://localhost:8080/PromptSharing5_JSP
+echo   - 애플리케이션 테스트: http://localhost:8080/ATS
 echo   - 로그 확인: C:/tomcat9/logs/catalina.out
 echo   - 재배포: maven-all.cmd 다시 실행
 echo.

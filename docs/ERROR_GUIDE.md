@@ -144,7 +144,7 @@ chcp 65001; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:MAVEN
 ### **에러 정보**
 ```
 증상: 인터뷰 일정 관리에서 "새 일정 추가" 버튼 클릭 시 HTTP 404 에러 발생
-URL: /PromptSharing5_JSP/interview/interview/add (잘못된 중복 경로)
+URL: /ATS/interview/interview/add (잘못된 중복 경로)
 원인: interview_schedules.jsp가 /interview/list URL에서 실행되는데, 상대 경로 'interview/add'를 클릭하면 현재 URL 기준으로 해석되어 중복 경로 생성
 ```
 
@@ -171,7 +171,7 @@ URL: /PromptSharing5_JSP/interview/interview/add (잘못된 중복 경로)
 
 2. **작동 원리**
    - base 태그로 모든 상대 경로의 기준점을 컨텍스트 루트로 설정
-   - `interview/add` → `/PromptSharing5_JSP/interview/add`로 자동 변환
+   - `interview/add` → `/ATS/interview/add`로 자동 변환
    - 기존 상대 경로 유지하면서 문제 해결
 
 3. **검증 방법**
