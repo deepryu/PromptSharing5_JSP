@@ -172,83 +172,48 @@ public class InterviewQuestionDAO {
      * 새 질문 추가
      */
     public boolean addQuestion(InterviewQuestion question) {
-        System.out.println("[DEBUG] === InterviewQuestionDAO.addQuestion 시작 ===");
-        System.out.println("[DEBUG] 질문 등록 요청 - " + question.getQuestionText().substring(0, Math.min(50, question.getQuestionText().length())) + "...");
-        
         String sql = "INSERT INTO interview_questions (question_text, category, difficulty_level, expected_answer, is_active) VALUES (?, ?, ?, ?, ?)";
-        System.out.println("[DEBUG] 실행할 SQL: " + sql);
         
         Connection conn = null;
         PreparedStatement pstmt = null;
         
         try {
-            System.out.println("[DEBUG] 데이터베이스 연결 시도...");
             conn = DatabaseUtil.getConnection();
-            System.out.println("[DEBUG] ✅ 데이터베이스 연결 성공");
-            
-            System.out.println("[DEBUG] PreparedStatement 생성...");
             pstmt = conn.prepareStatement(sql);
             
             // 파라미터 설정
-            System.out.println("[DEBUG] SQL 파라미터 설정 시작...");
             pstmt.setString(1, question.getQuestionText());
-            System.out.println("[DEBUG] 파라미터 1 (question_text): " + question.getQuestionText().substring(0, Math.min(100, question.getQuestionText().length())) + "...");
-            
             pstmt.setString(2, question.getCategory());
-            System.out.println("[DEBUG] 파라미터 2 (category): " + question.getCategory());
-            
             pstmt.setInt(3, question.getDifficultyLevel());
-            System.out.println("[DEBUG] 파라미터 3 (difficulty_level): " + question.getDifficultyLevel());
-            
             pstmt.setString(4, question.getExpectedAnswer());
-            System.out.println("[DEBUG] 파라미터 4 (expected_answer): " + (question.getExpectedAnswer() != null ? question.getExpectedAnswer().substring(0, Math.min(50, question.getExpectedAnswer().length())) + "..." : "null"));
-            
             pstmt.setBoolean(5, question.isActive());
-            System.out.println("[DEBUG] 파라미터 5 (is_active): " + question.isActive());
-            System.out.println("[DEBUG] ✅ SQL 파라미터 설정 완료");
             
-            System.out.println("[DEBUG] SQL 실행 시작...");
             int rowsAffected = pstmt.executeUpdate();
-            System.out.println("[DEBUG] SQL 실행 완료 - 영향받은 행 수: " + rowsAffected);
-            
-            boolean success = rowsAffected > 0;
-            System.out.println("[DEBUG] 최종 결과: " + (success ? "성공" : "실패"));
-            
-            if (success) {
-                System.out.println("[DEBUG] ✅ 질문이 성공적으로 데이터베이스에 저장되었습니다");
-            } else {
-                System.out.println("[DEBUG] ❌ 질문 저장 실패 - 영향받은 행이 없음");
-            }
-            
-            return success;
+            return rowsAffected > 0;
             
         } catch (SQLException e) {
-            System.err.println("[ERROR] ❌ SQL 오류 발생:");
+            System.err.println("[ERROR] SQL 오류 발생:");
             System.err.println("[ERROR] SQL State: " + e.getSQLState());
             System.err.println("[ERROR] Error Code: " + e.getErrorCode());
             System.err.println("[ERROR] Message: " + e.getMessage());
             e.printStackTrace();
             return false;
         } catch (Exception e) {
-            System.err.println("[ERROR] ❌ 예상치 못한 오류 발생: " + e.getMessage());
+            System.err.println("[ERROR] 예상치 못한 오류 발생: " + e.getMessage());
             e.printStackTrace();
             return false;
         } finally {
             // 리소스 정리
-            System.out.println("[DEBUG] 리소스 정리 시작...");
             try {
                 if (pstmt != null) {
                     pstmt.close();
-                    System.out.println("[DEBUG] PreparedStatement 닫기 완료");
                 }
                 if (conn != null) {
                     conn.close();
-                    System.out.println("[DEBUG] Connection 닫기 완료");
                 }
             } catch (SQLException e) {
                 System.err.println("[ERROR] 리소스 정리 중 오류: " + e.getMessage());
             }
-            System.out.println("[DEBUG] === InterviewQuestionDAO.addQuestion 완료 ===\n");
         }
     }
     

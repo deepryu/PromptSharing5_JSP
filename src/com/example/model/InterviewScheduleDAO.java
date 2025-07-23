@@ -28,7 +28,6 @@ public class InterviewScheduleDAO {
     }
 
     public List<InterviewSchedule> getAllSchedules() {
-        System.out.println("[DEBUG][DAO] getAllSchedules 호출");
         List<InterviewSchedule> list = new ArrayList<>();
         String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id ORDER BY s.interview_date DESC, s.interview_time DESC";
         try (Connection conn = DatabaseUtil.getConnection();
@@ -41,7 +40,6 @@ public class InterviewScheduleDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("[DEBUG][DAO] getAllSchedules 반환 size=" + list.size());
         return list;
     }
 
@@ -82,7 +80,6 @@ public class InterviewScheduleDAO {
     }
 
     public List<InterviewSchedule> getSchedulesByStatus(String status) {
-        System.out.println("[DEBUG][DAO] getSchedulesByStatus 호출, status=" + status);
         List<InterviewSchedule> list = new ArrayList<>();
         String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.status = ? ORDER BY s.interview_date DESC, s.interview_time DESC";
         try (Connection conn = DatabaseUtil.getConnection();
@@ -97,7 +94,6 @@ public class InterviewScheduleDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("[DEBUG][DAO] getSchedulesByStatus 반환 size=" + list.size());
         return list;
     }
 
@@ -187,7 +183,6 @@ public class InterviewScheduleDAO {
     }
 
     public List<InterviewSchedule> getSchedulesByDateRange(Date start, Date end, String status) {
-        System.out.println("[DEBUG][DAO] getSchedulesByDateRange 호출, start=" + start + ", end=" + end + ", status=" + status);
         List<InterviewSchedule> list = new ArrayList<>();
         String sql = "SELECT s.*, c.name as candidate_name, c.team as candidate_position FROM interview_schedules s LEFT JOIN candidates c ON s.candidate_id = c.id WHERE s.interview_date >= ? AND s.interview_date <= ?";
         if (status != null && !status.isEmpty()) {
@@ -209,7 +204,6 @@ public class InterviewScheduleDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("[DEBUG][DAO] getSchedulesByDateRange 반환 size=" + list.size());
         return list;
     }
 

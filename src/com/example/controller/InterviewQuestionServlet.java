@@ -22,29 +22,22 @@ public class InterviewQuestionServlet extends HttpServlet {
     
     @Override
     public void init() throws ServletException {
-        System.out.println("[DEBUG] ========== InterviewQuestionServlet 초기화 시작 ==========");
         try {
             questionDAO = new InterviewQuestionDAO();
-            System.out.println("[DEBUG] InterviewQuestionDAO 객체 생성 성공");
         } catch (Exception e) {
             System.err.println("[ERROR] InterviewQuestionServlet 초기화 실패: " + e.getMessage());
             e.printStackTrace();
             questionDAO = null;
         }
-        System.out.println("[DEBUG] ========== InterviewQuestionServlet 초기화 완료 ==========");
     }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        System.out.println("[DEBUG] ========== GET 요청 수신 ==========");
-        System.out.println("[DEBUG] 요청 URI: " + request.getRequestURI());
-        
         // 세션 검증
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("username") == null) {
-            System.out.println("[DEBUG] 세션이 없거나 사용자가 로그인되지 않음");
             response.sendRedirect("login.jsp");
             return;
         }
@@ -99,8 +92,6 @@ public class InterviewQuestionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        System.out.println("[DEBUG] ========== POST 요청 수신 ==========");
-        
         // 인코딩 설정
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
@@ -113,7 +104,6 @@ public class InterviewQuestionServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        System.out.println("[DEBUG] POST 액션 파라미터: " + action);
 
         try {
             if ("create".equals(action)) {

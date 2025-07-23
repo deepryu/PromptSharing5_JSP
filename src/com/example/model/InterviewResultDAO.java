@@ -17,12 +17,8 @@ public class InterviewResultDAO {
      * 인터뷰 결과 추가
      */
     public boolean addResult(InterviewResult result) {
-        System.out.println("🔍 [DAO-DEBUG] addResult 메소드 시작");
-        System.out.println("🔍 [DAO-DEBUG] 입력 데이터: 지원자ID=" + result.getCandidateId() + ", 면접관=" + result.getInterviewerName() + ", 날짜=" + result.getInterviewDate());
-        
         // 중복 체크
         boolean exists = isResultExists(result.getCandidateId(), result.getInterviewDate(), result.getInterviewerName());
-        System.out.println("🔍 [DAO-DEBUG] 중복 체크 결과: " + (exists ? "중복 존재 - 저장 실패" : "중복 없음 - 저장 진행"));
         
         if (exists) {
             return false;
@@ -61,9 +57,7 @@ public class InterviewResultDAO {
             pstmt.setString(16, result.getHireRecommendation());
             pstmt.setString(17, result.getNextStep());
             
-            System.out.println("🔍 [DAO-DEBUG] SQL 실행 중...");
             int affectedRows = pstmt.executeUpdate();
-            System.out.println("🔍 [DAO-DEBUG] SQL 실행 결과: 영향받은 행 수 = " + affectedRows);
             
             if (affectedRows > 0) {
                 // 새로 생성된 ID를 결과 객체에 설정
@@ -71,18 +65,14 @@ public class InterviewResultDAO {
                     if (generatedKeys.next()) {
                         int newId = generatedKeys.getInt(1);
                         result.setId(newId);
-                        System.out.println("🔍 [DAO-DEBUG] 새로 생성된 ID: " + newId);
                     }
                 }
-                System.out.println("✅ [DAO-DEBUG] 저장 성공!");
                 return true;
             }
             
-            System.out.println("❌ [DAO-DEBUG] 저장 실패 - 영향받은 행이 0");
             return false;
             
         } catch (SQLException e) {
-            System.out.println("💥 [DAO-DEBUG] SQL 예외 발생: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

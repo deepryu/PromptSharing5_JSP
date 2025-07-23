@@ -89,7 +89,6 @@ public class InterviewScheduleServlet extends HttpServlet {
         String startDateParam = request.getParameter("startDate");
         String endDateParam = request.getParameter("endDate");
         String filter = request.getParameter("filter");
-        System.out.println("[DEBUG] status=" + status + ", startDate=" + startDateParam + ", endDate=" + endDateParam + ", filter=" + filter);
 
         // filter 파라미터 처리
         if ((startDateParam == null || startDateParam.isEmpty() || endDateParam == null || endDateParam.isEmpty()) 
@@ -113,7 +112,6 @@ public class InterviewScheduleServlet extends HttpServlet {
                     endDateParam = monthEnd.toString();
                     break;
             }
-            System.out.println("[DEBUG] filter 적용 후 startDate=" + startDateParam + ", endDate=" + endDateParam);
         }
 
         List<InterviewSchedule> schedules;
@@ -121,20 +119,15 @@ public class InterviewScheduleServlet extends HttpServlet {
             try {
                 Date start = Date.valueOf(startDateParam);
                 Date end = Date.valueOf(endDateParam);
-                System.out.println("[DEBUG] DAO.getSchedulesByDateRange 호출");
                 schedules = scheduleDAO.getSchedulesByDateRange(start, end, status);
             } catch (IllegalArgumentException e) {
-                System.out.println("[DEBUG] 날짜 파싱 오류, DAO.getAllSchedules 호출");
                 schedules = scheduleDAO.getAllSchedules();
             }
         } else if (status != null && !status.isEmpty()) {
-            System.out.println("[DEBUG] DAO.getSchedulesByStatus 호출");
             schedules = scheduleDAO.getSchedulesByStatus(status);
         } else {
-            System.out.println("[DEBUG] DAO.getAllSchedules 호출");
             schedules = scheduleDAO.getAllSchedules();
         }
-        System.out.println("[DEBUG] schedules.size=" + (schedules != null ? schedules.size() : -1));
         request.setAttribute("schedules", schedules);
         request.setAttribute("selectedStatus", status);
         request.setAttribute("selectedStartDate", startDateParam);

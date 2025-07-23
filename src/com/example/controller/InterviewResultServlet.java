@@ -56,12 +56,6 @@ public class InterviewResultServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         String action = request.getParameter("action");
         
-        System.out.println("🔍 [InterviewResultServlet-GET] ================================");
-        System.out.println("🔍 [InterviewResultServlet-GET] 요청 URI: " + requestURI);
-        System.out.println("🔍 [InterviewResultServlet-GET] 컨텍스트 경로: " + contextPath);
-        System.out.println("🔍 [InterviewResultServlet-GET] PathInfo: " + pathInfo);
-        System.out.println("🔍 [InterviewResultServlet-GET] Action 파라미터: " + action);
-        
         // action 파라미터가 있으면 우선 사용, 없으면 pathInfo 사용
         String targetAction = null;
         if (action != null && !action.trim().isEmpty()) {
@@ -75,43 +69,34 @@ public class InterviewResultServlet extends HttpServlet {
         try {
             switch (targetAction) {
                 case "/list":
-                    System.out.println("📋 [InterviewResultServlet-GET] /list 경로 처리");
                     showResultList(request, response);
                     break;
                 case "/detail":
-                    System.out.println("👁️ [InterviewResultServlet-GET] /detail 경로 처리");
                     showResultDetail(request, response);
                     break;
                 case "/add":
                 case "/new":
-                    System.out.println("➕ [InterviewResultServlet-GET] /add 경로 처리 - 결과등록 폼");
                     showResultForm(request, response);
                     break;
                 case "/edit":
-                    System.out.println("✏️ [InterviewResultServlet-GET] /edit 경로 처리");
                     editResult(request, response);
                     break;
                 case "/delete":
-                    System.out.println("🗑️ [InterviewResultServlet-GET] /delete 경로 처리");
                     deleteResult(request, response);
                     break;
                 case "/search":
-                    System.out.println("🔍 [InterviewResultServlet-GET] /search 경로 처리");
                     searchResults(request, response);
                     break;
                 case "/filter":
-                    System.out.println("🔽 [InterviewResultServlet-GET] /filter 경로 처리");
                     filterResults(request, response);
                     break;
                 default:
-                    System.out.println("❓ [InterviewResultServlet-GET] 기본 경로 처리: " + targetAction);
                     showResultList(request, response);
                     break;
             }
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "오류가 발생했습니다: " + e.getMessage());
-            System.out.println("📄 [InterviewResultServlet] doGet catch - interview_results.jsp로 포워딩 (절대경로)");
             request.getRequestDispatcher("/interview_results.jsp").forward(request, response);
         }
     }
@@ -331,15 +316,10 @@ public class InterviewResultServlet extends HttpServlet {
      */
     private void createResult(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        System.out.println("🚀 [DEBUG] createResult 메소드 시작");
         try {
-            System.out.println("📝 [DEBUG] 폼 데이터 추출 중...");
             InterviewResult result = extractResultFromRequest(request);
-            System.out.println("✅ [DEBUG] 추출된 데이터: 지원자ID=" + result.getCandidateId() + ", 면접관=" + result.getInterviewerName() + ", 결과상태=" + result.getResultStatus());
             
-            System.out.println("💾 [DEBUG] DB 저장 시도 중...");
             boolean success = resultDAO.addResult(result);
-            System.out.println("📊 [DEBUG] DB 저장 결과: " + (success ? "성공" : "실패"));
             
             // 선택된 질문들 저장
             if (success && result.getId() > 0) {
@@ -353,11 +333,7 @@ public class InterviewResultServlet extends HttpServlet {
                     && ("pass".equals(result.getResultStatus()) || "fail".equals(result.getResultStatus()))) {
                     try {
                         boolean statusUpdated = candidateDAO.updateCandidateStatus(result.getCandidateId(), "면접완료");
-                        System.out.println("✅ [DEBUG] 2차면접 완료 - 지원자 상태 업데이트: " + 
-                                          (statusUpdated ? "성공" : "실패") + 
-                                          " (지원자 ID: " + result.getCandidateId() + ", 결과상태: " + result.getResultStatus() + ")");
                     } catch (Exception e) {
-                        System.out.println("❌ [DEBUG] 2차면접 완료 처리 중 오류: " + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -411,11 +387,7 @@ public class InterviewResultServlet extends HttpServlet {
                     && ("pass".equals(result.getResultStatus()) || "fail".equals(result.getResultStatus()))) {
                     try {
                         boolean statusUpdated = candidateDAO.updateCandidateStatus(result.getCandidateId(), "면접완료");
-                        System.out.println("✅ [DEBUG] 2차면접 수정 완료 - 지원자 상태 업데이트: " + 
-                                          (statusUpdated ? "성공" : "실패") + 
-                                          " (지원자 ID: " + result.getCandidateId() + ", 결과상태: " + result.getResultStatus() + ")");
                     } catch (Exception e) {
-                        System.out.println("❌ [DEBUG] 2차면접 수정 완료 처리 중 오류: " + e.getMessage());
                         e.printStackTrace();
                     }
                 }

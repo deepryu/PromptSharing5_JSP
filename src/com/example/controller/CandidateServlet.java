@@ -48,45 +48,27 @@ public class CandidateServlet extends HttpServlet {
         String contextPath = request.getContextPath();
         String path = requestURI.substring(contextPath.length());
         
-        System.out.println("🔍 [CandidateServlet-GET] ================================");
-        System.out.println("🔍 [CandidateServlet-GET] 요청 경로: " + path);
-        System.out.println("🔍 [CandidateServlet-GET] 전체 URI: " + requestURI);
-        
         // 세션 상태 확인 (AuthenticationFilter에서 이미 검증했지만 재확인)
         HttpSession session = request.getSession(false);
-        System.out.println("🔍 [CandidateServlet-GET] 세션 상태: " + (session != null ? "존재" : "null"));
-        
-        if (session != null) {
-            String username = (String) session.getAttribute("username");
-            System.out.println("🔍 [CandidateServlet-GET] 세션의 username: " + username);
-        }
         
         // RESTful URL 라우팅
         if (path.equals("/candidates")) {
-            System.out.println("📋 [CandidateServlet-GET] 지원자 목록 요청 처리");
             // 지원자 목록 (기본)
             List<Candidate> candidates = candidateDAO.getAllCandidatesWithInterviewSchedule();
             request.setAttribute("candidates", candidates);
-            System.out.println("✅ [CandidateServlet-GET] candidates.jsp로 포워딩, 지원자 수: " + candidates.size());
             request.getRequestDispatcher("candidates.jsp").forward(request, response);
         } else if (path.equals("/candidates/add")) {
-            System.out.println("➕ [CandidateServlet-GET] 새 지원자 추가 폼 요청 처리");
             // 새 지원자 추가 폼
-            System.out.println("📄 [CandidateServlet-GET] candidate_form.jsp로 포워딩 (절대경로)");
             request.getRequestDispatcher("/candidate_form.jsp").forward(request, response);
         } else if (path.equals("/candidates/edit")) {
-            System.out.println("✏️ [CandidateServlet-GET] 지원자 편집 폼 요청 처리");
             // 지원자 편집 폼
             String idParam = request.getParameter("id");
-            System.out.println("🔍 [CandidateServlet-GET] 편집할 지원자 ID: " + idParam);
             if (idParam != null && !idParam.isEmpty()) {
                 int id = Integer.parseInt(idParam);
                 Candidate candidate = candidateDAO.getCandidateById(id);
                 request.setAttribute("candidate", candidate);
-                System.out.println("📄 [CandidateServlet-GET] candidate_form.jsp로 포워딩 (절대경로) - 지원자: " + (candidate != null ? candidate.getName() : "null"));
                 request.getRequestDispatcher("/candidate_form.jsp").forward(request, response);
             } else {
-                System.out.println("❌ [CandidateServlet-GET] ID 파라미터가 없음 - 400 에러 반환");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID 파라미터가 필요합니다.");
             }
         } else if (path.equals("/candidates/detail")) {
@@ -104,39 +86,29 @@ public class CandidateServlet extends HttpServlet {
             // 이력서 파일 다운로드 처리
             handleResumeDownload(request, response);
         } else if (path.equals("/candidates/export")) {
-            System.out.println("📊 [CandidateServlet-GET] Excel 내보내기 요청 처리");
             // Excel 내보내기
             handleExcelExport(request, response);
         } else {
             // 기존 action 파라미터 방식도 지원 (하위 호환성)
             String action = request.getParameter("action");
             
-            System.out.println("🔍 [CandidateServlet-GET] else 블록 진입");
-            System.out.println("🔍 [CandidateServlet-GET] action 파라미터: " + action);
-            
             if ("new".equals(action)) {
-                System.out.println("📄 [CandidateServlet-GET] action=new - candidate_form.jsp로 포워딩 (절대경로)");
                 request.getRequestDispatcher("/candidate_form.jsp").forward(request, response);
             } else if ("edit".equals(action)) {
-                System.out.println("✏️ [CandidateServlet-GET] action=edit - 편집 폼으로 이동");
                 int id = Integer.parseInt(request.getParameter("id"));
                 Candidate candidate = candidateDAO.getCandidateById(id);
                 request.setAttribute("candidate", candidate);
                 request.getRequestDispatcher("/candidate_form.jsp").forward(request, response);
             } else if ("detail".equals(action)) {
-                System.out.println("👁️ [CandidateServlet-GET] action=detail - 상세보기로 이동");
                 int id = Integer.parseInt(request.getParameter("id"));
                 Candidate candidate = candidateDAO.getCandidateById(id);
                 request.setAttribute("candidate", candidate);
                 request.getRequestDispatcher("/candidate_detail.jsp").forward(request, response);
             } else if ("delete-resume".equals(action)) {
-                System.out.println("🗑️ [CandidateServlet-GET] action=delete-resume - 이력서 삭제");
                 handleResumeDelete(request, response);
             } else {
                 // 지원자 목록으로 리다이렉트 (절대경로로 수정)
                 String redirectURL = request.getContextPath() + "/candidates";
-                System.out.println("🔄 [CandidateServlet-GET] 기본 리다이렉트: " + redirectURL);
-                System.out.println("⚠️ [CandidateServlet-GET] 예상치 못한 경로 또는 action: path=" + path + ", action=" + action);
                 response.sendRedirect(redirectURL);
             }
         }
@@ -336,16 +308,14 @@ public class CandidateServlet extends HttpServlet {
     private void handleExcelExport(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        try {
-            System.out.println("📊 [CandidateServlet] Excel 내보내기 시작");
+        // try-with-resources로 워크북 자원 관리
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             
             // 모든 지원자 데이터 가져오기
             List<Candidate> candidates = candidateDAO.getAllCandidatesWithInterviewSchedule();
-            System.out.println("📊 [CandidateServlet] 지원자 데이터 조회 완료: " + candidates.size() + "명");
             
-            // Excel 워크북 생성
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("인터뷰 대상자 목록");
+            // Excel 시트 생성 (영문 시트명으로 안전하게)
+            Sheet sheet = workbook.createSheet("Candidates_List");
             
             // 스타일 생성
             CellStyle headerStyle = workbook.createCellStyle();
@@ -369,8 +339,8 @@ public class CandidateServlet extends HttpServlet {
             // 헤더 행 생성
             Row headerRow = sheet.createRow(0);
             String[] headers = {
-                "ID", "이름", "이메일", "전화번호", "지원분야", 
-                "인터뷰날짜", "인터뷰시간", "면접유형", "결과상태", "등록일시"
+                "ID", "Name", "Email", "Phone", "Team", 
+                "Interview_Date", "Interview_Time", "Interview_Type", "Result_Status", "Created_At"
             };
             
             for (int i = 0; i < headers.length; i++) {
@@ -380,7 +350,6 @@ public class CandidateServlet extends HttpServlet {
             }
             
             // 데이터 행 생성
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             
             for (int i = 0; i < candidates.size(); i++) {
@@ -409,12 +378,12 @@ public class CandidateServlet extends HttpServlet {
                 
                 // 지원분야
                 Cell cell4 = row.createCell(4);
-                cell4.setCellValue(candidate.getTeam() != null ? candidate.getTeam() : "미정");
+                cell4.setCellValue(candidate.getTeam() != null ? candidate.getTeam() : "TBD");
                 cell4.setCellStyle(dataStyle);
                 
                 // 인터뷰날짜
                 Cell cell5 = row.createCell(5);
-                String interviewDate = "";
+                String interviewDate = "TBD";
                 if (candidate.getInterviewDateTime() != null && !candidate.getInterviewDateTime().trim().isEmpty()) {
                     try {
                         String[] dateTimeParts = candidate.getInterviewDateTime().split(" ");
@@ -422,17 +391,15 @@ public class CandidateServlet extends HttpServlet {
                             interviewDate = dateTimeParts[0];
                         }
                     } catch (Exception e) {
-                        interviewDate = "미정";
+                        interviewDate = "TBD";
                     }
-                } else {
-                    interviewDate = "미정";
                 }
                 cell5.setCellValue(interviewDate);
                 cell5.setCellStyle(dataStyle);
                 
                 // 인터뷰시간
                 Cell cell6 = row.createCell(6);
-                String interviewTime = "";
+                String interviewTime = "TBD";
                 if (candidate.getInterviewDateTime() != null && !candidate.getInterviewDateTime().trim().isEmpty()) {
                     try {
                         String[] dateTimeParts = candidate.getInterviewDateTime().split(" ");
@@ -440,17 +407,15 @@ public class CandidateServlet extends HttpServlet {
                             interviewTime = dateTimeParts[1];
                         }
                     } catch (Exception e) {
-                        interviewTime = "미정";
+                        interviewTime = "TBD";
                     }
-                } else {
-                    interviewTime = "미정";
                 }
                 cell6.setCellValue(interviewTime);
                 cell6.setCellStyle(dataStyle);
                 
                 // 면접유형
                 Cell cell7 = row.createCell(7);
-                cell7.setCellValue(candidate.getInterviewType() != null ? candidate.getInterviewType() : "미정");
+                cell7.setCellValue(candidate.getInterviewType() != null ? candidate.getInterviewType() : "TBD");
                 cell7.setCellStyle(dataStyle);
                 
                 // 결과상태
@@ -458,16 +423,16 @@ public class CandidateServlet extends HttpServlet {
                 String resultStatus = candidate.getInterviewResultStatus();
                 if (resultStatus != null && !resultStatus.trim().isEmpty() && !"미등록".equals(resultStatus)) {
                     if ("pass".equals(resultStatus)) {
-                        resultStatus = "합격";
+                        resultStatus = "PASS";
                     } else if ("fail".equals(resultStatus)) {
-                        resultStatus = "불합격";
+                        resultStatus = "FAIL";
                     } else if ("hold".equals(resultStatus)) {
-                        resultStatus = "보류";
+                        resultStatus = "HOLD";
                     } else if ("pending".equals(resultStatus)) {
-                        resultStatus = "대기";
+                        resultStatus = "PENDING";
                     }
                 } else {
-                    resultStatus = "미등록";
+                    resultStatus = "NOT_REGISTERED";
                 }
                 cell8.setCellValue(resultStatus);
                 cell8.setCellStyle(dataStyle);
@@ -485,39 +450,41 @@ public class CandidateServlet extends HttpServlet {
             // 컬럼 너비 자동 조정
             for (int i = 0; i < headers.length; i++) {
                 sheet.autoSizeColumn(i);
-                // 최소 너비 설정 (한글 텍스트를 위해)
+                // 최소 너비 설정
                 int currentWidth = sheet.getColumnWidth(i);
                 if (currentWidth < 3000) {
                     sheet.setColumnWidth(i, 3000);
                 }
             }
             
-            // 파일명 생성 (한글 파일명 지원)
+            // 파일명 생성 (영문으로 안전하게)
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String fileName = "인터뷰_대상자_목록_" + timestamp + ".xlsx";
+            String fileName = "candidates_list_" + timestamp + ".xlsx";
             
-            // 응답 헤더 설정
+            // 응답 헤더 설정 (더 안전한 방식)
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + 
-                java.net.URLEncoder.encode(fileName, "UTF-8"));
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
             
             // Excel 파일을 응답으로 전송
             try (OutputStream out = response.getOutputStream()) {
                 workbook.write(out);
                 out.flush();
-                System.out.println("📊 [CandidateServlet] Excel 파일 전송 완료: " + fileName);
             }
             
-            workbook.close();
-            System.out.println("📊 [CandidateServlet] Excel 내보내기 완료");
+            System.out.println("[CandidateServlet] Excel 파일 전송 완료: " + fileName);
             
         } catch (Exception e) {
-            System.err.println("❌ [CandidateServlet] Excel 내보내기 실패: " + e.getMessage());
+            System.err.println("[CandidateServlet] Excel 내보내기 실패: " + e.getMessage());
             e.printStackTrace();
             
-            response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().write("<script>alert('Excel 내보내기 중 오류가 발생했습니다: " + 
-                e.getMessage() + "'); history.back();</script>");
+            // 에러 발생 시 JSON 응답으로 변경 (더 안전함)
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Excel export failed: " + e.getMessage() + "\"}");
         }
     }
 }
