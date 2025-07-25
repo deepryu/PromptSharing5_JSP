@@ -1,0 +1,135 @@
+# JSP 인터뷰 관리 시스템 개발 가이드 (.cursorrules)
+
+## 🎯 프로젝트 핵심 정보
+- **기술스택**: JSP, Servlet, PostgreSQL, Maven, Tomcat 9
+- **패턴**: MVC 패턴, Enterprise Grade 보안
+- **환경**: Windows PowerShell, UTF-8 인코딩 필수
+- **DB**: promptsharing (PostgreSQL), 사용자: postgresql/1234
+
+## 🚨 절대 금지사항 (CRITICAL)
+
+### 데이터베이스 관련
+- ❌ PostgreSQL 직접 연결 금지 (`psql` 명령어 등)
+- ❌ 데이터베이스 스크립트 자동 실행 금지
+- ✅ SQL 스크립트 파일 생성만 허용 (sql/ 디렉토리)
+
+### 시스템 제어 관련  
+- ❌ Tomcat 자동 재시작 금지 (`taskkill`, `startup.bat` 등)
+- ❌ PowerShell 치환 명령어 금지 (한글 깨짐 위험)
+- ✅ 사용자 확인 후 명령어 제공만 허용
+
+### 파일 인코딩 관련
+- ❌ UTF-8 BOM 포함 저장 금지
+- ❌ 한글이 포함된 파일의 무분별한 치환 금지
+- ✅ UTF-8 (BOM 없이) 인코딩 사용
+
+## ⚡ 필수 개발 절차
+
+### Java 클래스 파일 변경 시
+1. **컴파일**: `mvn compile` (시스템 Maven 사용)
+2. **재시작**: `.\restart-tomcat.cmd` (자동화 스크립트 [[memory:3492016]])
+3. **테스트**: 브라우저에서 기능 확인
+
+### JSP 파일 변경 시
+- 컴파일 불필요 (Tomcat 자동 처리)
+- 브라우저 새로고침만으로 확인 가능
+
+### GitHub 푸시 절차 [[memory:2841158]]
+1. 컴파일 완료 후 사용자에게 질문: "변경사항을 GitHub에 푸시하시겠습니까?"
+2. 사용자 승인 시에만 Git 명령어 실행
+3. 표준 절차: `git add .` → `git commit -m "메시지"` → `git push origin main --no-verify`
+
+## 🎨 UI/UX 가이드라인
+
+### GitHub 스타일 준수 [[memory:812340]]
+- **구조**: container → top-bar → main-dashboard
+- **색상**: 배경 #f0f0f0, 테두리 #d0d7de, 헤더 #0078d4
+- **버튼**: btn-primary (#1f883d), btn-secondary (white)
+- **금지**: 그라데이션, 독립 색상 체계
+
+### 참조 파일
+- `main.jsp`: 기본 레이아웃 템플릿
+- `system_settings.jsp`: 표준 폼 스타일
+
+## 🔒 보안 시스템 [[memory:812323]]
+
+### 3단계 보안 구조
+1. **AuthenticationFilter**: 모든 요청 자동 검증
+2. **서블릿 레벨**: `session.getAttribute("username")` 검증
+3. **JSP 레벨**: 세션 검증 코드
+
+### 보안 기능
+- SQL Injection 방지 (PreparedStatement)
+- XSS 방지 (HTML 이스케이프)
+- 비밀번호 암호화 (BCrypt)
+
+## 📁 프로젝트 구조
+
+### 핵심 디렉토리
+- `src/com/example/controller/`: 서블릿 파일
+- `src/com/example/model/`: DAO, 모델 클래스
+- `sql/`: SQL 스크립트 (사용자가 수동 실행)
+- `docs/`: 상세 가이드 문서들
+- `scripts/`: 유틸리티 스크립트
+
+### 중요 문서
+- `docs/PROJECT_GUIDE.md`: 상세 개발 가이드
+- `docs/ERROR_GUIDE.md`: 에러 해결 사례
+- `docs/SECURITY_GUIDE.md`: 보안 구현 가이드
+- `docs/KOREAN_ENCODING_GUIDE.md`: 한글 인코딩 해결방법
+
+## 🛠️ 개발 원칙
+
+### 안전한 개발 [[memory:2577789]]
+1. 변경 전 백업: `safety-backup.cmd`
+2. 점진적 수정: 1개 파일씩 수정 후 테스트
+3. 컴파일 실패 시 즉시 롤백
+4. 문제 발생 시: `emergency-recovery.cmd`
+
+### 코드 수정 원칙 [[memory:2556446]]
+1. 수정 전 기존 코드 실제 확인 (read_file 사용)
+2. 최소 변경 원칙
+3. 수정 사유 명확히 설명
+4. 점진적 수정 후 즉시 테스트
+
+## 🧪 테스트 실행
+
+### Maven 테스트 [[memory:812329]]
+- **명령어**: `test-maven-utf8.cmd` (한글 깨짐 방지)
+- **테스트 수**: 50개 (모두 통과 필수)
+- **주요 테스트**: UserDAOTest, CandidateDAOTest, InterviewResultDAOTest
+
+### 컴파일 환경
+- **Windows**: PowerShell 환경 전용
+- **구분자**: 세미콜론(;) 사용 (콜론 아님)
+- **경로**: 백슬래시(\) 사용
+
+## 📝 문서화 정책
+
+### 에러 발생 시
+- `docs/ERROR_GUIDE.md`에 해결 사례 추가
+- 단계별 해결 과정 상세 기록
+- 재발 방지 대책 포함
+
+### 새 기능 추가 시
+- 관련 문서 업데이트
+- 테스트 케이스 추가
+- 사용자 가이드 작성
+
+## 💡 참고사항
+
+### 주요 스크립트
+- `restart-tomcat.cmd`: Tomcat 안전 재시작
+- `fix-korean-encoding.cmd`: 한글 인코딩 설정
+- `safety-backup.cmd`: 자동 백업
+- `test-maven-utf8.cmd`: UTF-8 테스트 실행
+
+### 자주 사용하는 명령어
+- 컴파일: `mvn compile`
+- 파일 확인: `dir` (Linux `ls` 사용 금지)
+- Git 상태: `git status`
+- 디렉토리 이동: `cd` (Windows 경로 사용)
+
+---
+**💬 이 파일은 Cursor AI가 개발 시 항상 참조하는 핵심 가이드입니다.**
+**모든 작업은 이 가이드라인을 엄격히 준수해야 합니다.** 
